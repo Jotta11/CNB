@@ -51,12 +51,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Defer Supabase calls with setTimeout to avoid deadlock
       if (session?.user) {
-        const admin = await checkAdminRole(session.user.id);
-        setIsAdmin(admin);
+        setTimeout(() => {
+          checkAdminRole(session.user.id).then(setIsAdmin);
+        }, 0);
       } else {
         setIsAdmin(false);
       }

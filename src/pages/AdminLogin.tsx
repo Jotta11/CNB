@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,8 +12,15 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in as admin
+  useEffect(() => {
+    if (user && isAdmin) {
+      navigate('/admin');
+    }
+  }, [user, isAdmin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,13 +30,16 @@ const AdminLogin = () => {
       const { error } = await signIn(email, password);
       if (error) {
         toast.error('Credenciais inválidas');
+        setLoading(false);
       } else {
         toast.success('Login realizado com sucesso!');
-        navigate('/admin');
+        // Small delay to allow auth state to update
+        setTimeout(() => {
+          navigate('/admin');
+        }, 500);
       }
     } catch (err) {
       toast.error('Erro ao fazer login');
-    } finally {
       setLoading(false);
     }
   };

@@ -89,7 +89,7 @@ Gostaria de cadastrar meu lote na plataforma.`;
       numeroCabecas: ''
     });
   };
-  return <section id="vender" className="py-20 md:py-28 gradient-form bg-secondary">
+  return <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
       <div className="container mx-auto px-4">
         <motion.div initial={{
         opacity: 0,

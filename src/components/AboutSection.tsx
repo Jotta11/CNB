@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, Shield, Wallet, ArrowRight } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const differentials = [
   {
@@ -20,6 +21,9 @@ const differentials = [
 ];
 
 const AboutSection = () => {
+  const { settings } = useSiteSettings();
+  const aboutImage = settings.about_image;
+
   return (
     <section id="sobre" className="py-20 md:py-32 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
@@ -33,29 +37,58 @@ const AboutSection = () => {
         >
           <div className="grid lg:grid-cols-2 gap-0 rounded-3xl overflow-hidden shadow-2xl">
             {/* Left - Image/Art Area */}
-            <div className="relative bg-primary min-h-[400px] lg:min-h-[500px] flex items-center justify-center p-8 lg:p-12">
-              {/* Decorative elements */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-foreground rounded-full" />
-                <div className="absolute bottom-20 right-20 w-48 h-48 border-2 border-primary-foreground rounded-full" />
-                <div className="absolute top-1/2 left-1/3 w-24 h-24 border border-primary-foreground rounded-full" />
-              </div>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="relative z-10 text-center"
-              >
-                <span className="text-primary-foreground/60 text-sm font-medium tracking-widest uppercase mb-4 block">
-                  Conexão Norte Bovino
-                </span>
-                <h2 className="font-display text-5xl md:text-6xl lg:text-7xl text-primary-foreground leading-tight">
-                  Quem<br />Somos
-                </h2>
-                <div className="mt-6 w-16 h-1 bg-primary-foreground/40 mx-auto rounded-full" />
-              </motion.div>
+            <div className="relative bg-primary min-h-[400px] lg:min-h-[500px] flex items-center justify-center overflow-hidden">
+              {aboutImage ? (
+                <>
+                  <img 
+                    src={aboutImage} 
+                    alt="Quem Somos" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {/* Overlay with text */}
+                  <div className="absolute inset-0 bg-primary/60" />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="relative z-10 text-center p-8"
+                  >
+                    <span className="text-primary-foreground/80 text-sm font-medium tracking-widest uppercase mb-4 block">
+                      Conexão Norte Bovino
+                    </span>
+                    <h2 className="font-display text-5xl md:text-6xl lg:text-7xl text-primary-foreground leading-tight drop-shadow-lg">
+                      Quem<br />Somos
+                    </h2>
+                    <div className="mt-6 w-16 h-1 bg-primary-foreground/60 mx-auto rounded-full" />
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  {/* Decorative elements - fallback when no image */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-foreground rounded-full" />
+                    <div className="absolute bottom-20 right-20 w-48 h-48 border-2 border-primary-foreground rounded-full" />
+                    <div className="absolute top-1/2 left-1/3 w-24 h-24 border border-primary-foreground rounded-full" />
+                  </div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="relative z-10 text-center p-8"
+                  >
+                    <span className="text-primary-foreground/60 text-sm font-medium tracking-widest uppercase mb-4 block">
+                      Conexão Norte Bovino
+                    </span>
+                    <h2 className="font-display text-5xl md:text-6xl lg:text-7xl text-primary-foreground leading-tight">
+                      Quem<br />Somos
+                    </h2>
+                    <div className="mt-6 w-16 h-1 bg-primary-foreground/40 mx-auto rounded-full" />
+                  </motion.div>
+                </>
+              )}
             </div>
 
             {/* Right - Content */}

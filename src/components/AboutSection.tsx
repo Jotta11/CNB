@@ -119,10 +119,10 @@ const AboutSection = () => {
 
                 <a 
                   href="#lotes" 
-                  className="inline-flex items-center gap-2 text-primary font-medium group mt-4"
+                  className="inline-flex items-center gap-3 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group mt-4"
                 >
                   Ver lotes disponíveis
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
                 </a>
               </motion.div>
             </div>

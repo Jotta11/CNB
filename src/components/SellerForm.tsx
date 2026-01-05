@@ -76,7 +76,7 @@ const SellerForm = () => {
 *Número de Cabeças:* ${formData.numeroCabecas}
 
 Gostaria de cadastrar meu lote na plataforma.`;
-    const whatsappUrl = `https://wa.me/556399262816?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5563992628916?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 
     // Clear form

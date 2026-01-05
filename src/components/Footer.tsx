@@ -36,7 +36,7 @@ const Footer = () => {
             <span>Região MATOPIBA</span>
           </div>
           <a
-            href="https://wa.me/556399262816"
+            href="https://wa.me/5563992628916"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-white transition-colors"

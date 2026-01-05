@@ -39,7 +39,7 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
     const message = encodeURIComponent(
       `Olá! Tenho interesse no ${lote.numero} - ${lote.titulo}`
     );
-    window.open(`https://wa.me/556399262816?text=${message}`, '_blank');
+    window.open(`https://wa.me/5563992628916?text=${message}`, '_blank');
   };
 
   if (!lote) return null;

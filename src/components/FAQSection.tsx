@@ -185,7 +185,7 @@ const FAQSection = () => {
               </p>
             </div>
             <a 
-              href="https://wa.me/556399262816" 
+              href="https://wa.me/5563992628916"
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-whatsapp px-6 py-3 rounded-lg flex items-center gap-2"

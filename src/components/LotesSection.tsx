@@ -1,12 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import LoteCard from './LoteCard';
 import LoteModal from './LoteModal';
-import { lotes, type Lote } from '@/data/lotes';
+import { useLotes, type Lote } from '@/hooks/useLotes';
+import { lotes as fallbackLotes } from '@/data/lotes';
+import { Loader2 } from 'lucide-react';
 
 const LotesSection = () => {
+  const { lotes: dbLotes, loading } = useLotes();
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Use DB lotes if available, otherwise use fallback data
+  const displayLotes = dbLotes.length > 0 ? dbLotes : fallbackLotes.map(l => ({
+    ...l,
+    preco: l.preco,
+    video_url: null,
+    imagem_url: null,
+    ativo: true,
+    ordem: 0,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }));
 
   const handleLoteClick = (lote: Lote) => {
     setSelectedLote(lote);
@@ -34,20 +49,26 @@ const LotesSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {lotes.map((lote, index) => (
-            <LoteCard
-              key={lote.id}
-              lote={lote}
-              onClick={() => handleLoteClick(lote)}
-              index={index}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayLotes.map((lote, index) => (
+              <LoteCard
+                key={lote.id}
+                lote={lote as any}
+                onClick={() => handleLoteClick(lote)}
+                index={index}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <LoteModal
-        lote={selectedLote}
+        lote={selectedLote as any}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />

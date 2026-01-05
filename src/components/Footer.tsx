@@ -1,4 +1,5 @@
 import { MapPin, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logoVertical from '@/assets/logo-vertical.svg';
 
 const navLinks = [
@@ -66,9 +67,17 @@ const Footer = () => {
         <p className="text-white/50 text-sm mb-2">
           © 2025 Conexão Norte Bovino - Todos os direitos reservados
         </p>
-        <p className="text-white/40 text-xs">
+        <p className="text-white/40 text-xs mb-4">
           Curadoria especializada para negociações com confiança
         </p>
+
+        {/* Admin link */}
+        <Link
+          to="/admin/login"
+          className="text-white/20 hover:text-white/40 text-xs transition-colors"
+        >
+          Admin
+        </Link>
       </div>
     </footer>
   );

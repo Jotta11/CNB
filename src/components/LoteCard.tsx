@@ -72,7 +72,7 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
           </div>
         </div>
 
-        <button className="w-full mt-4 bg-primary-medium text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary transition-colors duration-200 group-hover:shadow-lg">
+        <button className="w-full mt-4 bg-accent text-accent-foreground py-3 rounded-lg font-semibold hover:bg-accent/90 transition-all duration-200 group-hover:shadow-lg group-hover:scale-[1.02]">
           Ver Detalhes Completos
         </button>
       </div>

@@ -1,24 +1,6 @@
 import { motion } from 'framer-motion';
-import { CheckCircle, Shield, Wallet, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-
-const differentials = [
-  {
-    icon: CheckCircle,
-    title: 'Curadoria Especializada',
-    description: 'Cada lote passa por validação criteriosa, garantindo qualidade e transparência.',
-  },
-  {
-    icon: Shield,
-    title: 'Segurança Garantida',
-    description: 'Processo transparente com documentação completa do início ao fim.',
-  },
-  {
-    icon: Wallet,
-    title: 'Economia de Recursos',
-    description: 'Menos deslocamento, menos tempo perdido e mais eficiência.',
-  },
-];
 
 const AboutSection = () => {
   const { settings } = useSiteSettings();
@@ -33,7 +15,7 @@ const AboutSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative mb-20"
+          className="relative"
         >
           <div className="grid lg:grid-cols-2 gap-0 rounded-3xl overflow-hidden shadow-2xl">
             {/* Left - Image/Art Area */}
@@ -128,65 +110,6 @@ const AboutSection = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Section Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h3 className="font-display text-3xl md:text-4xl text-foreground mb-3">
-            Por Que Escolher o CNB?
-          </h3>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Simplicidade, segurança e resultados em cada negociação
-          </p>
-        </motion.div>
-
-        {/* Differentials - Modern Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {differentials.map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.15,
-                ease: "easeOut"
-              }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group relative bg-card rounded-2xl p-8 border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-300"
-            >
-              {/* Icon */}
-              <motion.div
-                initial={{ scale: 1 }}
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors"
-              >
-                <item.icon className="text-primary" size={28} />
-              </motion.div>
-
-              {/* Content */}
-              <h4 className="font-display text-xl text-foreground mb-3">
-                {item.title}
-              </h4>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {item.description}
-              </p>
-
-              {/* Decorative corner */}
-              <div className="absolute top-0 right-0 w-20 h-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-primary/40" />
-                <div className="absolute top-4 right-8 w-1 h-1 rounded-full bg-primary/30" />
-                <div className="absolute top-8 right-4 w-1 h-1 rounded-full bg-primary/30" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );

@@ -171,6 +171,51 @@ const AdminSettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Image className="w-5 h-5" />
+              Arte Quem Somos
+            </CardTitle>
+            <CardDescription>Imagem/arte da seção "Quem Somos" (400x500px recomendado)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {settings.about_image ? (
+              <div className="relative inline-block">
+                <img
+                  src={settings.about_image}
+                  alt="Arte Quem Somos"
+                  className="max-h-40 object-cover rounded"
+                />
+                <button
+                  onClick={() => handleRemoveImage('about_image')}
+                  className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-1"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files?.[0] && handleImageUpload('about_image', e.target.files[0])}
+                  className="hidden"
+                  disabled={uploading === 'about_image'}
+                />
+                {uploading === 'about_image' ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground mt-2">Clique para enviar</span>
+                  </>
+                )}
+              </label>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Image className="w-5 h-5" />
               Background Hero
             </CardTitle>
             <CardDescription>Imagem de fundo da seção principal</CardDescription>

@@ -39,28 +39,28 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
       <div className="p-6">
         <h3 className="font-display text-2xl text-primary mb-4">{lote.titulo}</h3>
 
-        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-          <div className="flex justify-between">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4 text-sm">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Raça:</span>
             <span className="font-medium">{lote.raca}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Idade:</span>
             <span className="font-medium">{lote.idade}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Peso:</span>
             <span className="font-medium">{lote.peso}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Qtd:</span>
             <span className="font-medium">{lote.quantidade} cabeças</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Sexo:</span>
             <span className="font-medium">{lote.sexo}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-1">
             <span className="text-muted-foreground">Estado:</span>
             <span className="font-medium text-primary">{lote.estado}</span>
           </div>

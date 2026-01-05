@@ -39,28 +39,25 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
       <div className="p-6">
         <h3 className="font-display text-2xl text-primary mb-4">{lote.titulo}</h3>
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4 text-sm">
-          <div className="flex gap-1">
+        <div className="space-y-2 mb-4 text-sm">
+          <div className="flex gap-1 flex-wrap">
             <span className="text-muted-foreground">Raça:</span>
             <span className="font-medium">{lote.raca}</span>
-          </div>
-          <div className="flex gap-1">
+            <span className="text-muted-foreground/40 mx-1">•</span>
             <span className="text-muted-foreground">Idade:</span>
             <span className="font-medium">{lote.idade}</span>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             <span className="text-muted-foreground">Peso:</span>
             <span className="font-medium">{lote.peso}</span>
-          </div>
-          <div className="flex gap-1">
+            <span className="text-muted-foreground/40 mx-1">•</span>
             <span className="text-muted-foreground">Qtd:</span>
-            <span className="font-medium">{lote.quantidade} cabeças</span>
+            <span className="font-medium whitespace-nowrap">{lote.quantidade} cabeças</span>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             <span className="text-muted-foreground">Sexo:</span>
             <span className="font-medium">{lote.sexo}</span>
-          </div>
-          <div className="flex gap-1">
+            <span className="text-muted-foreground/40 mx-1">•</span>
             <span className="text-muted-foreground">Estado:</span>
             <span className="font-medium text-primary">{lote.estado}</span>
           </div>
@@ -75,7 +72,7 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
           </div>
         </div>
 
-        <button className="w-full mt-4 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary-medium transition-colors duration-200 group-hover:shadow-lg">
+        <button className="w-full mt-4 bg-primary-medium text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary transition-colors duration-200 group-hover:shadow-lg">
           Ver Detalhes Completos
         </button>
       </div>

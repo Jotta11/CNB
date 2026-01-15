@@ -1,6 +1,5 @@
-import { Video, Share2 } from 'lucide-react';
+import { Video } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import type { Lote } from '@/data/lotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -34,26 +33,6 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  const handleShareClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareData = {
-      title: `${lote.numero} - ${lote.titulo}`,
-      text: `Confira este lote: ${lote.titulo} - ${lote.quantidade} cabeças de ${lote.raca} por ${formatPrice(lote.preco)}/cabeça`,
-      url: window.location.href
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
-        toast.success('Link copiado para a área de transferência!');
-      }
-    } catch (error) {
-      // User cancelled or error
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -69,15 +48,6 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
           <span className="text-sm">Vídeo disponível</span>
         </div>
         <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
-        
-        {/* Share Button */}
-        <button
-          onClick={handleShareClick}
-          className="absolute top-4 right-4 w-9 h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all duration-200 hover:scale-110"
-          aria-label="Compartilhar lote"
-        >
-          <Share2 className="w-4 h-4 text-primary" />
-        </button>
       </div>
 
       {/* Content */}

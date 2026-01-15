@@ -1,6 +1,13 @@
-import { Video } from 'lucide-react';
+import { Video, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import type { Lote } from '@/data/lotes';
+
+const WhatsAppIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>
+);
 
 interface LoteCardProps {
   lote: Lote;
@@ -17,27 +24,65 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
     }).format(price);
   };
 
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
+      `• Raça: ${lote.raca}\n` +
+      `• Quantidade: ${lote.quantidade} cabeças\n` +
+      `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` +
+      `Gostaria de mais informações.`;
+    window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const handleShareClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareData = {
+      title: `${lote.numero} - ${lote.titulo}`,
+      text: `Confira este lote: ${lote.titulo} - ${lote.quantidade} cabeças de ${lote.raca} por ${formatPrice(lote.preco)}/cabeça`,
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+        toast.success('Link copiado para a área de transferência!');
+      }
+    } catch (error) {
+      // User cancelled or error
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="card-lot cursor-pointer group"
-      onClick={onClick}
+      className="card-lot group"
     >
       {/* Video Placeholder */}
-      <div className="relative h-48 bg-primary flex items-center justify-center">
+      <div className="relative h-48 bg-primary flex items-center justify-center cursor-pointer" onClick={onClick}>
         <div className="text-white/50 flex flex-col items-center gap-2">
           <Video size={40} />
           <span className="text-sm">Vídeo disponível</span>
         </div>
         <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
+        
+        {/* Share Button */}
+        <button
+          onClick={handleShareClick}
+          className="absolute top-4 right-4 w-9 h-9 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all duration-200 hover:scale-110"
+          aria-label="Compartilhar lote"
+        >
+          <Share2 className="w-4 h-4 text-primary" />
+        </button>
       </div>
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="font-display text-2xl text-primary mb-4">{lote.titulo}</h3>
+        <h3 className="font-display text-2xl text-primary mb-4 cursor-pointer" onClick={onClick}>{lote.titulo}</h3>
 
         <div className="space-y-2 mb-4 text-sm">
           <div className="flex gap-1 flex-wrap">
@@ -72,9 +117,23 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
           </div>
         </div>
 
-        <button className="w-full mt-4 bg-accent text-accent-foreground py-3 rounded-lg font-semibold hover:bg-accent/90 transition-all duration-200 group-hover:shadow-lg group-hover:scale-[1.02]">
-          Ver Detalhes Completos
-        </button>
+        {/* Action Buttons */}
+        <div className="mt-5 space-y-3">
+          <button
+            onClick={handleWhatsAppClick}
+            className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white py-3.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+          >
+            <WhatsAppIcon className="w-5 h-5" />
+            Consultar no WhatsApp
+          </button>
+          
+          <button
+            onClick={onClick}
+            className="w-full bg-transparent border-2 border-primary text-primary py-3 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+          >
+            Ver Detalhes Completos
+          </button>
+        </div>
       </div>
     </motion.div>
   );

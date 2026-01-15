@@ -6,6 +6,8 @@ import AboutSection from '@/components/AboutSection';
 import SellerForm from '@/components/SellerForm';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import BackToTop from '@/components/BackToTop';
 
 const Index = () => {
   return (
@@ -18,6 +20,8 @@ const Index = () => {
       <SellerForm />
       <FAQSection />
       <Footer />
+      <FloatingWhatsApp />
+      <BackToTop />
     </div>
   );
 };

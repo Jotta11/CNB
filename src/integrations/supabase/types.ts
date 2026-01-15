@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      leads: {
+        Row: {
+          created_at: string
+          fazenda: string | null
+          id: string
+          localizacao: string | null
+          mensagem: string | null
+          nome: string
+          numero_cabecas: number | null
+          status: string
+          telefone: string
+          tipo: string
+          tipo_cultura: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fazenda?: string | null
+          id?: string
+          localizacao?: string | null
+          mensagem?: string | null
+          nome: string
+          numero_cabecas?: number | null
+          status?: string
+          telefone: string
+          tipo: string
+          tipo_cultura?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fazenda?: string | null
+          id?: string
+          localizacao?: string | null
+          mensagem?: string | null
+          nome?: string
+          numero_cabecas?: number | null
+          status?: string
+          telefone?: string
+          tipo?: string
+          tipo_cultura?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lotes: {
         Row: {
           ativo: boolean

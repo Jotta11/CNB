@@ -1,35 +1,43 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ClipboardList, Clock, Send } from 'lucide-react';
+import { ClipboardList, Clock, Send, ShoppingCart, Tag } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
 interface FormData {
+  tipo: 'comprar' | 'vender';
   nome: string;
   telefone: string;
   fazenda: string;
   localizacao: string;
   tipoCultura: string;
   numeroCabecas: string;
+  mensagem: string;
 }
+
 const SellerForm = () => {
   const [formData, setFormData] = useState<FormData>({
+    tipo: 'vender',
     nome: '',
     telefone: '',
     fazenda: '',
     localizacao: '',
     tipoCultura: '',
-    numeroCabecas: ''
+    numeroCabecas: '',
+    mensagem: ''
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     if (numbers.length <= 2) return `(${numbers}`;
     if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
     return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const {
-      name,
-      value
-    } = e.target;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     if (name === 'telefone') {
       setFormData(prev => ({
         ...prev,
@@ -48,60 +56,99 @@ const SellerForm = () => {
       }));
     }
   };
+
   const validate = () => {
     const newErrors: Partial<FormData> = {};
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório';
     if (!formData.telefone.trim() || formData.telefone.replace(/\D/g, '').length < 10) {
       newErrors.telefone = 'Telefone válido é obrigatório';
     }
-    if (!formData.fazenda.trim()) newErrors.fazenda = 'Nome da fazenda é obrigatório';
-    if (!formData.localizacao.trim()) newErrors.localizacao = 'Localização é obrigatória';
-    if (!formData.tipoCultura) newErrors.tipoCultura = 'Selecione o tipo de cultura';
-    if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
-      newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
+    
+    if (formData.tipo === 'vender') {
+      if (!formData.fazenda.trim()) newErrors.fazenda = 'Nome da fazenda é obrigatório';
+      if (!formData.localizacao.trim()) newErrors.localizacao = 'Localização é obrigatória';
+      if (!formData.tipoCultura) newErrors.tipoCultura = 'Selecione o tipo de cultura';
+      if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
+        newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
+      }
     }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    const message = `*Novo Cadastro de Lote - CNB*
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Save lead to database
+      const { error } = await supabase.from('leads').insert({
+        tipo: formData.tipo,
+        nome: formData.nome.trim(),
+        telefone: formData.telefone.trim(),
+        fazenda: formData.tipo === 'vender' ? formData.fazenda.trim() : null,
+        localizacao: formData.tipo === 'vender' ? formData.localizacao.trim() : null,
+        tipo_cultura: formData.tipo === 'vender' ? formData.tipoCultura : null,
+        numero_cabecas: formData.tipo === 'vender' && formData.numeroCabecas ? parseInt(formData.numeroCabecas) : null,
+        mensagem: formData.mensagem.trim() || null
+      });
 
-*Nome:* ${formData.nome}
-*Telefone:* ${formData.telefone}
-*Fazenda:* ${formData.fazenda}
-*Local:* ${formData.localizacao}
-*Tipo de Cultura:* ${formData.tipoCultura}
-*Número de Cabeças:* ${formData.numeroCabecas}
+      if (error) throw error;
 
-Gostaria de cadastrar meu lote na plataforma.`;
-    const whatsappUrl = `https://wa.me/5563992628916?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+      // Build WhatsApp message
+      const tipoLabel = formData.tipo === 'comprar' ? 'COMPRAR' : 'VENDER';
+      let message = `*Novo Lead - ${tipoLabel} - CNB*\n\n`;
+      message += `*Nome:* ${formData.nome}\n`;
+      message += `*Telefone:* ${formData.telefone}\n`;
+      
+      if (formData.tipo === 'vender') {
+        message += `*Fazenda:* ${formData.fazenda}\n`;
+        message += `*Local:* ${formData.localizacao}\n`;
+        message += `*Tipo de Cultura:* ${formData.tipoCultura}\n`;
+        message += `*Número de Cabeças:* ${formData.numeroCabecas}\n`;
+      }
+      
+      if (formData.mensagem) {
+        message += `\n*Mensagem:* ${formData.mensagem}\n`;
+      }
 
-    // Clear form
-    setFormData({
-      nome: '',
-      telefone: '',
-      fazenda: '',
-      localizacao: '',
-      tipoCultura: '',
-      numeroCabecas: ''
-    });
+      const whatsappUrl = `https://wa.me/5563992628916?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      toast.success('Mensagem enviada com sucesso!');
+
+      // Clear form
+      setFormData({
+        tipo: 'vender',
+        nome: '',
+        telefone: '',
+        fazenda: '',
+        localizacao: '',
+        tipoCultura: '',
+        numeroCabecas: '',
+        mensagem: ''
+      });
+    } catch (error) {
+      console.error('Error submitting lead:', error);
+      toast.error('Erro ao enviar. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-  return <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
+
+  return (
+    <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
       <div className="container mx-auto px-4">
-        <motion.div initial={{
-        opacity: 0,
-        y: 30
-      }} whileInView={{
-        opacity: 1,
-        y: 0
-      }} viewport={{
-        once: true
-      }} transition={{
-        duration: 0.6
-      }} className="max-w-3xl mx-auto bg-card rounded-2xl shadow-xl p-8 md:p-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto bg-card rounded-2xl shadow-xl p-8 md:p-12"
+        >
           {/* Header */}
           <div className="text-center mb-10">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -122,13 +169,53 @@ Gostaria de cadastrar meu lote na plataforma.`;
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Tipo Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-3">
+                O que você deseja? <span className="text-destructive">*</span>
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, tipo: 'comprar' }))}
+                  className={`flex items-center justify-center gap-3 p-4 rounded-lg border-2 transition-all duration-200 ${
+                    formData.tipo === 'comprar'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-input bg-background hover:border-primary/50'
+                  }`}
+                >
+                  <ShoppingCart size={24} />
+                  <span className="font-semibold">Quero Comprar</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, tipo: 'vender' }))}
+                  className={`flex items-center justify-center gap-3 p-4 rounded-lg border-2 transition-all duration-200 ${
+                    formData.tipo === 'vender'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-input bg-background hover:border-primary/50'
+                  }`}
+                >
+                  <Tag size={24} />
+                  <span className="font-semibold">Quero Vender</span>
+                </button>
+              </div>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               {/* Nome */}
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Nome Completo <span className="text-destructive">*</span>
                 </label>
-                <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Seu nome completo" className={`w-full px-4 py-3 rounded-lg border ${errors.nome ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`} />
+                <input
+                  type="text"
+                  name="nome"
+                  value={formData.nome}
+                  onChange={handleChange}
+                  placeholder="Seu nome completo"
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.nome ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                />
                 {errors.nome && <span className="text-destructive text-xs mt-1">{errors.nome}</span>}
               </div>
 
@@ -137,67 +224,128 @@ Gostaria de cadastrar meu lote na plataforma.`;
                 <label className="block text-sm font-medium mb-2">
                   Telefone/WhatsApp <span className="text-destructive">*</span>
                 </label>
-                <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="(63) 99999-9999" maxLength={15} className={`w-full px-4 py-3 rounded-lg border ${errors.telefone ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`} />
+                <input
+                  type="text"
+                  name="telefone"
+                  value={formData.telefone}
+                  onChange={handleChange}
+                  placeholder="(63) 99999-9999"
+                  maxLength={15}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.telefone ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                />
                 {errors.telefone && <span className="text-destructive text-xs mt-1">{errors.telefone}</span>}
               </div>
 
-              {/* Fazenda */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Nome da Fazenda <span className="text-destructive">*</span>
-                </label>
-                <input type="text" name="fazenda" value={formData.fazenda} onChange={handleChange} placeholder="Nome da propriedade" className={`w-full px-4 py-3 rounded-lg border ${errors.fazenda ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`} />
-                {errors.fazenda && <span className="text-destructive text-xs mt-1">{errors.fazenda}</span>}
-              </div>
+              {/* Campos condicionais para Vender */}
+              {formData.tipo === 'vender' && (
+                <>
+                  {/* Fazenda */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Nome da Fazenda <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="fazenda"
+                      value={formData.fazenda}
+                      onChange={handleChange}
+                      placeholder="Nome da propriedade"
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.fazenda ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                    />
+                    {errors.fazenda && <span className="text-destructive text-xs mt-1">{errors.fazenda}</span>}
+                  </div>
 
-              {/* Localização */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Localização <span className="text-destructive">*</span>
-                </label>
-                <input type="text" name="localizacao" value={formData.localizacao} onChange={handleChange} placeholder="Cidade - Estado" className={`w-full px-4 py-3 rounded-lg border ${errors.localizacao ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`} />
-                {errors.localizacao && <span className="text-destructive text-xs mt-1">{errors.localizacao}</span>}
-              </div>
+                  {/* Localização */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Localização <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="localizacao"
+                      value={formData.localizacao}
+                      onChange={handleChange}
+                      placeholder="Cidade - Estado"
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.localizacao ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                    />
+                    {errors.localizacao && <span className="text-destructive text-xs mt-1">{errors.localizacao}</span>}
+                  </div>
 
-              {/* Tipo de Cultura */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Tipo de Cultura <span className="text-destructive">*</span>
-                </label>
-                <select name="tipoCultura" value={formData.tipoCultura} onChange={handleChange} className={`w-full px-4 py-3 rounded-lg border ${errors.tipoCultura ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}>
-                  <option value="">Selecione...</option>
-                  <option value="Cria">Cria</option>
-                  <option value="Recria">Recria</option>
-                  <option value="Engorda">Engorda</option>
-                  <option value="Reprodução">Reprodução</option>
-                  <option value="Leite">Leite</option>
-                  <option value="Misto">Misto</option>
-                </select>
-                {errors.tipoCultura && <span className="text-destructive text-xs mt-1">{errors.tipoCultura}</span>}
-              </div>
+                  {/* Tipo de Cultura */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Tipo de Cultura <span className="text-destructive">*</span>
+                    </label>
+                    <select
+                      name="tipoCultura"
+                      value={formData.tipoCultura}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.tipoCultura ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Cria">Cria</option>
+                      <option value="Recria">Recria</option>
+                      <option value="Engorda">Engorda</option>
+                      <option value="Reprodução">Reprodução</option>
+                      <option value="Leite">Leite</option>
+                      <option value="Misto">Misto</option>
+                    </select>
+                    {errors.tipoCultura && <span className="text-destructive text-xs mt-1">{errors.tipoCultura}</span>}
+                  </div>
 
-              {/* Número de Cabeças */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Número de Cabeças <span className="text-destructive">*</span>
-                </label>
-                <input type="number" name="numeroCabecas" value={formData.numeroCabecas} onChange={handleChange} placeholder="Ex: 100" min={1} className={`w-full px-4 py-3 rounded-lg border ${errors.numeroCabecas ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`} />
-                {errors.numeroCabecas && <span className="text-destructive text-xs mt-1">{errors.numeroCabecas}</span>}
-              </div>
+                  {/* Número de Cabeças */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Número de Cabeças <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="numeroCabecas"
+                      value={formData.numeroCabecas}
+                      onChange={handleChange}
+                      placeholder="Ex: 100"
+                      min={1}
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.numeroCabecas ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                    />
+                    {errors.numeroCabecas && <span className="text-destructive text-xs mt-1">{errors.numeroCabecas}</span>}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Mensagem */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Mensagem {formData.tipo === 'comprar' && <span className="text-muted-foreground">(descreva o que procura)</span>}
+              </label>
+              <textarea
+                name="mensagem"
+                value={formData.mensagem}
+                onChange={handleChange}
+                placeholder={formData.tipo === 'comprar' ? 'Ex: Procuro 50 novilhas nelore, entre 12-18 meses...' : 'Informações adicionais sobre seu lote...'}
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
+              />
             </div>
 
             {/* Submit */}
-            <button type="submit" className="w-full bg-primary text-primary-foreground py-4 rounded-lg font-semibold text-lg hover:bg-primary-medium transition-colors duration-200 flex items-center justify-center gap-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-primary text-primary-foreground py-4 rounded-lg font-semibold text-lg hover:bg-primary-medium transition-colors duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Send size={20} />
-              Cadastrar Meu Lote
+              {isSubmitting ? 'Enviando...' : formData.tipo === 'comprar' ? 'Enviar Interesse' : 'Cadastrar Meu Lote'}
             </button>
 
             <p className="text-center text-muted-foreground text-sm">
-              Ao enviar, você será direcionado ao WhatsApp para continuarmos o processo de curadoria.
+              Ao enviar, você será direcionado ao WhatsApp para continuarmos o processo.
             </p>
           </form>
         </motion.div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default SellerForm;

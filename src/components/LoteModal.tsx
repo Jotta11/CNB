@@ -6,7 +6,8 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
-import type { Lote } from '@/data/lotes';
+import FreightCalculator from './FreightCalculator';
+import type { Lote } from '@/hooks/useLotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -189,6 +190,11 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
                     </div>
                   </Link>
                 )}
+              </div>
+
+              {/* Freight Calculator */}
+              <div className="mb-8">
+                <FreightCalculator lote={lote as any} onClose={onClose} />
               </div>
 
               {/* Description */}

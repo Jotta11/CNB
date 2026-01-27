@@ -43,6 +43,10 @@ const Lotes = () => {
     imagem_url: null,
     ativo: true,
     ordem: 0,
+    localizacao: l.localizacao || 'Tocantins',
+    capacidade_carga: l.capacidade_carga || 96,
+    tipo_implemento: l.tipo_implemento || 'nove_eixos',
+    qtd_carretas: l.qtd_carretas || 1,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }));

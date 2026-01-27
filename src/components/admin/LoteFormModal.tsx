@@ -55,6 +55,9 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
     imagem_url: '',
     ativo: true,
     ordem: 0,
+    capacidade_carga: 96,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   });
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         quantidade: lote.quantidade,
         sexo: lote.sexo,
         estado: lote.estado,
-        localizacao: (lote as any).localizacao || 'Tocantins',
+        localizacao: lote.localizacao || 'Tocantins',
         preco: lote.preco,
         descricao: lote.descricao || '',
         caracteristicas: lote.caracteristicas || defaultCaracteristicas,
@@ -76,6 +79,9 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         imagem_url: lote.imagem_url || '',
         ativo: lote.ativo,
         ordem: lote.ordem,
+        capacidade_carga: lote.capacidade_carga || 96,
+        tipo_implemento: lote.tipo_implemento || 'nove_eixos',
+        qtd_carretas: lote.qtd_carretas || 1,
       });
     } else {
       setForm({
@@ -95,6 +101,9 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         imagem_url: '',
         ativo: true,
         ordem: 0,
+        capacidade_carga: 96,
+        tipo_implemento: 'nove_eixos',
+        qtd_carretas: 1,
       });
     }
   }, [lote, isOpen]);
@@ -303,6 +312,49 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
                 value={form.ordem}
                 onChange={(e) => setForm((prev) => ({ ...prev, ordem: parseInt(e.target.value) || 0 }))}
               />
+            </div>
+          </div>
+
+          {/* Composição de Carga - Freight fields */}
+          <div className="space-y-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <h3 className="font-semibold text-primary">Composição de Carga (Frete)</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="capacidade_carga">Capacidade (cabeças)</Label>
+                <Input
+                  id="capacidade_carga"
+                  type="number"
+                  min="1"
+                  value={form.capacidade_carga}
+                  onChange={(e) => setForm((prev) => ({ ...prev, capacidade_carga: parseInt(e.target.value) || 96 }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tipo_implemento">Tipo de Implemento</Label>
+                <Select
+                  value={form.tipo_implemento}
+                  onValueChange={(value) => setForm((prev) => ({ ...prev, tipo_implemento: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nove_eixos">9 eixos</SelectItem>
+                    <SelectItem value="truck">Truck</SelectItem>
+                    <SelectItem value="bitrem">Bitrem</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="qtd_carretas">Qtd. Carretas</Label>
+                <Input
+                  id="qtd_carretas"
+                  type="number"
+                  min="1"
+                  value={form.qtd_carretas}
+                  onChange={(e) => setForm((prev) => ({ ...prev, qtd_carretas: parseInt(e.target.value) || 1 }))}
+                />
+              </div>
             </div>
           </div>
 

@@ -3,6 +3,8 @@ import Hero from '@/components/Hero';
 import LotesSection from '@/components/LotesSection';
 import PartnersSection from '@/components/PartnersSection';
 import AboutSection from '@/components/AboutSection';
+import HowItWorksSection from '@/components/HowItWorksSection';
+import MissionVisionValuesSection from '@/components/MissionVisionValuesSection';
 import SellerForm from '@/components/SellerForm';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
@@ -17,6 +19,8 @@ const Index = () => {
       <LotesSection />
       <PartnersSection />
       <AboutSection />
+      <HowItWorksSection />
+      <MissionVisionValuesSection />
       <SellerForm />
       <FAQSection />
       <Footer />

@@ -130,77 +130,55 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
             {/* Content */}
             <div className="p-6 md:p-8">
               <h2 className="font-display text-4xl md:text-5xl text-primary mb-2">{lote.titulo}</h2>
-              <p className="text-muted-foreground mb-6">Raça {lote.raca}</p>
+              <p className="text-muted-foreground mb-6">{lote.numero}</p>
 
-              {/* Specs Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                {[
-                  { label: 'Idade', value: lote.idade },
-                  { label: 'Peso Médio', value: lote.peso },
-                  { label: 'Quantidade', value: `${lote.quantidade} cabeças` },
-                  { label: 'Sexo', value: lote.sexo },
-                  { label: 'Estado', value: lote.estado },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="p-4 rounded-lg bg-muted"
-                  >
-                    <span className="text-xs block mb-1 text-muted-foreground">
-                      {item.label}
-                    </span>
-                    <span className="font-semibold text-lg text-foreground">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-                
-                {/* Price Card with Blur */}
-                <div className="p-4 rounded-lg bg-primary text-primary-foreground">
-                  <span className="text-xs block mb-1 text-primary-foreground/70">
-                    Preço/Cabeça
-                  </span>
-                  {user ? (
-                    <span className="font-semibold text-lg">
-                      {formatPrice(lote.preco)}
-                    </span>
-                  ) : (
-                    <Link 
-                      to="/auth" 
-                      onClick={onClose}
-                      className="flex items-center gap-2 group"
-                    >
-                      <span className="font-semibold text-lg blur-sm select-none">
-                        R$ XX.XXX
-                      </span>
-                      <div className="flex items-center gap-1 text-xs bg-white/20 px-2 py-0.5 rounded-full group-hover:bg-white group-hover:text-primary transition-colors">
-                        <Lock className="w-3 h-3" />
-                        <span>Ver</span>
-                      </div>
-                    </Link>
-                  )}
+              {/* Specs Grid - Simplified: Quantidade, Categoria, Localização, Peso */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="p-4 rounded-lg bg-muted">
+                  <span className="text-xs block mb-1 text-muted-foreground">Quantidade</span>
+                  <span className="font-semibold text-lg text-foreground">{lote.quantidade} cabeças</span>
                 </div>
+                <div className="p-4 rounded-lg bg-muted">
+                  <span className="text-xs block mb-1 text-muted-foreground">Categoria</span>
+                  <span className="font-semibold text-lg text-foreground">{lote.raca}</span>
+                </div>
+                <div className="p-4 rounded-lg bg-muted">
+                  <span className="text-xs block mb-1 text-muted-foreground">Localização</span>
+                  <span className="font-semibold text-lg text-foreground">{lote.estado}</span>
+                </div>
+                <div className="p-4 rounded-lg bg-muted">
+                  <span className="text-xs block mb-1 text-muted-foreground">Peso</span>
+                  <span className="font-semibold text-lg text-foreground">{lote.peso}</span>
+                </div>
+              </div>
+
+              {/* Price Card with Blur */}
+              <div className="p-5 rounded-xl bg-primary text-primary-foreground mb-8">
+                <span className="text-sm block mb-1 text-primary-foreground/70">Preço por cabeça</span>
+                {user ? (
+                  <span className="font-display text-3xl">{formatPrice(lote.preco)}</span>
+                ) : (
+                  <Link 
+                    to="/auth" 
+                    onClick={onClose}
+                    className="flex items-center gap-3 group"
+                  >
+                    <span className="font-display text-3xl blur-md select-none">R$ XX.XXX</span>
+                    <div className="flex items-center gap-1.5 text-sm bg-white/20 px-3 py-1 rounded-full group-hover:bg-white group-hover:text-primary transition-colors">
+                      <Lock className="w-4 h-4" />
+                      <span>Fazer login para ver preço</span>
+                    </div>
+                  </Link>
+                )}
               </div>
 
               {/* Description */}
-              <div className="mb-8">
-                <h3 className="font-display text-2xl text-primary mb-3">Descrição</h3>
-                <p className="text-muted-foreground leading-relaxed">{lote.descricao}</p>
-              </div>
-
-              {/* Characteristics */}
-              <div className="mb-8">
-                <h3 className="font-display text-2xl text-primary mb-4">Características</h3>
-                <div className="grid md:grid-cols-2 gap-3">
-                  {lote.caracteristicas.map((item) => (
-                    <div key={item} className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Check size={14} className="text-primary" />
-                      </div>
-                      <span className="text-sm">{item}</span>
-                    </div>
-                  ))}
+              {lote.descricao && (
+                <div className="mb-8">
+                  <h3 className="font-display text-2xl text-primary mb-3">Descrição</h3>
+                  <p className="text-muted-foreground leading-relaxed">{lote.descricao}</p>
                 </div>
-              </div>
+              )}
 
               {/* WhatsApp CTA */}
               <button

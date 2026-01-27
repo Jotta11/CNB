@@ -23,6 +23,11 @@ const Lotes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRaca, setSelectedRaca] = useState('Todas');
@@ -263,19 +268,20 @@ const Lotes = () => {
             </p>
           </div>
 
-          {/* Lotes Grid */}
+          {/* Lotes Grid - Horizontal cards */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : filteredLotes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredLotes.map((lote, index) => (
                 <LoteCard
                   key={lote.id}
                   lote={lote as any}
                   onClick={() => handleLoteClick(lote)}
                   index={index}
+                  horizontal
                 />
               ))}
             </div>

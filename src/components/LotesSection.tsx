@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import LoteCard from './LoteCard';
 import LoteModal from './LoteModal';
 import { useLotes, type Lote } from '@/hooks/useLotes';
 import { lotes as fallbackLotes } from '@/data/lotes';
-import { Loader2 } from 'lucide-react';
 
 const LotesSection = () => {
   const { lotes: dbLotes, loading } = useLotes();
@@ -76,16 +77,34 @@ const LotesSection = () => {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayLotes.map((lote, index) => (
-              <LoteCard
-                key={lote.id}
-                lote={lote as any}
-                onClick={() => handleLoteClick(lote)}
-                index={index}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displayLotes.slice(0, 8).map((lote, index) => (
+                <LoteCard
+                  key={lote.id}
+                  lote={lote as any}
+                  onClick={() => handleLoteClick(lote)}
+                  index={index}
+                />
+              ))}
+            </div>
+
+            {/* Ver Todos button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center mt-12"
+            >
+              <Link to="/lotes">
+                <Button size="lg" className="gap-2">
+                  Ver Todos os Lotes
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
+            </motion.div>
+          </>
         )}
       </div>
 

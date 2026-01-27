@@ -16,6 +16,14 @@ interface LoteFormModalProps {
   lote: Lote | null;
 }
 
+const estados = [
+  'Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal',
+  'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul',
+  'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí',
+  'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia',
+  'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'
+];
+
 const defaultCaracteristicas = [
   'Certificado sanitário completo',
   'GTA (Guia de Trânsito Animal)',
@@ -39,6 +47,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
     quantidade: 1,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Tocantins',
     preco: 0,
     descricao: '',
     caracteristicas: defaultCaracteristicas,
@@ -59,6 +68,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         quantidade: lote.quantidade,
         sexo: lote.sexo,
         estado: lote.estado,
+        localizacao: (lote as any).localizacao || 'Tocantins',
         preco: lote.preco,
         descricao: lote.descricao || '',
         caracteristicas: lote.caracteristicas || defaultCaracteristicas,
@@ -77,6 +87,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         quantidade: 1,
         sexo: 'Macho',
         estado: 'Vacinado',
+        localizacao: 'Tocantins',
         preco: 0,
         descricao: '',
         caracteristicas: defaultCaracteristicas,
@@ -123,10 +134,10 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
 
     try {
       if (lote) {
-        await updateLote(lote.id, form);
+        await updateLote(lote.id, form as any);
         toast.success('Lote atualizado com sucesso');
       } else {
-        await createLote(form);
+        await createLote(form as any);
         toast.success('Lote criado com sucesso');
       }
       onClose();
@@ -204,7 +215,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="quantidade">Quantidade</Label>
               <Input
@@ -232,8 +243,29 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="estado">Estado</Label>
+              <Label htmlFor="localizacao">Localização (Estado)</Label>
+              <Select
+                value={form.localizacao}
+                onValueChange={(value) => setForm((prev) => ({ ...prev, localizacao: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  {estados.map((estado) => (
+                    <SelectItem key={estado} value={estado}>
+                      {estado}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="estado">Situação Sanitária</Label>
               <Select
                 value={form.estado}
                 onValueChange={(value) => setForm((prev) => ({ ...prev, estado: value }))}

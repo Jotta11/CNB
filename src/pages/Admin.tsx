@@ -5,10 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { LogOut, Package, Settings, ArrowLeft, Loader2, Users } from 'lucide-react';
+import { LogOut, Package, Settings, ArrowLeft, Loader2, Users, UserCheck } from 'lucide-react';
 import AdminLotes from '@/components/admin/AdminLotes';
 import AdminSettings from '@/components/admin/AdminSettings';
 import AdminLeads from '@/components/admin/AdminLeads';
+import AdminUsers from '@/components/admin/AdminUsers';
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
@@ -81,6 +82,10 @@ const Admin = () => {
                 <Users className="w-4 h-4" />
                 Leads
               </TabsTrigger>
+              <TabsTrigger value="usuarios" className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4" />
+                Usuários
+              </TabsTrigger>
               <TabsTrigger value="lotes" className="flex items-center gap-2">
                 <Package className="w-4 h-4" />
                 Lotes
@@ -93,6 +98,10 @@ const Admin = () => {
 
             <TabsContent value="leads">
               <AdminLeads />
+            </TabsContent>
+
+            <TabsContent value="usuarios">
+              <AdminUsers />
             </TabsContent>
 
             <TabsContent value="lotes">

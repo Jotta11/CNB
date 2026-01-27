@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Video, Check, Share2 } from 'lucide-react';
+import { X, Video, Check, Share2, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 import type { Lote } from '@/data/lotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -17,6 +19,8 @@ interface LoteModalProps {
 }
 
 const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
+  const { user } = useAuth();
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -46,7 +50,7 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
-      `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` +
+      (user ? `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -136,20 +140,45 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
                   { label: 'Quantidade', value: `${lote.quantidade} cabeças` },
                   { label: 'Sexo', value: lote.sexo },
                   { label: 'Estado', value: lote.estado },
-                  { label: 'Preço/Cabeça', value: formatPrice(lote.preco), highlight: true },
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className={`p-4 rounded-lg ${item.highlight ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+                    className="p-4 rounded-lg bg-muted"
                   >
-                    <span className={`text-xs block mb-1 ${item.highlight ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                    <span className="text-xs block mb-1 text-muted-foreground">
                       {item.label}
                     </span>
-                    <span className={`font-semibold text-lg ${item.highlight ? '' : 'text-foreground'}`}>
+                    <span className="font-semibold text-lg text-foreground">
                       {item.value}
                     </span>
                   </div>
                 ))}
+                
+                {/* Price Card with Blur */}
+                <div className="p-4 rounded-lg bg-primary text-primary-foreground">
+                  <span className="text-xs block mb-1 text-primary-foreground/70">
+                    Preço/Cabeça
+                  </span>
+                  {user ? (
+                    <span className="font-semibold text-lg">
+                      {formatPrice(lote.preco)}
+                    </span>
+                  ) : (
+                    <Link 
+                      to="/auth" 
+                      onClick={onClose}
+                      className="flex items-center gap-2 group"
+                    >
+                      <span className="font-semibold text-lg blur-sm select-none">
+                        R$ XX.XXX
+                      </span>
+                      <div className="flex items-center gap-1 text-xs bg-white/20 px-2 py-0.5 rounded-full group-hover:bg-white group-hover:text-primary transition-colors">
+                        <Lock className="w-3 h-3" />
+                        <span>Ver</span>
+                      </div>
+                    </Link>
+                  )}
+                </div>
               </div>
 
               {/* Description */}

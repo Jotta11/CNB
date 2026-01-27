@@ -40,12 +40,9 @@ const PartnersSection = () => {
           viewport={{ once: true }}
           className="text-center mb-8"
         >
-          <span className="inline-block px-4 py-1 bg-white/10 text-white font-semibold rounded-full text-sm mb-3">
-            PARCEIROS
+          <span className="inline-block px-4 py-1 bg-white/10 text-white font-semibold rounded-full text-sm">
+            EMPRESAS PARCEIRAS
           </span>
-          <h2 className="font-display text-2xl md:text-3xl text-white">
-            Empresas Parceiras
-          </h2>
         </motion.div>
 
         <motion.div

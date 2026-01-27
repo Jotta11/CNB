@@ -30,7 +30,7 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section className="py-20 md:py-32 bg-background overflow-hidden">
+    <section className="py-12 md:py-16 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { usePartners, Partner } from '@/hooks/usePartners';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +8,9 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Pencil, Trash2, ExternalLink, Loader2, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, Loader2, GripVertical, Upload, ImageIcon } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface PartnerFormData {
   nome: string;
@@ -31,6 +33,9 @@ const AdminPartners = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
   const [formData, setFormData] = useState<PartnerFormData>(emptyForm);
+  const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOpenCreate = () => {
     setEditingPartner(null);
@@ -38,6 +43,7 @@ const AdminPartners = () => {
       ...emptyForm,
       ordem: partners.length,
     });
+    setPreviewUrl('');
     setIsDialogOpen(true);
   };
 
@@ -50,11 +56,65 @@ const AdminPartners = () => {
       ordem: partner.ordem,
       ativo: partner.ativo,
     });
+    setPreviewUrl(partner.logo_url);
     setIsDialogOpen(true);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione apenas arquivos de imagem');
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('A imagem deve ter no máximo 2MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('partner-logos')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('partner-logos')
+        .getPublicUrl(data.path);
+
+      setFormData({ ...formData, logo_url: publicUrl });
+      setPreviewUrl(publicUrl);
+      toast.success('Logo enviada com sucesso!');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast.error('Erro ao enviar a logo');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.logo_url) {
+      toast.error('Por favor, envie uma logo para o parceiro');
+      return;
+    }
     
     if (editingPartner) {
       await updatePartner.mutateAsync({
@@ -67,6 +127,7 @@ const AdminPartners = () => {
     
     setIsDialogOpen(false);
     setFormData(emptyForm);
+    setPreviewUrl('');
     setEditingPartner(null);
   };
 
@@ -123,26 +184,53 @@ const AdminPartners = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="logo_url">URL da Logo</Label>
-                  <Input
-                    id="logo_url"
-                    value={formData.logo_url}
-                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                    placeholder="https://exemplo.com/logo.png"
-                    required
-                  />
-                  {formData.logo_url && (
-                    <div className="mt-2 p-4 bg-muted rounded-lg flex items-center justify-center">
-                      <img 
-                        src={formData.logo_url} 
-                        alt="Preview" 
-                        className="max-h-16 max-w-full object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
+                  <Label>Logo da Empresa</Label>
+                  <div 
+                    className={`
+                      border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
+                      ${previewUrl ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}
+                    `}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    
+                    {uploading ? (
+                      <div className="flex flex-col items-center gap-2 py-4">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <span className="text-sm text-muted-foreground">Enviando...</span>
+                      </div>
+                    ) : previewUrl ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <img 
+                          src={previewUrl} 
+                          alt="Preview" 
+                          className="max-h-20 max-w-full object-contain"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          Clique para alterar a imagem
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 py-4">
+                        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                          <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                        <div className="flex items-center gap-1 text-primary font-medium">
+                          <Upload className="w-4 h-4" />
+                          Clique para enviar a logo
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          PNG, JPG ou SVG (máx. 2MB)
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -188,7 +276,7 @@ const AdminPartners = () => {
                   <Button 
                     type="submit" 
                     className="flex-1"
-                    disabled={createPartner.isPending || updatePartner.isPending}
+                    disabled={createPartner.isPending || updatePartner.isPending || uploading}
                   >
                     {(createPartner.isPending || updatePartner.isPending) && (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />

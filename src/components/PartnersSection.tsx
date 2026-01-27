@@ -64,19 +64,14 @@ const PartnersSection = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              whileHover={{ scale: 1.08, y: -4 }}
-              className="group relative bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center min-w-[140px] h-20"
+              whileHover={{ scale: 1.1, y: -4 }}
+              className="group flex items-center justify-center p-4 transition-all duration-300"
             >
               <img
                 src={partner.logo_url}
                 alt={partner.nome}
-                className="max-h-12 max-w-[120px] object-contain transition-all duration-300"
+                className="h-16 md:h-20 max-w-[180px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-primary/95 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl">
-                <span className="text-white text-sm font-medium flex items-center gap-1">
-                  Visitar <ExternalLink size={14} />
-                </span>
-              </div>
             </motion.a>
           ))}
         </motion.div>

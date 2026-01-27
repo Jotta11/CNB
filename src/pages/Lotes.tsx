@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Filter, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import LoteCard from '@/components/LoteCard';
-import LoteModal from '@/components/LoteModal';
 import { useLotes, type Lote } from '@/hooks/useLotes';
 import { lotes as fallbackLotes } from '@/data/lotes';
 import Header from '@/components/Header';
@@ -18,10 +17,6 @@ const sexos = ['Todos', 'Macho', 'Fêmea'];
 
 const Lotes = () => {
   const { lotes: dbLotes, loading } = useLotes();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -34,9 +29,10 @@ const Lotes = () => {
   const [selectedSexo, setSelectedSexo] = useState('Todos');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [quantityRange, setQuantityRange] = useState<[number, number]>([1, 500]);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Use DB lotes if available, otherwise use fallback data
-  const displayLotes = dbLotes.length > 0 ? dbLotes : fallbackLotes.map(l => ({
+  const displayLotes: Lote[] = dbLotes.length > 0 ? dbLotes : fallbackLotes.map(l => ({
     ...l,
     preco: l.preco,
     video_url: null,
@@ -75,30 +71,6 @@ const Lotes = () => {
       return matchesSearch && matchesRaca && matchesSexo && matchesPrice && matchesQuantity;
     });
   }, [displayLotes, searchTerm, selectedRaca, selectedSexo, priceRange, quantityRange]);
-
-  // Check URL for lote parameter on load
-  useEffect(() => {
-    const loteId = searchParams.get('lote');
-    if (loteId && displayLotes.length > 0 && !loading) {
-      const foundLote = displayLotes.find(l => l.id === loteId);
-      if (foundLote) {
-        setSelectedLote(foundLote);
-        setIsModalOpen(true);
-      }
-    }
-  }, [searchParams, displayLotes, loading]);
-
-  const handleLoteClick = (lote: Lote) => {
-    setSelectedLote(lote);
-    setIsModalOpen(true);
-    setSearchParams({ lote: lote.id });
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSearchParams({});
-    setTimeout(() => setSelectedLote(null), 300);
-  };
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -282,8 +254,7 @@ const Lotes = () => {
               {filteredLotes.map((lote, index) => (
                 <LoteCard
                   key={lote.id}
-                  lote={lote as any}
-                  onClick={() => handleLoteClick(lote)}
+                  lote={lote}
                   index={index}
                   horizontal
                 />
@@ -307,12 +278,6 @@ const Lotes = () => {
       </main>
 
       <Footer />
-
-      <LoteModal
-        lote={selectedLote as any}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
     </div>
   );
 };

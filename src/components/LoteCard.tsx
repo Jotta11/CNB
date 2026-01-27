@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
-import type { Lote } from '@/data/lotes';
+import type { Lote } from '@/hooks/useLotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -14,12 +14,11 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 
 interface LoteCardProps {
   lote: Lote;
-  onClick: () => void;
   index: number;
   horizontal?: boolean;
 }
 
-const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) => {
+const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
   const { user } = useAuth();
   const { profile } = useUserProfile();
 
@@ -37,6 +36,7 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
   };
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
@@ -69,9 +69,9 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
         className="card-lot group flex flex-col md:flex-row overflow-hidden"
       >
         {/* Video Section - Larger for horizontal */}
-        <div 
-          className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0" 
-          onClick={onClick}
+        <Link 
+          to={`/lotes/${lote.id}`}
+          className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0"
         >
           <div className="text-white/50 flex flex-col items-center gap-2">
             <Video size={48} />
@@ -79,13 +79,15 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
           </div>
           <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
           <DistanceBadge />
-        </div>
+        </Link>
 
         {/* Content */}
         <div className="flex-1 p-5 flex flex-col">
-          <h3 className="font-display text-2xl text-primary mb-3 cursor-pointer" onClick={onClick}>
-            {lote.titulo}
-          </h3>
+          <Link to={`/lotes/${lote.id}`}>
+            <h3 className="font-display text-2xl text-primary mb-3 hover:text-primary/80 transition-colors">
+              {lote.titulo}
+            </h3>
+          </Link>
 
           <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
             <div>
@@ -118,32 +120,30 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
               ) : (
                 <Link to="/auth" className="group/price flex items-center gap-2">
                   <span className="font-display text-2xl text-primary blur-sm select-none">
-                    R$ XX.XXX
+                    R$ X.XXX
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full group-hover/price:bg-primary group-hover/price:text-white transition-colors">
+                  <span className="text-xs text-muted-foreground group-hover/price:text-primary transition-colors flex items-center gap-1">
                     <Lock className="w-3 h-3" />
-                    <span>Ver preço</span>
-                  </div>
+                    Login para ver
+                  </span>
                 </Link>
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2">
-              <button
-                onClick={onClick}
-                className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg font-semibold transition-all duration-200"
-              >
-                Ver lote
-              </button>
-              
+            <div className="flex gap-3">
               <button
                 onClick={handleWhatsAppClick}
-                className="w-12 h-12 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-lg flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg flex-shrink-0"
-                aria-label="Consultar no WhatsApp"
+                className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
               >
-                <WhatsAppIcon className="w-5 h-5" />
+                <WhatsAppIcon className="w-4 h-4" />
+                WhatsApp
               </button>
+              <Link
+                to={`/lotes/${lote.id}`}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 text-center"
+              >
+                Ver Detalhes
+              </Link>
             </div>
           </div>
         </div>
@@ -151,81 +151,91 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
     );
   }
 
-  // Default vertical card (for carousel)
+  // Vertical card (default)
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="card-lot group h-full flex flex-col"
+      className="card-lot group overflow-hidden"
     >
-      {/* Video Placeholder */}
-      <div className="relative h-48 bg-primary flex items-center justify-center cursor-pointer" onClick={onClick}>
+      {/* Video Section */}
+      <Link 
+        to={`/lotes/${lote.id}`}
+        className="relative h-48 bg-primary flex items-center justify-center"
+      >
         <div className="text-white/50 flex flex-col items-center gap-2">
           <Video size={40} />
           <span className="text-sm">Vídeo disponível</span>
         </div>
         <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
         <DistanceBadge />
-      </div>
+      </Link>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-display text-xl text-primary mb-3 cursor-pointer" onClick={onClick}>{lote.titulo}</h3>
+      <div className="p-5">
+        <Link to={`/lotes/${lote.id}`}>
+          <h3 className="font-display text-2xl text-primary mb-3 hover:text-primary/80 transition-colors">
+            {lote.titulo}
+          </h3>
+        </Link>
 
-        <div className="space-y-1.5 mb-4 text-sm">
-          <div className="flex gap-1 flex-wrap">
+        <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+          <div>
             <span className="text-muted-foreground">Raça:</span>
-            <span className="font-medium">{lote.raca}</span>
-            <span className="text-muted-foreground/40 mx-1">•</span>
-            <span className="text-muted-foreground">Qtd:</span>
-            <span className="font-medium">{lote.quantidade}</span>
+            <span className="font-medium ml-1">{lote.raca}</span>
           </div>
-          <div className="flex gap-1 flex-wrap">
+          <div>
+            <span className="text-muted-foreground">Idade:</span>
+            <span className="font-medium ml-1">{lote.idade}</span>
+          </div>
+          <div>
             <span className="text-muted-foreground">Peso:</span>
-            <span className="font-medium">{lote.peso}</span>
+            <span className="font-medium ml-1">{lote.peso}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div>
+            <span className="text-muted-foreground">Qtd:</span>
+            <span className="font-medium ml-1">{lote.quantidade} cabeças</span>
+          </div>
+          <div className="col-span-2 flex items-center gap-1">
             <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="font-medium text-primary">{loteLocation}</span>
           </div>
         </div>
 
-        <div className="border-t border-border pt-3 mt-auto">
-          <div className="mb-3">
+        <div className="border-t border-border pt-4">
+          <div className="mb-4">
             <span className="text-xs text-muted-foreground block">Preço por cabeça</span>
             {user ? (
               <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}</span>
             ) : (
               <Link to="/auth" className="group/price flex items-center gap-2">
                 <span className="font-display text-2xl text-primary blur-sm select-none">
-                  R$ XX.XXX
+                  R$ X.XXX
                 </span>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full group-hover/price:bg-primary group-hover/price:text-white transition-colors">
+                <span className="text-xs text-muted-foreground group-hover/price:text-primary transition-colors flex items-center gap-1">
                   <Lock className="w-3 h-3" />
-                  <span>Ver</span>
-                </div>
+                  Login para ver
+                </span>
               </Link>
             )}
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={onClick}
-              className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-2.5 rounded-lg font-semibold transition-all duration-200 text-sm"
-            >
-              Ver lote
-            </button>
-            
+          <div className="flex gap-3">
             <button
               onClick={handleWhatsAppClick}
-              className="w-11 h-11 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-lg flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg flex-shrink-0"
-              aria-label="Consultar no WhatsApp"
+              className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
             >
-              <WhatsAppIcon className="w-5 h-5" />
+              <WhatsAppIcon className="w-4 h-4" />
+              WhatsApp
             </button>
+            <Link
+              to={`/lotes/${lote.id}`}
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 text-center"
+            >
+              Ver Detalhes
+            </Link>
           </div>
         </div>
       </div>

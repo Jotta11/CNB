@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Video, Share2, MapPin, Loader2 } from 'lucide-react';
+import { ArrowLeft, Video, Share2, MapPin, Loader2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -208,6 +208,25 @@ const LoteDetails = () => {
                   <span className="text-xs block mb-1 text-muted-foreground">Peso</span>
                   <span className="font-semibold text-lg text-foreground">{lote.peso}</span>
                 </div>
+              </div>
+
+              {/* Price Section */}
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-xs block mb-1 text-muted-foreground">Preço por cabeça</span>
+                {user ? (
+                  <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-3xl text-primary blur-md select-none">R$ X.XXX</span>
+                    <Link 
+                      to="/auth" 
+                      className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
+                    >
+                      <Lock className="w-4 h-4" />
+                      Cadastre-se para ver
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* WhatsApp CTA */}

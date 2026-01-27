@@ -122,9 +122,9 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
                   <span className="font-display text-2xl text-primary blur-sm select-none">
                     R$ X.XXX
                   </span>
-                  <span className="text-xs text-muted-foreground group-hover/price:text-primary transition-colors flex items-center gap-1">
+                  <span className="text-xs bg-primary text-primary-foreground px-3 py-1 rounded-full flex items-center gap-1 hover:bg-primary/90 transition-colors">
                     <Lock className="w-3 h-3" />
-                    Login para ver
+                    Cadastre-se
                   </span>
                 </Link>
               )}
@@ -213,9 +213,9 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
                 <span className="font-display text-2xl text-primary blur-sm select-none">
                   R$ X.XXX
                 </span>
-                <span className="text-xs text-muted-foreground group-hover/price:text-primary transition-colors flex items-center gap-1">
+                <span className="text-xs bg-primary text-primary-foreground px-3 py-1 rounded-full flex items-center gap-1 hover:bg-primary/90 transition-colors">
                   <Lock className="w-3 h-3" />
-                  Login para ver
+                  Cadastre-se
                 </span>
               </Link>
             )}

@@ -88,7 +88,7 @@ const FreightCalculator = ({ lote, onClose }: FreightCalculatorProps) => {
               className="flex items-center gap-3 bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-primary/90 transition-colors"
             >
               <Lock className="w-5 h-5" />
-              <span>Faça login para ver os valores</span>
+              <span>Cadastre-se para ver os valores</span>
             </Link>
           </div>
         </div>

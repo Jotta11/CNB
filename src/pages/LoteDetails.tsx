@@ -9,6 +9,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useLotes, type Lote } from '@/hooks/useLotes';
 import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
 import FreightCalculator from '@/components/FreightCalculator';
+import RelatedLotes from '@/components/RelatedLotes';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -181,10 +182,10 @@ const LoteDetails = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="space-y-6"
             >
-              {/* Title */}
+              {/* Title - Only lot number */}
               <div>
-                <h1 className="font-display text-4xl md:text-5xl text-primary mb-2">{lote.titulo}</h1>
-                <p className="text-muted-foreground">{lote.numero}</p>
+                <h1 className="font-display text-4xl md:text-5xl text-primary mb-2">{lote.numero}</h1>
+                <p className="text-muted-foreground">Raça: {lote.raca}</p>
               </div>
 
               {/* Specs Grid */}
@@ -262,6 +263,9 @@ const LoteDetails = () => {
               <p className="text-muted-foreground leading-relaxed">{lote.descricao}</p>
             </motion.div>
           )}
+
+          {/* Related Lots Section */}
+          <RelatedLotes currentLote={lote} allLotes={lotes} />
         </div>
       </main>
 

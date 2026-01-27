@@ -182,9 +182,6 @@ const LoteDetails = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="space-y-6"
             >
-              {/* Lot number */}
-              <h1 className="font-display text-4xl md:text-5xl text-primary">{lote.numero}</h1>
-
               {/* Specs Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg bg-card border border-border">

@@ -1,19 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import useEmblaCarousel from 'embla-carousel-react';
 import LoteCard from './LoteCard';
-import LoteModal from './LoteModal';
 import { useLotes, type Lote } from '@/hooks/useLotes';
 import { lotes as fallbackLotes } from '@/data/lotes';
 
 const LotesSection = () => {
   const { lotes: dbLotes, loading } = useLotes();
-  const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
@@ -46,7 +42,7 @@ const LotesSection = () => {
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   // Use DB lotes if available, otherwise use fallback data
-  const displayLotes = dbLotes.length > 0 ? dbLotes : fallbackLotes.map(l => ({
+  const displayLotes: Lote[] = dbLotes.length > 0 ? dbLotes : fallbackLotes.map(l => ({
     ...l,
     preco: l.preco,
     video_url: null,
@@ -60,36 +56,6 @@ const LotesSection = () => {
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }));
-
-  // Check URL for lote parameter on load
-  useEffect(() => {
-    const loteId = searchParams.get('lote');
-    if (loteId && displayLotes.length > 0 && !loading) {
-      const foundLote = displayLotes.find(l => l.id === loteId);
-      if (foundLote) {
-        setSelectedLote(foundLote);
-        setIsModalOpen(true);
-        // Scroll to lotes section
-        setTimeout(() => {
-          document.getElementById('lotes')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
-    }
-  }, [searchParams, displayLotes, loading]);
-
-  const handleLoteClick = (lote: Lote) => {
-    setSelectedLote(lote);
-    setIsModalOpen(true);
-    // Update URL with lote ID
-    setSearchParams({ lote: lote.id });
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    // Remove lote from URL
-    setSearchParams({});
-    setTimeout(() => setSelectedLote(null), 300);
-  };
 
   return (
     <section id="lotes" className="py-20 md:py-28 bg-cream">
@@ -144,8 +110,7 @@ const LotesSection = () => {
                     className="flex-none w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
                   >
                     <LoteCard
-                      lote={lote as any}
-                      onClick={() => handleLoteClick(lote)}
+                      lote={lote}
                       index={index}
                     />
                   </div>
@@ -171,12 +136,6 @@ const LotesSection = () => {
           </>
         )}
       </div>
-
-      <LoteModal
-        lote={selectedLote as any}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
     </section>
   );
 };

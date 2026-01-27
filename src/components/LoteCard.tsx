@@ -12,12 +12,8 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-interface LoteWithLocalizacao extends Lote {
-  localizacao?: string;
-}
-
 interface LoteCardProps {
-  lote: LoteWithLocalizacao;
+  lote: Lote;
   onClick: () => void;
   index: number;
   horizontal?: boolean;

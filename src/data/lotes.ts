@@ -8,9 +8,13 @@ export interface Lote {
   quantidade: number;
   sexo: string;
   estado: string;
+  localizacao: string | null;
   preco: number;
   descricao: string;
   caracteristicas: string[];
+  capacidade_carga: number;
+  tipo_implemento: string;
+  qtd_carretas: number;
 }
 
 export const lotes: Lote[] = [
@@ -24,6 +28,7 @@ export const lotes: Lote[] = [
     quantidade: 50,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Tocantins',
     preco: 3200,
     descricao: 'Lote premium de gado Nelore, com excelente padrão genético e conformação para engorda. Animais criados em sistema semi-intensivo, com manejo nutricional diferenciado e acompanhamento veterinário constante. Os animais apresentam uniformidade de lote, ótima conversão alimentar e estrutura óssea robusta, características essenciais para alto ganho de peso. Ideal para confinamento ou terminação em pasto.',
     caracteristicas: [
@@ -34,6 +39,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 50,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '002',
@@ -45,6 +53,7 @@ export const lotes: Lote[] = [
     quantidade: 30,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Goiás',
     preco: 4500,
     descricao: 'Lote excepcional de gado Angus, reconhecido mundialmente pela qualidade superior da carne. Animais com excelente marmoreio, características ideais para mercados premium e programas de carne certificada. Criados com manejo específico para a raça, estes animais apresentam precocidade de acabamento e qualidade de carcaça diferenciada.',
     caracteristicas: [
@@ -55,6 +64,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 30,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '003',
@@ -66,6 +78,7 @@ export const lotes: Lote[] = [
     quantidade: 20,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Mato Grosso',
     preco: 8900,
     descricao: 'Lote exclusivo de reprodutores Brahman, raça conhecida pela rusticidade, adaptabilidade e resistência a climas tropicais. Animais com excelente conformação racial, ideal para melhoramento genético de rebanhos. Touros com comprovada fertilidade e temperamento dócil.',
     caracteristicas: [
@@ -76,6 +89,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 20,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '004',
@@ -87,6 +103,7 @@ export const lotes: Lote[] = [
     quantidade: 40,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Bahia',
     preco: 3800,
     descricao: 'Lote selecionado de gado Senepol, raça tropical adaptada ao clima brasileiro. Excelente ganho de peso, conformação de carcaça e precocidade. Ideal para sistemas de produção intensivos e adaptação a climas quentes.',
     caracteristicas: [
@@ -97,6 +114,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 40,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '005',
@@ -108,6 +128,7 @@ export const lotes: Lote[] = [
     quantidade: 35,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Maranhão',
     preco: 3400,
     descricao: 'Lote de gado Tabapuã com excelente aptidão para corte. Raça brasileira adaptada às condições tropicais, conhecida pela docilidade e rusticidade. Animais com bom desenvolvimento muscular e acabamento de carcaça.',
     caracteristicas: [
@@ -118,6 +139,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 35,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '006',
@@ -129,6 +153,7 @@ export const lotes: Lote[] = [
     quantidade: 25,
     sexo: 'Fêmea',
     estado: 'Vacinado',
+    localizacao: 'Piauí',
     preco: 5200,
     descricao: 'Lote de fêmeas Girolando de alta produção leiteira. Cruzamento ideal entre Gir e Holandês, combinando rusticidade tropical com potencial produtivo. Animais com histórico de boa lactação e fertilidade.',
     caracteristicas: [
@@ -139,6 +164,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 25,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '007',
@@ -150,6 +178,7 @@ export const lotes: Lote[] = [
     quantidade: 60,
     sexo: 'Macho',
     estado: 'Vacinado',
+    localizacao: 'Mato Grosso do Sul',
     preco: 4100,
     descricao: 'Lote de novilhos Brangus prontos para terminação. Cruzamento de Angus com Brahman oferece qualidade de carne superior com adaptabilidade tropical. Excelente uniformidade e potencial de ganho de peso.',
     caracteristicas: [
@@ -160,6 +189,9 @@ export const lotes: Lote[] = [
       'Rastreabilidade completa',
       'Garantia de procedência',
     ],
+    capacidade_carga: 60,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
   {
     id: '008',
@@ -171,6 +203,7 @@ export const lotes: Lote[] = [
     quantidade: 18,
     sexo: 'Fêmea',
     estado: 'Prenhe',
+    localizacao: 'Pará',
     preco: 6500,
     descricao: 'Lote exclusivo de matrizes Guzerá prenhas de touros provados. Raça zebuína de dupla aptidão com excelente fertilidade e habilidade materna. Animais com confirmação de prenhez por ultrassonografia.',
     caracteristicas: [
@@ -182,5 +215,8 @@ export const lotes: Lote[] = [
       'Garantia de procedência',
       'Confirmação de prenhez',
     ],
+    capacidade_carga: 18,
+    tipo_implemento: 'nove_eixos',
+    qtd_carretas: 1,
   },
 ];

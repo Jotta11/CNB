@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      freight_rates: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          regiao: string
+          tipo_implemento: string
+          updated_at: string
+          valor_km: number
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          regiao: string
+          tipo_implemento: string
+          updated_at?: string
+          valor_km?: number
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          regiao?: string
+          tipo_implemento?: string
+          updated_at?: string
+          valor_km?: number
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -62,6 +92,7 @@ export type Database = {
       lotes: {
         Row: {
           ativo: boolean
+          capacidade_carga: number | null
           caracteristicas: string[] | null
           created_at: string
           descricao: string | null
@@ -74,15 +105,18 @@ export type Database = {
           ordem: number
           peso: string
           preco: number
+          qtd_carretas: number | null
           quantidade: number
           raca: string
           sexo: string
+          tipo_implemento: string | null
           titulo: string
           updated_at: string
           video_url: string | null
         }
         Insert: {
           ativo?: boolean
+          capacidade_carga?: number | null
           caracteristicas?: string[] | null
           created_at?: string
           descricao?: string | null
@@ -95,15 +129,18 @@ export type Database = {
           ordem?: number
           peso: string
           preco: number
+          qtd_carretas?: number | null
           quantidade?: number
           raca: string
           sexo?: string
+          tipo_implemento?: string | null
           titulo: string
           updated_at?: string
           video_url?: string | null
         }
         Update: {
           ativo?: boolean
+          capacidade_carga?: number | null
           caracteristicas?: string[] | null
           created_at?: string
           descricao?: string | null
@@ -116,9 +153,11 @@ export type Database = {
           ordem?: number
           peso?: string
           preco?: number
+          qtd_carretas?: number | null
           quantidade?: number
           raca?: string
           sexo?: string
+          tipo_implemento?: string | null
           titulo?: string
           updated_at?: string
           video_url?: string | null

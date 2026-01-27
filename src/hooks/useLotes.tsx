@@ -11,6 +11,7 @@ export interface Lote {
   quantidade: number;
   sexo: string;
   estado: string;
+  localizacao: string | null;
   preco: number;
   descricao: string | null;
   caracteristicas: string[];
@@ -18,6 +19,9 @@ export interface Lote {
   imagem_url: string | null;
   ativo: boolean;
   ordem: number;
+  capacidade_carga: number;
+  tipo_implemento: string;
+  qtd_carretas: number;
   created_at: string;
   updated_at: string;
 }

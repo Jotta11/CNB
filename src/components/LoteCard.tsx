@@ -1,5 +1,7 @@
-import { Video } from 'lucide-react';
+import { Video, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import type { Lote } from '@/data/lotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -15,6 +17,8 @@ interface LoteCardProps {
 }
 
 const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
+  const { user } = useAuth();
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -28,7 +32,7 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
-      `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` +
+      (user ? `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -82,26 +86,38 @@ const LoteCard = ({ lote, onClick, index }: LoteCardProps) => {
           <div className="flex items-end justify-between">
             <div>
               <span className="text-xs text-muted-foreground block">Preço por cabeça</span>
-              <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
+              {user ? (
+                <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
+              ) : (
+                <Link to="/auth" className="group/price flex items-center gap-2">
+                  <span className="font-display text-3xl text-primary blur-sm select-none">
+                    R$ XX.XXX
+                  </span>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full group-hover/price:bg-primary group-hover/price:text-white transition-colors">
+                    <Lock className="w-3 h-3" />
+                    <span>Ver preço</span>
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-5 space-y-3">
+        {/* Action Buttons - New Layout */}
+        <div className="mt-5 flex gap-2">
           <button
-            onClick={handleWhatsAppClick}
-            className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white py-3.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            onClick={onClick}
+            className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3.5 rounded-lg font-semibold transition-all duration-200"
           >
-            <WhatsAppIcon className="w-5 h-5" />
-            Consultar no WhatsApp
+            Ver lote
           </button>
           
           <button
-            onClick={onClick}
-            className="w-full bg-transparent border-2 border-primary text-primary py-3 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+            onClick={handleWhatsAppClick}
+            className="w-14 h-14 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-lg flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg flex-shrink-0"
+            aria-label="Consultar no WhatsApp"
           >
-            Ver Detalhes Completos
+            <WhatsAppIcon className="w-6 h-6" />
           </button>
         </div>
       </div>

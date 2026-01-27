@@ -164,6 +164,39 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          link: string
+          logo_url: string
+          nome: string
+          ordem: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          link: string
+          logo_url: string
+          nome: string
+          ordem?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          link?: string
+          logo_url?: string
+          nome?: string
+          ordem?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

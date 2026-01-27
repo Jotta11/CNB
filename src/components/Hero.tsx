@@ -18,7 +18,7 @@ const Hero = () => {
   return (
     <section 
       id="inicio" 
-      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20"
+      className="min-h-[85vh] flex items-center justify-center relative overflow-hidden pt-20"
       style={{
         background: heroBackground 
           ? `url(${heroBackground}) center/cover no-repeat`

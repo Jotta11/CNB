@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Video, Check, Share2, Lock } from 'lucide-react';
+import { X, Video, Share2, Lock, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
 import type { Lote } from '@/data/lotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -20,6 +22,12 @@ interface LoteModalProps {
 
 const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
   const { user } = useAuth();
+  const { profile } = useUserProfile();
+
+  // Calculate distance
+  const loteLocation = lote ? ((lote as any).localizacao || lote.estado) : null;
+  const userRegion = profile?.regiao;
+  const distance = userRegion && loteLocation ? getDistanceBetweenStates(userRegion, loteLocation) : null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -125,6 +133,14 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
                 <span className="text-lg">Vídeo do lote em breve</span>
               </div>
               <span className="badge-lot absolute top-4 left-4 text-lg">{lote.numero}</span>
+              
+              {/* Distance badge */}
+              {user && distance && (
+                <div className="absolute top-4 right-16 bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-md">
+                  <MapPin className="w-4 h-4" />
+                  <span>{formatDistance(distance)} de você</span>
+                </div>
+              )}
             </div>
 
             {/* Content */}
@@ -144,7 +160,10 @@ const LoteModal = ({ lote, isOpen, onClose }: LoteModalProps) => {
                 </div>
                 <div className="p-4 rounded-lg bg-muted">
                   <span className="text-xs block mb-1 text-muted-foreground">Localização</span>
-                  <span className="font-semibold text-lg text-foreground">{lote.estado}</span>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    <span className="font-semibold text-lg text-foreground">{loteLocation}</span>
+                  </div>
                 </div>
                 <div className="p-4 rounded-lg bg-muted">
                   <span className="text-xs block mb-1 text-muted-foreground">Peso</span>

@@ -69,6 +69,7 @@ export type Database = {
           id: string
           idade: string
           imagem_url: string | null
+          localizacao: string | null
           numero: string
           ordem: number
           peso: string
@@ -89,6 +90,7 @@ export type Database = {
           id?: string
           idade: string
           imagem_url?: string | null
+          localizacao?: string | null
           numero: string
           ordem?: number
           peso: string
@@ -109,6 +111,7 @@ export type Database = {
           id?: string
           idade?: string
           imagem_url?: string | null
+          localizacao?: string | null
           numero?: string
           ordem?: number
           peso?: string

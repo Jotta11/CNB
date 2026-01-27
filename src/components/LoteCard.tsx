@@ -1,7 +1,9 @@
-import { Video, Lock } from 'lucide-react';
+import { Video, Lock, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
 import type { Lote } from '@/data/lotes';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -10,8 +12,12 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+interface LoteWithLocalizacao extends Lote {
+  localizacao?: string;
+}
+
 interface LoteCardProps {
-  lote: Lote;
+  lote: LoteWithLocalizacao;
   onClick: () => void;
   index: number;
   horizontal?: boolean;
@@ -19,6 +25,12 @@ interface LoteCardProps {
 
 const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) => {
   const { user } = useAuth();
+  const { profile } = useUserProfile();
+
+  // Calculate distance between user's region and lote location
+  const loteLocation = lote.localizacao || lote.estado;
+  const userRegion = profile?.regiao;
+  const distance = userRegion && loteLocation ? getDistanceBetweenStates(userRegion, loteLocation) : null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -33,9 +45,22 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
+      `• Localização: ${loteLocation}\n` +
       (user ? `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  // Distance badge component
+  const DistanceBadge = () => {
+    if (!user || !distance) return null;
+    
+    return (
+      <div className="absolute top-4 right-4 z-10 bg-white/95 backdrop-blur-sm text-primary px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-md">
+        <MapPin className="w-3.5 h-3.5" />
+        <span>{formatDistance(distance)}</span>
+      </div>
+    );
   };
 
   if (horizontal) {
@@ -57,6 +82,7 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
             <span className="text-sm">Vídeo disponível</span>
           </div>
           <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
+          <DistanceBadge />
         </div>
 
         {/* Content */}
@@ -82,13 +108,9 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
               <span className="text-muted-foreground">Qtd:</span>
               <span className="font-medium ml-1">{lote.quantidade} cabeças</span>
             </div>
-            <div>
-              <span className="text-muted-foreground">Sexo:</span>
-              <span className="font-medium ml-1">{lote.sexo}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Estado:</span>
-              <span className="font-medium text-primary ml-1">{lote.estado}</span>
+            <div className="col-span-2 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="font-medium text-primary">{loteLocation}</span>
             </div>
           </div>
 
@@ -149,6 +171,7 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
           <span className="text-sm">Vídeo disponível</span>
         </div>
         <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
+        <DistanceBadge />
       </div>
 
       {/* Content */}
@@ -166,9 +189,10 @@ const LoteCard = ({ lote, onClick, index, horizontal = false }: LoteCardProps) =
           <div className="flex gap-1 flex-wrap">
             <span className="text-muted-foreground">Peso:</span>
             <span className="font-medium">{lote.peso}</span>
-            <span className="text-muted-foreground/40 mx-1">•</span>
-            <span className="text-muted-foreground">Local:</span>
-            <span className="font-medium text-primary">{lote.estado}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="font-medium text-primary">{loteLocation}</span>
           </div>
         </div>
 

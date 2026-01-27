@@ -139,28 +139,46 @@ const SellerForm = () => {
     }
   };
 
+  const ESTADOS_BRASIL = [
+    'Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal',
+    'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul',
+    'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí',
+    'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia',
+    'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'
+  ];
+
   return (
     <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
       <div className="container mx-auto px-4">
+        {/* Section Header - Outside white box */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <h2 className="font-display text-3xl md:text-4xl text-white mb-3">
+            O Próximo Passo para Modernizar Sua Pecuária
+          </h2>
+          <p className="text-white/80 max-w-2xl mx-auto">
+            Cadastre seu lote, envie as informações básicas e deixe a curadoria 
+            e a apresentação trabalharem por você. Menos deslocamento, menos custo e mais alcance.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           className="max-w-3xl mx-auto bg-card rounded-2xl shadow-xl p-8 md:p-12"
         >
-          {/* Header */}
+          {/* Header inside form */}
           <div className="text-center mb-10">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <ClipboardList className="text-primary" size={32} />
             </div>
-            <h2 className="font-display text-3xl md:text-4xl text-primary mb-3">
-              O Próximo Passo para Modernizar Sua Pecuária
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Cadastre seu lote, envie as informações básicas e deixe a curadoria 
-              e a apresentação trabalharem por você. Menos deslocamento, menos custo e mais alcance.
-            </p>
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full">
               <Clock size={18} />
               <span className="font-medium text-sm">Menos de 2 minutos para começar</span>
@@ -260,21 +278,24 @@ const SellerForm = () => {
                     <label className="block text-sm font-medium mb-2">
                       Localização <span className="text-destructive">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="localizacao"
                       value={formData.localizacao}
                       onChange={handleChange}
-                      placeholder="Cidade - Estado"
                       className={`w-full px-4 py-3 rounded-lg border ${errors.localizacao ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                    />
+                    >
+                      <option value="">Selecione o estado...</option>
+                      {ESTADOS_BRASIL.map((estado) => (
+                        <option key={estado} value={estado}>{estado}</option>
+                      ))}
+                    </select>
                     {errors.localizacao && <span className="text-destructive text-xs mt-1">{errors.localizacao}</span>}
                   </div>
 
-                  {/* Tipo de Cultura */}
+                  {/* Categoria */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Tipo de Cultura <span className="text-destructive">*</span>
+                      Categoria <span className="text-destructive">*</span>
                     </label>
                     <select
                       name="tipoCultura"

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Filter, X, Loader2 } from 'lucide-react';
@@ -68,7 +68,7 @@ const Lotes = () => {
   }, [displayLotes, searchTerm, selectedRaca, selectedSexo, priceRange, quantityRange]);
 
   // Check URL for lote parameter on load
-  useState(() => {
+  useEffect(() => {
     const loteId = searchParams.get('lote');
     if (loteId && displayLotes.length > 0 && !loading) {
       const foundLote = displayLotes.find(l => l.id === loteId);
@@ -77,7 +77,7 @@ const Lotes = () => {
         setIsModalOpen(true);
       }
     }
-  });
+  }, [searchParams, displayLotes, loading]);
 
   const handleLoteClick = (lote: Lote) => {
     setSelectedLote(lote);

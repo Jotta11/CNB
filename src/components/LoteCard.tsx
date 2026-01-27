@@ -130,20 +130,19 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
               )}
             </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleWhatsAppClick}
-                className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                <WhatsAppIcon className="w-4 h-4" />
-                WhatsApp
-              </button>
+            <div className="flex gap-2">
               <Link
                 to={`/lotes/${lote.id}`}
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 text-center"
+                className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 text-center"
               >
-                Ver Detalhes
+                Ver lote
               </Link>
+              <button
+                onClick={handleWhatsAppClick}
+                className="bg-[#25D366] hover:bg-[#20BD5A] text-white p-3 rounded-xl transition-all duration-200 flex items-center justify-center"
+              >
+                <WhatsAppIcon className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -222,20 +221,19 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
             )}
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={handleWhatsAppClick}
-              className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <WhatsAppIcon className="w-4 h-4" />
-              WhatsApp
-            </button>
+          <div className="flex gap-2">
             <Link
               to={`/lotes/${lote.id}`}
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 text-center"
+              className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 text-center"
             >
-              Ver Detalhes
+              Ver lote
             </Link>
+            <button
+              onClick={handleWhatsAppClick}
+              className="bg-[#25D366] hover:bg-[#20BD5A] text-white p-3 rounded-xl transition-all duration-200 flex items-center justify-center"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>

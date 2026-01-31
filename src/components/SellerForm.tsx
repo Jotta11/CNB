@@ -3,13 +3,15 @@ import { motion } from 'framer-motion';
 import { ClipboardList, Clock, Send, ShoppingCart, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
 
 interface FormData {
   tipo: 'comprar' | 'vender';
   nome: string;
   telefone: string;
   fazenda: string;
-  localizacao: string;
+  estado: string;
+  cidade: string;
   tipoCultura: string;
   numeroCabecas: string;
   mensagem: string;
@@ -21,7 +23,8 @@ const SellerForm = () => {
     nome: '',
     telefone: '',
     fazenda: '',
-    localizacao: '',
+    estado: '',
+    cidade: '',
     tipoCultura: '',
     numeroCabecas: '',
     mensagem: ''
@@ -42,6 +45,13 @@ const SellerForm = () => {
       setFormData(prev => ({
         ...prev,
         [name]: formatPhone(value)
+      }));
+    } else if (name === 'estado') {
+      // Quando muda o estado, limpa a cidade selecionada
+      setFormData(prev => ({
+        ...prev,
+        estado: value,
+        cidade: ''
       }));
     } else {
       setFormData(prev => ({
@@ -66,7 +76,8 @@ const SellerForm = () => {
     
     if (formData.tipo === 'vender') {
       if (!formData.fazenda.trim()) newErrors.fazenda = 'Nome da fazenda é obrigatório';
-      if (!formData.localizacao.trim()) newErrors.localizacao = 'Localização é obrigatória';
+      if (!formData.estado) newErrors.estado = 'Selecione o estado';
+      if (!formData.cidade) newErrors.cidade = 'Selecione a cidade';
       if (!formData.tipoCultura) newErrors.tipoCultura = 'Selecione o tipo de cultura';
       if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
         newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
@@ -85,12 +96,13 @@ const SellerForm = () => {
     
     try {
       // Save lead to database
+      const localizacaoCompleta = formData.tipo === 'vender' ? `${formData.cidade} - ${formData.estado}` : null;
       const { error } = await supabase.from('leads').insert({
         tipo: formData.tipo,
         nome: formData.nome.trim(),
         telefone: formData.telefone.trim(),
         fazenda: formData.tipo === 'vender' ? formData.fazenda.trim() : null,
-        localizacao: formData.tipo === 'vender' ? formData.localizacao.trim() : null,
+        localizacao: localizacaoCompleta,
         tipo_cultura: formData.tipo === 'vender' ? formData.tipoCultura : null,
         numero_cabecas: formData.tipo === 'vender' && formData.numeroCabecas ? parseInt(formData.numeroCabecas) : null,
         mensagem: formData.mensagem.trim() || null
@@ -106,7 +118,7 @@ const SellerForm = () => {
       
       if (formData.tipo === 'vender') {
         message += `*Fazenda:* ${formData.fazenda}\n`;
-        message += `*Local:* ${formData.localizacao}\n`;
+        message += `*Local:* ${formData.cidade} - ${formData.estado}\n`;
         message += `*Tipo de Cultura:* ${formData.tipoCultura}\n`;
         message += `*Número de Cabeças:* ${formData.numeroCabecas}\n`;
       }
@@ -126,7 +138,8 @@ const SellerForm = () => {
         nome: '',
         telefone: '',
         fazenda: '',
-        localizacao: '',
+        estado: '',
+        cidade: '',
         tipoCultura: '',
         numeroCabecas: '',
         mensagem: ''
@@ -139,13 +152,8 @@ const SellerForm = () => {
     }
   };
 
-  const ESTADOS_BRASIL = [
-    'Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal',
-    'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul',
-    'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí',
-    'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia',
-    'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'
-  ];
+  // Cidades disponíveis baseadas no estado selecionado
+  const cidadesDisponiveis = formData.estado ? cidadesPorEstado[formData.estado] || [] : [];
 
   return (
     <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
@@ -273,23 +281,43 @@ const SellerForm = () => {
                     {errors.fazenda && <span className="text-destructive text-xs mt-1">{errors.fazenda}</span>}
                   </div>
 
-                  {/* Localização */}
+                  {/* Estado */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Localização <span className="text-destructive">*</span>
+                      Estado <span className="text-destructive">*</span>
                     </label>
                     <select
-                      name="localizacao"
-                      value={formData.localizacao}
+                      name="estado"
+                      value={formData.estado}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.localizacao ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.estado ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
                     >
                       <option value="">Selecione o estado...</option>
-                      {ESTADOS_BRASIL.map((estado) => (
+                      {estados.map((estado) => (
                         <option key={estado} value={estado}>{estado}</option>
                       ))}
                     </select>
-                    {errors.localizacao && <span className="text-destructive text-xs mt-1">{errors.localizacao}</span>}
+                    {errors.estado && <span className="text-destructive text-xs mt-1">{errors.estado}</span>}
+                  </div>
+
+                  {/* Cidade */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Cidade <span className="text-destructive">*</span>
+                    </label>
+                    <select
+                      name="cidade"
+                      value={formData.cidade}
+                      onChange={handleChange}
+                      disabled={!formData.estado}
+                      className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      <option value="">{formData.estado ? 'Selecione a cidade...' : 'Selecione o estado primeiro'}</option>
+                      {cidadesDisponiveis.map((cidade) => (
+                        <option key={cidade} value={cidade}>{cidade}</option>
+                      ))}
+                    </select>
+                    {errors.cidade && <span className="text-destructive text-xs mt-1">{errors.cidade}</span>}
                   </div>
 
                   {/* Categoria */}

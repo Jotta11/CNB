@@ -162,18 +162,7 @@ const LoteDetails = () => {
                 )}
               </div>
 
-              {/* Share button */}
-              <div className="flex justify-end mt-4">
-                <Button
-                  variant="outline"
-                  onClick={handleShare}
-                  className="gap-2"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Compartilhar
-                </Button>
-              </div>
-            </motion.div>
+              </motion.div>
 
             {/* Right Column - Details */}
             <motion.div
@@ -224,14 +213,24 @@ const LoteDetails = () => {
                 )}
               </div>
 
-              {/* WhatsApp CTA */}
-              <button
-                onClick={handleWhatsApp}
-                className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-lg"
-              >
-                <WhatsAppIcon className="w-6 h-6" />
-                Consultar no WhatsApp
-              </button>
+              {/* WhatsApp CTA + Share */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleWhatsApp}
+                  className="flex-1 bg-[#25D366] hover:bg-[#20BD5A] text-white py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-lg"
+                >
+                  <WhatsAppIcon className="w-6 h-6" />
+                  Consultar no WhatsApp
+                </button>
+                <Button
+                  variant="outline"
+                  onClick={handleShare}
+                  className="px-4 py-4 h-auto"
+                  title="Compartilhar"
+                >
+                  <Share2 className="w-5 h-5" />
+                </Button>
+              </div>
             </motion.div>
           </div>
 

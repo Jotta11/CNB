@@ -144,7 +144,9 @@ const Lotes = () => {
               <div className="flex gap-3">
                 <Select value={selectedRaca} onValueChange={setSelectedRaca}>
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Raça" />
+                    <SelectValue>
+                      {selectedRaca === 'Todas' ? 'Raça' : selectedRaca}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {racas.map((raca) => (
@@ -157,7 +159,9 @@ const Lotes = () => {
 
                 <Select value={selectedSexo} onValueChange={setSelectedSexo}>
                   <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Sexo" />
+                    <SelectValue>
+                      {selectedSexo === 'Todos' ? 'Sexo' : selectedSexo}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {sexos.map((sexo) => (

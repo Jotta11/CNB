@@ -9,14 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import logoVertical from '@/assets/logo-vertical.svg';
-
-const estados = [
-  'Acre', 'Alagoas', 'Amapá', 'Amazonas', 'Bahia', 'Ceará', 'Distrito Federal',
-  'Espírito Santo', 'Goiás', 'Maranhão', 'Mato Grosso', 'Mato Grosso do Sul',
-  'Minas Gerais', 'Pará', 'Paraíba', 'Paraná', 'Pernambuco', 'Piauí',
-  'Rio de Janeiro', 'Rio Grande do Norte', 'Rio Grande do Sul', 'Rondônia',
-  'Roraima', 'Santa Catarina', 'São Paulo', 'Sergipe', 'Tocantins'
-];
+import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,7 +18,8 @@ const Auth = () => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
-    regiao: '',
+    estado: '',
+    cidade: '',
     password: ''
   });
 
@@ -47,10 +41,11 @@ const Auth = () => {
         });
         navigate('/');
       } else {
-        if (!formData.nome || !formData.regiao) {
+        if (!formData.nome || !formData.estado || !formData.cidade) {
           throw new Error('Preencha todos os campos');
         }
-        const { error } = await signUp(formData.email, formData.password, formData.nome, formData.regiao);
+        const regiaoCompleta = `${formData.cidade} - ${formData.estado}`;
+        const { error } = await signUp(formData.email, formData.password, formData.nome, regiaoCompleta);
         if (error) throw error;
         
         toast({
@@ -71,8 +66,16 @@ const Auth = () => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'estado') {
+      // Quando muda o estado, limpa a cidade
+      setFormData(prev => ({ ...prev, estado: value, cidade: '' }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
+
+  // Cidades disponíveis baseadas no estado selecionado
+  const cidadesDisponiveis = formData.estado ? cidadesPorEstado[formData.estado] || [] : [];
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-4">
@@ -131,10 +134,10 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="regiao">Estado</Label>
+                  <Label htmlFor="estado">Estado</Label>
                   <Select
-                    value={formData.regiao}
-                    onValueChange={(value) => handleInputChange('regiao', value)}
+                    value={formData.estado}
+                    onValueChange={(value) => handleInputChange('estado', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione seu estado" />
@@ -143,6 +146,26 @@ const Auth = () => {
                       {estados.map((estado) => (
                         <SelectItem key={estado} value={estado}>
                           {estado}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cidade">Cidade</Label>
+                  <Select
+                    value={formData.cidade}
+                    onValueChange={(value) => handleInputChange('cidade', value)}
+                    disabled={!formData.estado}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.estado ? "Selecione sua cidade" : "Selecione o estado primeiro"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cidadesDisponiveis.map((cidade) => (
+                        <SelectItem key={cidade} value={cidade}>
+                          {cidade}
                         </SelectItem>
                       ))}
                     </SelectContent>

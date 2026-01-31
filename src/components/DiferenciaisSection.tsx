@@ -57,24 +57,28 @@ const colorClasses = {
     bg: 'bg-accent',
     text: 'text-accent',
     border: 'border-accent',
+    hoverBorder: 'hover:border-accent',
     light: 'bg-accent/10'
   },
   primary: {
     bg: 'bg-primary',
     text: 'text-primary',
     border: 'border-primary',
+    hoverBorder: 'hover:border-primary',
     light: 'bg-primary/10'
   },
   secondary: {
     bg: 'bg-secondary',
     text: 'text-secondary',
     border: 'border-secondary',
+    hoverBorder: 'hover:border-secondary',
     light: 'bg-secondary/10'
   },
   'primary-light': {
     bg: 'bg-primary-medium',
     text: 'text-primary-medium',
     border: 'border-primary-medium',
+    hoverBorder: 'hover:border-primary-medium',
     light: 'bg-primary-light/30'
   }
 };
@@ -121,7 +125,7 @@ const DiferenciaisSection = () => {
                 whileHover={{ y: -8 }}
                 className="group"
               >
-                <div className={`relative h-full bg-card rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:${colors.border} overflow-hidden`}>
+                <div className={`relative h-full bg-card rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent ${colors.hoverBorder} overflow-hidden`}>
                   {/* Colored accent bar */}
                   <div className={`absolute top-0 left-0 right-0 h-1 ${colors.bg}`} />
                   

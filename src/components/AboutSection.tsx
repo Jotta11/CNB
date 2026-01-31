@@ -7,7 +7,7 @@ const AboutSection = () => {
   const aboutImage = settings.about_image;
 
   return (
-    <section id="sobre" className="py-20 md:py-32 bg-background overflow-hidden">
+    <section id="sobre" className="py-12 md:py-16 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Hero Card - Quem Somos */}
         <motion.div

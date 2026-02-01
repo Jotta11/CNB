@@ -21,8 +21,8 @@ const Index = () => {
       <PartnersSection />
       <AboutSection />
       <HowItWorksSection />
-      <MissionVisionValuesSection />
       <DiferenciaisSection />
+      <MissionVisionValuesSection />
       <SellerForm />
       <FAQSection />
       <Footer />

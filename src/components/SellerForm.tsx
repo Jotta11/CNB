@@ -4,6 +4,7 @@ import { ClipboardList, Clock, Send, ShoppingCart, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
+import bgForm from '@/assets/bg-form.png';
 
 interface FormData {
   tipo: 'comprar' | 'vender';
@@ -156,7 +157,15 @@ const SellerForm = () => {
   const cidadesDisponiveis = formData.estado ? cidadesPorEstado[formData.estado] || [] : [];
 
   return (
-    <section id="vender" className="py-20 md:py-28 bg-[#3d2817]">
+    <section
+      id="vender"
+      className="py-20 md:py-28 relative overflow-hidden"
+      style={{
+        backgroundImage: `url(${bgForm})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
       <div className="container mx-auto px-4">
         {/* Section Header - Outside white box */}
         <motion.div

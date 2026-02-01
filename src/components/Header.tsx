@@ -3,14 +3,14 @@ import { Menu, X, User, LogOut } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import logoHorizontal from '@/assets/logo-horizontal.svg';
+import logoHorizontal from '@/assets/logo-horizontal2.png';
 
 const navLinks = [
   { label: 'Início', href: '#inicio' },
   { label: 'Lotes', href: '#lotes' },
   { label: 'Sobre', href: '#sobre' },
   { label: 'Vender', href: '#vender' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Dúvidas', href: '#faq' },
 ];
 
 const Header = () => {

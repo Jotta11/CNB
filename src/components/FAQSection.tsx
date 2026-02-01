@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle, MessageCircle } from 'lucide-react';
+import bgFaq from '@/assets/bg-faq.png';
 
 const faqItems = [
   {
@@ -33,7 +34,15 @@ const FAQSection = () => {
   };
 
   return (
-    <section id="faq" className="py-20 md:py-28 bg-card relative overflow-hidden">
+    <section
+      id="faq"
+      className="py-20 md:py-28 relative overflow-hidden"
+      style={{
+        backgroundImage: `url(${bgFaq})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
       {/* Decorative Elements */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top left decoration */}

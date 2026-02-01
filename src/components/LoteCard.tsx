@@ -1,10 +1,18 @@
-import { Video, Lock, MapPin } from 'lucide-react';
+import { Video, Lock, MapPin, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
 import type { Lote } from '@/hooks/useLotes';
+
+// Helper to extract YouTube video ID
+const getYouTubeVideoId = (url: string | null): string | null => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+};
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -69,15 +77,37 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
         className="card-lot group flex flex-col md:flex-row overflow-hidden"
       >
         {/* Video Section - Larger for horizontal */}
-        <Link 
+        <Link
           to={`/lotes/${lote.id}`}
-          className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0"
+          className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0 overflow-hidden"
         >
-          <div className="text-white/50 flex flex-col items-center gap-2">
-            <Video size={48} />
-            <span className="text-sm">Vídeo disponível</span>
-          </div>
-          <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
+          {(() => {
+            const videoId = getYouTubeVideoId(lote.video_url);
+            if (videoId) {
+              return (
+                <>
+                  <img
+                    src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                    alt={`Vídeo do ${lote.numero}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                    <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Play className="w-7 h-7 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </>
+              );
+            }
+            return (
+              <div className="text-white/50 flex flex-col items-center gap-2">
+                <Video size={48} />
+                <span className="text-sm">Vídeo disponível</span>
+              </div>
+            );
+          })()}
+          <span className="badge-lot absolute top-4 left-4 z-10">{lote.numero}</span>
           <DistanceBadge />
         </Link>
 
@@ -160,15 +190,37 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
       className="card-lot group overflow-hidden"
     >
       {/* Video Section */}
-      <Link 
+      <Link
         to={`/lotes/${lote.id}`}
-        className="relative h-48 bg-primary flex items-center justify-center"
+        className="relative h-48 bg-primary flex items-center justify-center overflow-hidden"
       >
-        <div className="text-white/50 flex flex-col items-center gap-2">
-          <Video size={40} />
-          <span className="text-sm">Vídeo disponível</span>
-        </div>
-        <span className="badge-lot absolute top-4 left-4">{lote.numero}</span>
+        {(() => {
+          const videoId = getYouTubeVideoId(lote.video_url);
+          if (videoId) {
+            return (
+              <>
+                <img
+                  src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                  alt={`Vídeo do ${lote.numero}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+                    <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+                  </div>
+                </div>
+              </>
+            );
+          }
+          return (
+            <div className="text-white/50 flex flex-col items-center gap-2">
+              <Video size={40} />
+              <span className="text-sm">Vídeo disponível</span>
+            </div>
+          );
+        })()}
+        <span className="badge-lot absolute top-4 left-4 z-10">{lote.numero}</span>
         <DistanceBadge />
       </Link>
 

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import logoVertical from '@/assets/logo-vertical.svg';
+import logoVertical from '@/assets/logo-vert.png';
 import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
 
 const Auth = () => {

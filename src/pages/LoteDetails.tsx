@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Video, Share2, MapPin, Loader2, Lock } from 'lucide-react';
+import { ArrowLeft, Video, Share2, MapPin, Loader2, Lock, Play } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,103 @@ import FreightCalculator from '@/components/FreightCalculator';
 import RelatedLotes from '@/components/RelatedLotes';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+
+// Helper to extract YouTube video ID
+const getYouTubeVideoId = (url: string): string | null => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+};
+
+// Lazy Video Player component
+const LazyVideoPlayer = ({ videoUrl, loteNumero }: { videoUrl: string | null; loteNumero: string }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const videoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
+  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+
+  const handlePlayClick = () => {
+    setShouldLoad(true);
+  };
+
+  // No video URL
+  if (!videoUrl || !videoId) {
+    return (
+      <div className="text-white/50 flex flex-col items-center gap-3">
+        <Video size={60} />
+        <span className="text-lg">Vídeo em breve</span>
+      </div>
+    );
+  }
+
+  // Show thumbnail with play button until clicked
+  if (!shouldLoad) {
+    return (
+      <div ref={containerRef} className="w-full h-full relative">
+        {isVisible && thumbnailUrl && (
+          <>
+            <img
+              src={thumbnailUrl}
+              alt={`Vídeo do ${loteNumero}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              onError={(e) => {
+                // Fallback to hqdefault if maxresdefault doesn't exist
+                (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+              }}
+            />
+            <button
+              onClick={handlePlayClick}
+              className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
+              aria-label="Reproduzir vídeo"
+            >
+              <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Play className="w-10 h-10 text-white fill-white ml-1" />
+              </div>
+            </button>
+          </>
+        )}
+        {!isVisible && (
+          <div className="w-full h-full flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-white/50" />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Load the actual iframe
+  return (
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+      title={`Vídeo do ${loteNumero}`}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      className="w-full h-full"
+    />
+  );
+};
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -145,17 +242,14 @@ const LoteDetails = () => {
               transition={{ duration: 0.5 }}
             >
               <div className="relative aspect-video bg-primary rounded-2xl flex items-center justify-center overflow-hidden shadow-lg">
-                <div className="text-white/50 flex flex-col items-center gap-3">
-                  <Video size={60} />
-                  <span className="text-lg">Vídeo do lote em breve</span>
-                </div>
-                
+                <LazyVideoPlayer videoUrl={lote.video_url} loteNumero={lote.numero} />
+
                 {/* Lot number badge */}
-                <span className="badge-lot absolute top-4 left-4 text-lg">{lote.numero}</span>
-                
+                <span className="badge-lot absolute top-4 left-4 text-lg z-10">{lote.numero}</span>
+
                 {/* Distance badge */}
                 {user && distance && (
-                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-md">
+                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-md z-10">
                     <MapPin className="w-4 h-4" />
                     <span>{formatDistance(distance)} de você</span>
                   </div>

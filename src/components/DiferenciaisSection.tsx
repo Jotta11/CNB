@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Eye, BarChart3, Truck, Award, Shield, Lock, MessageCircle } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import bgBio from '@/assets/bg-bio.png';
 
 // Logo symbol component with dynamic color
 const LogoSymbol = ({ className = '' }: { className?: string }) => (
@@ -93,7 +94,14 @@ const DiferenciaisSection = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section
+      className="py-16 md:py-24"
+      style={{
+        backgroundImage: `url(${bgBio})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -78,12 +78,11 @@ export const useLotes = (includeInactive = false) => {
       .from('lotes')
       .update(updates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) throw error;
     await fetchLotes();
-    return data;
+    return data?.[0] || null;
   };
 
   const deleteLote = async (id: string) => {

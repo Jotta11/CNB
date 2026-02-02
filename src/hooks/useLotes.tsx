@@ -74,6 +74,7 @@ export const useLotes = (includeInactive = false) => {
   };
 
   const updateLote = async (id: string, updates: Partial<Lote>) => {
+    // Try direct update first
     const { data, error } = await supabase
       .from('lotes')
       .update(updates)
@@ -81,6 +82,11 @@ export const useLotes = (includeInactive = false) => {
       .select();
 
     if (error) throw error;
+
+    if (!data || data.length === 0) {
+      console.warn('Update succeeded but no rows were returned. Potential RLS issue or ID mismatch.');
+    }
+
     await fetchLotes();
     return data?.[0] || null;
   };

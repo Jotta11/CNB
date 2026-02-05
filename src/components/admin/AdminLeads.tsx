@@ -52,23 +52,34 @@ const statusColors: Record<LeadStatus, string> = {
   perdido: 'bg-red-500'
 };
 
+const ITEMS_PER_PAGE = 50;
+
 const AdminLeads = () => {
   const [filterTipo, setFilterTipo] = useState<'todos' | LeadTipo>('todos');
   const [filterStatus, setFilterStatus] = useState<'todos' | LeadStatus>('todos');
+  const [page, setPage] = useState(0);
   const queryClient = useQueryClient();
 
-  const { data: leads, isLoading } = useQuery({
-    queryKey: ['admin-leads'],
+  const { data: leadsData, isLoading } = useQuery({
+    queryKey: ['admin-leads', page],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const from = page * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      const { data, error, count } = await supabase
         .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
-      return data as Lead[];
+      return { leads: data as Lead[], totalCount: count || 0 };
     }
   });
+
+  const leads = leadsData?.leads;
+  const totalCount = leadsData?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: LeadStatus }) => {
@@ -330,6 +341,33 @@ const AdminLeads = () => {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {page * ITEMS_PER_PAGE + 1} - {Math.min((page + 1) * ITEMS_PER_PAGE, totalCount)} de {totalCount}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+            >
+              Próximo
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

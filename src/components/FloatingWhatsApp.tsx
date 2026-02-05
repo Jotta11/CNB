@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg
@@ -10,10 +11,15 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const DEFAULT_WHATSAPP = '5563992628916';
+
 const FloatingWhatsApp = () => {
-  const whatsappNumber = '5563992628916';
+  const { settings, loading } = useSiteSettings();
+  const whatsappNumber = settings.whatsapp_number || DEFAULT_WHATSAPP;
   const message = 'Olá! Vim pelo site e gostaria de mais informações.';
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+  if (loading) return null;
 
   return (
     <motion.a

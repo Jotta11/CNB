@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useLotes, type Lote } from '@/hooks/useLotes';
-import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +35,6 @@ const defaultCaracteristicas = [
 
 const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
   const { createLote, updateLote } = useLotes(true);
-  const { user, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -168,13 +166,6 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
             {lote ? 'Editar Lote' : 'Novo Lote'}
           </DialogTitle>
         </DialogHeader>
-
-        <div className="bg-yellow-100 p-2 text-xs mb-4 rounded border border-yellow-300 text-yellow-800">
-          <strong>Debug Info:</strong><br />
-          User ID: {user?.id || 'Not logged in'}<br />
-          Is Admin: {isAdmin ? 'YES' : 'NO'}<br />
-          Lote ID: {lote?.id || 'New Lote'}
-        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">

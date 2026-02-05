@@ -4,7 +4,10 @@ import { ClipboardList, Clock, Send, ShoppingCart, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import bgForm from '@/assets/bg-form.png';
+
+const DEFAULT_WHATSAPP = '5563992628916';
 
 interface FormData {
   tipo: 'comprar' | 'vender';
@@ -19,6 +22,7 @@ interface FormData {
 }
 
 const SellerForm = () => {
+  const { settings } = useSiteSettings();
   const [formData, setFormData] = useState<FormData>({
     tipo: 'vender',
     nome: '',
@@ -128,7 +132,8 @@ const SellerForm = () => {
         message += `\n*Mensagem:* ${formData.mensagem}\n`;
       }
 
-      const whatsappUrl = `https://wa.me/5563992628916?text=${encodeURIComponent(message)}`;
+      const whatsappNumber = settings.whatsapp_number || DEFAULT_WHATSAPP;
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
       
       toast.success('Mensagem enviada com sucesso!');

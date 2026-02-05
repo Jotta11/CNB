@@ -26,7 +26,7 @@ const stats = [{
   icon: Users
 }, {
   number: '100%',
-  label: 'MATOPIBA',
+  label: 'Satisfação',
   icon: MapPin
 }];
 
@@ -38,7 +38,7 @@ const diferenciais = [{
 }, {
   icon: Truck,
   title: 'Logística Integrada',
-  description: 'Entrega em todo o MATOPIBA com acompanhamento em tempo real.',
+  description: 'Entrega em todo o Brasil com acompanhamento em tempo real.',
   color: 'primary'
 }, {
   icon: CheckCircle,

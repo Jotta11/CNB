@@ -83,8 +83,8 @@ const AboutSection = () => {
                 className="space-y-6"
               >
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Uma plataforma do <span className="text-foreground font-medium">MATOPIBA</span> criada 
-                  para aproximar compradores e vendedores de gado com mais confiança, agilidade e critério.
+                  Uma plataforma criada para aproximar compradores e vendedores de gado
+                  com mais confiança, agilidade e critério.
                 </p>
                 
                 <p className="text-muted-foreground leading-relaxed">

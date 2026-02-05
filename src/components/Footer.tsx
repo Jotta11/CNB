@@ -33,7 +33,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-8 text-white/80">
           <div className="flex items-center gap-2">
             <MapPin size={18} />
-            <span>Região MATOPIBA</span>
+            <span>Tocantins, Brasil</span>
           </div>
           <a
             href="https://wa.me/5563992628916"

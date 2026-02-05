@@ -6,7 +6,7 @@ import bgFaq from '@/assets/bg-faq.png';
 const faqItems = [
   {
     question: 'O que é o Conexão Norte Bovino?',
-    answer: 'O Conexão Norte Bovino é uma plataforma de comercialização de gado no MATOPIBA. Aqui você encontra lotes divulgados com padrão de informação, curadoria e atendimento direto para facilitar a negociação com mais segurança.',
+    answer: 'O Conexão Norte Bovino é uma plataforma de comercialização de gado. Aqui você encontra lotes divulgados com padrão de informação, curadoria e atendimento direto para facilitar a negociação com mais segurança.',
   },
   {
     question: 'O Conexão é um leilão?',

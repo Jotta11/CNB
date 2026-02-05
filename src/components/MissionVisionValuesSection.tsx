@@ -54,8 +54,8 @@ const MissionVisionValuesSection = () => {
                 
                 <h3 className="font-display text-3xl md:text-4xl mb-4">Missão</h3>
                 <p className="text-primary-foreground/90 text-lg leading-relaxed">
-                  Conectar produtores rurais do MATOPIBA de forma eficiente e transparente, 
-                  facilitando negociações de gado com tecnologia, agilidade e confiança, 
+                  Conectar produtores rurais de forma eficiente e transparente,
+                  facilitando negociações de gado com tecnologia, agilidade e confiança,
                   maximizando oportunidades para compradores e vendedores.
                 </p>
               </div>
@@ -86,9 +86,9 @@ const MissionVisionValuesSection = () => {
                 
                 <h3 className="font-display text-3xl md:text-4xl mb-4">Visão</h3>
                 <p className="text-accent-foreground/90 text-lg leading-relaxed">
-                  Ser a principal plataforma de comercialização de gado do MATOPIBA, 
-                  reconhecida pela excelência no atendimento, inovação tecnológica e 
-                  impacto positivo na cadeia produtiva pecuária da região.
+                  Ser a principal plataforma de comercialização de gado do Brasil,
+                  reconhecida pela excelência no atendimento, inovação tecnológica e
+                  impacto positivo na cadeia produtiva pecuária.
                 </p>
               </div>
             </div>

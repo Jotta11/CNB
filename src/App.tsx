@@ -10,6 +10,8 @@ import AdminLogin from "./pages/AdminLogin";
 import Auth from "./pages/Auth";
 import Lotes from "./pages/Lotes";
 import LoteDetails from "./pages/LoteDetails";
+import News from "./pages/News";
+import NewsDetail from "./pages/NewsDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +30,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/lotes" element={<Lotes />} />
             <Route path="/lotes/:id" element={<LoteDetails />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/noticias" element={<News />} />
+            <Route path="/noticias/:slug" element={<NewsDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

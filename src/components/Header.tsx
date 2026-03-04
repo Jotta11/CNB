@@ -9,6 +9,7 @@ const navLinks = [
   { label: 'Início', href: '#inicio' },
   { label: 'Lotes', href: '#lotes' },
   { label: 'Sobre', href: '#sobre' },
+  { label: 'Blog', href: '/noticias' },
   { label: 'Vender', href: '#vender' },
   { label: 'Dúvidas', href: '#faq' },
 ];
@@ -31,6 +32,11 @@ const Header = () => {
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('/')) {
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
     e.preventDefault();
     if (!isHomePage) {
       navigate('/' + href);
@@ -50,20 +56,19 @@ const Header = () => {
   };
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-primary shadow-lg' : 'bg-primary'
-      }`}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-primary shadow-lg' : 'bg-primary'
+        }`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <a 
-          href="#inicio" 
+        <a
+          href="#inicio"
           onClick={(e) => handleNavClick(e, '#inicio')}
           className="flex items-center gap-3"
         >
-          <img 
-            src={logoHorizontal} 
-            alt="Conexão Norte Bovino" 
+          <img
+            src={logoHorizontal}
+            alt="Conexão Norte Bovino"
             className="h-10 md:h-12 w-auto"
           />
         </a>
@@ -71,16 +76,27 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className="text-white/90 hover:text-white font-medium transition-colors duration-200 text-sm tracking-wide"
-            >
-              {link.label}
-            </a>
+            link.href.startsWith('/') ? (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="text-white/90 hover:text-white font-medium transition-colors duration-200 text-sm tracking-wide"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className="text-white/90 hover:text-white font-medium transition-colors duration-200 text-sm tracking-wide"
+              >
+                {link.label}
+              </a>
+            )
           ))}
-          
+
           {user ? (
             <Button
               variant="ghost"
@@ -118,16 +134,27 @@ const Header = () => {
         <nav className="md:hidden bg-primary border-t border-white/10 py-4">
           <div className="container mx-auto px-4 flex flex-col gap-4">
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="text-white/90 hover:text-white font-medium transition-colors duration-200 py-2"
-              >
-                {link.label}
-              </a>
+              link.href.startsWith('/') ? (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="text-white/90 hover:text-white font-medium transition-colors duration-200 py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="text-white/90 hover:text-white font-medium transition-colors duration-200 py-2"
+                >
+                  {link.label}
+                </a>
+              )
             ))}
-            
+
             {user ? (
               <button
                 onClick={handleSignOut}

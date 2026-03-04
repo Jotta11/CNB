@@ -11,6 +11,8 @@ import AdminSettings from '@/components/admin/AdminSettings';
 import AdminLeads from '@/components/admin/AdminLeads';
 import AdminUsers from '@/components/admin/AdminUsers';
 import AdminPartners from '@/components/admin/AdminPartners';
+import AdminNews from '@/components/admin/AdminNews';
+import { Newspaper } from 'lucide-react';
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
@@ -95,6 +97,10 @@ const Admin = () => {
                 <Handshake className="w-4 h-4" />
                 Parceiros
               </TabsTrigger>
+              <TabsTrigger value="noticias" className="flex items-center gap-2">
+                <Newspaper className="w-4 h-4" />
+                Notícias
+              </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Configurações
@@ -115,6 +121,10 @@ const Admin = () => {
 
             <TabsContent value="parceiros">
               <AdminPartners />
+            </TabsContent>
+
+            <TabsContent value="noticias">
+              <AdminNews />
             </TabsContent>
 
             <TabsContent value="settings">

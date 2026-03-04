@@ -1,0 +1,167 @@
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Loader2, ArrowLeft, Calendar, User, Share2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import { Database } from "@/integrations/supabase/types";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+type Noticia = Database["public"]["Tables"]["noticias"]["Row"];
+
+const NewsDetail = () => {
+    const { slug } = useParams();
+    const [noticia, setNoticia] = useState<Noticia | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchNewsDetail = async () => {
+            if (!slug) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from("noticias")
+                    .select("*")
+                    .eq("slug", slug)
+                    .single();
+
+                if (error) throw error;
+                setNoticia(data);
+            } catch (error) {
+                console.error("Erro ao buscar detalhe da notícia:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNewsDetail();
+        window.scrollTo(0, 0);
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-cream">
+                <Header />
+                <div className="flex flex-col items-center justify-center min-h-screen">
+                    <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
+                    <p className="text-muted-foreground font-medium tracking-wide">BUSCANDO MATÉRIA...</p>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (!noticia) {
+        return (
+            <div className="min-h-screen bg-cream">
+                <Header />
+                <div className="container mx-auto px-4 pt-40 pb-24 text-center">
+                    <h1 className="text-4xl md:text-5xl font-bebas text-primary mb-8 tracking-wide">CONTEÚDO NÃO LOCALIZADO</h1>
+                    <Button asChild className="font-bold">
+                        <Link to="/noticias">VOLTAR PARA TODAS AS NOTÍCIAS</Link>
+                    </Button>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: noticia.titulo,
+                text: noticia.resumo || '',
+                url: window.location.href,
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            toast.success("Link de acesso copiado!");
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-cream">
+            <Header />
+
+            <main className="pt-40 pb-24">
+                <article className="container mx-auto px-4 max-w-4xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <Link
+                            to="/noticias"
+                            className="inline-flex items-center gap-2 text-primary font-bold text-sm mb-12 hover:text-primary-light transition-colors group tracking-widest"
+                        >
+                            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                            VOLTAR PARA O BLOG
+                        </Link>
+
+                        <h1 className="text-4xl md:text-7xl font-bebas text-primary mb-8 leading-[1] tracking-tighter uppercase">
+                            {noticia.titulo}
+                        </h1>
+
+                        <div className="flex flex-wrap items-center gap-8 mb-12 py-6 border-y border-cream-dark text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-primary-light opacity-60" />
+                                {format(new Date(noticia.data_publicacao), "dd 'de' MMMM, yyyy", { locale: ptBR })}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <User className="w-4 h-4 text-primary-light opacity-60" />
+                                {noticia.autor || "Redação CNB"}
+                            </div>
+                            <button
+                                onClick={handleShare}
+                                className="flex items-center gap-2 hover:text-primary transition-colors ml-auto group"
+                            >
+                                <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                Compartilhar
+                            </button>
+                        </div>
+
+                        {noticia.imagem_url && (
+                            <div className="rounded-[2.5rem] overflow-hidden shadow-2xl mb-16 border-[12px] border-white ring-1 ring-black/5">
+                                <img
+                                    src={noticia.imagem_url}
+                                    alt={noticia.titulo}
+                                    className="w-full h-auto object-cover max-h-[600px]"
+                                />
+                            </div>
+                        )}
+
+                        <div
+                            className="prose prose-lg prose-stone max-w-none text-muted-foreground leading-relaxed text-lg"
+                            style={{ whiteSpace: 'pre-wrap' }}
+                        >
+                            {noticia.conteudo}
+                        </div>
+
+                        <div className="mt-20 pt-16 border-t border-cream-dark flex flex-col items-center bg-white/30 rounded-[3rem] p-12 shadow-sm">
+                            <p className="font-bebas text-3xl text-primary mb-8 tracking-wide">INTERESSADO NESTE TEMA?</p>
+                            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                                <Button size="lg" onClick={handleShare} variant="outline" className="gap-2 border-primary text-primary font-bold px-8 h-14">
+                                    <Share2 className="w-4 h-4" />
+                                    COMPARTILHAR ESTE ARTIGO
+                                </Button>
+                                <Button size="lg" asChild className="font-bold px-10 h-14 shadow-lg shadow-primary/20">
+                                    <Link to="/noticias">EXPLORAR MAIS CONTEÚDOS</Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </article>
+            </main>
+
+            <Footer />
+            <FloatingWhatsApp />
+            <BackToTop />
+        </div>
+    );
+};
+
+export default NewsDetail;

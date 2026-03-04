@@ -8,6 +8,7 @@ import MissionVisionValuesSection from '@/components/MissionVisionValuesSection'
 import DiferenciaisSection from '@/components/DiferenciaisSection';
 import SellerForm from '@/components/SellerForm';
 import FAQSection from '@/components/FAQSection';
+import NewsSection from '@/components/NewsSection';
 import Footer from '@/components/Footer';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import BackToTop from '@/components/BackToTop';
@@ -24,6 +25,7 @@ const Index = () => {
       <DiferenciaisSection />
       <MissionVisionValuesSection />
       <SellerForm />
+      <NewsSection />
       <FAQSection />
       <Footer />
       <FloatingWhatsApp />

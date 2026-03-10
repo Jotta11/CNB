@@ -24,6 +24,7 @@ const Index = () => {
       <AboutSection />
       <HowItWorksSection />
       <DiferenciaisSection />
+      <ReferralSection />
       <MissionVisionValuesSection />
       <SellerForm />
       <NewsSection />

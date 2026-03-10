@@ -6,6 +6,7 @@ import AboutSection from '@/components/AboutSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
 import MissionVisionValuesSection from '@/components/MissionVisionValuesSection';
 import DiferenciaisSection from '@/components/DiferenciaisSection';
+import ReferralSection from '@/components/ReferralSection';
 import SellerForm from '@/components/SellerForm';
 import FAQSection from '@/components/FAQSection';
 import NewsSection from '@/components/NewsSection';

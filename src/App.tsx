@@ -12,6 +12,7 @@ import Lotes from "./pages/Lotes";
 import LoteDetails from "./pages/LoteDetails";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
+import IndicacaoConectada from "./pages/IndicacaoConectada";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/lotes/:id" element={<LoteDetails />} />
             <Route path="/noticias" element={<News />} />
             <Route path="/noticias/:slug" element={<NewsDetail />} />
+            <Route path="/indicacao-conectada" element={<IndicacaoConectada />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -47,9 +47,9 @@ const Hero = () => {
         ease: "easeOut"
       }}>
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white tracking-wider mb-6">
-            Conectando compra e venda     
+            Conectando os melhores
             <br />
-            <span className="text-primary-light">com confiança </span>
+            <span className="text-primary-light">lotes para a sua fazenda.</span>
           </h1>
         </motion.div>
 
@@ -64,8 +64,8 @@ const Hero = () => {
         delay: 0.2,
         ease: "easeOut"
       }} className="text-white/90 text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
-          Venda sem depender do leilão físico e sem desperdiçar recursos com deslocamento. Apresente seu gado com padrão e alcance regional.
-
+          Com a Conexão Norte Bovino, você compra e vende seu rebanho com inteligência
+          de mercado e um processo comercial eficiente, seguro e profissional.
         </motion.p>
 
         <motion.div initial={{

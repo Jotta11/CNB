@@ -1,73 +1,143 @@
-# Welcome to your Lovable project
+# CNB — Conexão Norte Bovino
 
-## Project info
+Plataforma digital de compra e venda de gado com curadoria profissional, desenvolvida para o mercado pecuário brasileiro.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Visão Geral
 
-## How can I edit this code?
+A CNB conecta compradores e vendedores de gado com segurança e transparência, oferecendo um marketplace de lotes, calculadora de frete, programa de indicação e painel administrativo completo.
 
-There are several ways of editing your application.
+**Stack principal:**
+- React 18 + TypeScript + Vite
+- Tailwind CSS + shadcn/ui (Radix UI)
+- Supabase (PostgreSQL + Auth)
+- TanStack React Query
+- Framer Motion
+- React Router DOM v6
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Estrutura do Projeto
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/
+│   ├── admin/          # Componentes do painel admin
+│   └── ui/             # Componentes shadcn/ui (51 arquivos)
+├── pages/              # Páginas da aplicação (10 páginas)
+├── hooks/              # Custom hooks (dados e auth)
+├── integrations/
+│   └── supabase/       # Cliente e tipos gerados do Supabase
+├── data/               # Dados estáticos (cidades, lotes fallback)
+└── utils/              # Utilitários (cálculo de distância, etc.)
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Páginas
 
-**Use GitHub Codespaces**
+| Rota | Página | Descrição |
+|------|--------|-----------|
+| `/` | Index | Homepage com todas as seções de marketing |
+| `/lotes` | Lotes | Marketplace com filtros por raça, sexo, preço e quantidade |
+| `/lotes/:id` | LoteDetails | Detalhes do lote com vídeo, calculadora de frete e lotes relacionados |
+| `/noticias` | News | Listagem de artigos/notícias |
+| `/noticias/:slug` | NewsDetail | Artigo individual |
+| `/indicacao-conectada` | IndicacaoConectada | Programa de indicação e parceria |
+| `/auth` | Auth | Login e cadastro de usuários |
+| `/admin` | Admin | Painel administrativo (requer role admin) |
+| `/admin/login` | AdminLogin | Login dedicado para admin |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Funcionalidades
 
-This project is built with:
+### Marketplace de Lotes
+- Listagem e filtragem de lotes de gado por raça, sexo, faixa de preço e quantidade
+- Página de detalhes com especificações completas, vídeo (YouTube) e galeria
+- Calculadora de frete entre estados brasileiros
+- Sugestões de lotes relacionados
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Formulário de Contato / Leads
+- Formulário para vendedores submeterem informações sobre gado à venda
+- Formulário para compradores registrarem interesse
+- Seleção de estado/cidade com cascata (dados de todos os municípios brasileiros)
+- Submissão salva como lead no Supabase
 
-## How can I deploy this project?
+### Programa de Indicação (Indicação Conectada)
+- Página dedicada ao programa de parceria
+- Estrutura de comissões progressiva (até 8%)
+- Seções de benefícios e como funciona
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Autenticação de Usuários
+- Cadastro e login via email/senha (Supabase Auth)
+- Perfil do usuário com região/estado
+- Role-based access control (tabela `user_roles`)
 
-## Can I connect a custom domain to my Lovable project?
+### Painel Administrativo
+- Gestão de lotes (criar, editar, excluir)
+- Gestão de notícias/artigos
+- Visualização e gerenciamento de leads
+- Gestão de usuários
+- Gestão de parceiros/depoimentos
+- Configurações do site (imagem do hero, contato, etc.)
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Design System
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+**Paleta de cores (variáveis HSL):**
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `primary` | Verde escuro (145° 49% 17%) | Botões principais, headers |
+| `secondary` | Marrom escuro (28° 42% 16%) | Elementos secundários |
+| `accent` | Laranja (32° 89% 44%) | Destaques, CTAs |
+| `background` | Creme (45° 27% 94%) | Fundo geral |
+| `whatsapp` | Verde (142° 70% 49%) | Widget WhatsApp |
+
+**Tipografia:**
+- Display: **Bebas Neue** (títulos, marketing)
+- Corpo: **Helvetica Neue** / Arial
+
+---
+
+## Banco de Dados (Supabase)
+
+Tabelas principais:
+- `lotes` — Lotes de gado disponíveis
+- `leads` — Contatos de compradores e vendedores
+- `news` — Artigos e notícias
+- `partners` — Parceiros e depoimentos
+- `user_roles` — Controle de acesso (role admin)
+- `site_settings` — Configurações globais do site
+- `freight_rates` — Tabela de frete por estado
+
+---
+
+## Desenvolvimento
+
+```bash
+# Instalar dependências
+npm install
+
+# Servidor de desenvolvimento (porta 8080)
+npm run dev
+
+# Build de produção
+npm run build
+
+# Lint
+npm run lint
+```
+
+**Variáveis de ambiente necessárias:**
+```env
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_PUBLISHABLE_KEY=...
+```
+
+---
+
+## Deploy
+
+O projeto foi construído com integração ao [Lovable.dev](https://lovable.dev). O build de produção é gerado pelo Vite e pode ser publicado em qualquer hosting estático (Netlify, Vercel, etc.).

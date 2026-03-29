@@ -184,8 +184,9 @@ const SellerForm = () => {
             O Próximo Passo para Modernizar Sua Pecuária
           </h2>
           <p className="text-white/80 max-w-2xl mx-auto">
-            Cadastre seu lote, envie as informações básicas e deixe a curadoria 
-            e a apresentação trabalharem por você. Menos deslocamento, menos custo e mais alcance.
+            Cadastre seu lote e envie as informações básicas. A CNB estrutura,
+            valida e conduz a negociação com mais eficiência, menos deslocamento
+            e maior alcance.
           </p>
         </motion.div>
 

@@ -83,19 +83,21 @@ const AboutSection = () => {
                 className="space-y-6"
               >
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Uma plataforma criada para aproximar compradores e vendedores de gado
-                  com mais confiança, agilidade e critério.
+                  A CNB é uma operação que apresenta oportunidades reais de compra e
+                  venda de gado com critério e padrão, com visibilidade ampliada pela
+                  nossa vitrine de negócios.
                 </p>
                 
                 <p className="text-muted-foreground leading-relaxed">
-                  Unimos curadoria de lotes, padronização de informações e atendimento direto 
-                  para transformar negociação em fechamento.
+                  Cada lote é validado, estruturado e direcionado para compradores
+                  com demanda, transformando exposição em negociação e negociação em
+                  fechamento.
                 </p>
 
                 <div className="pt-4 border-t border-border">
                   <p className="text-foreground font-medium italic">
-                    "Facilitar negociações transparentes e eficientes, maximizando 
-                    oportunidades para todos no mercado pecuário."
+                    "Organizar o fluxo de negócios pecuários com informação,
+                    critério e execução."
                   </p>
                 </div>
 

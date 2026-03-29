@@ -17,38 +17,38 @@ const LogoSymbol = ({ className = '' }: { className?: string }) => (
 const diferenciais = [
   {
     icon: Eye,
-    title: 'Visibilidade',
-    description: 'Meios de comunicação eficientes para alcançar compradores em toda a região.',
+    title: 'Eficiência com Mais Segurança',
+    description: 'Menos deslocamento e mais controle na negociação. A CNB reduz custos operacionais e oferece um ambiente mais estruturado do que negociações informais.',
     color: 'accent'
   },
   {
     icon: BarChart3,
-    title: 'Previsibilidade',
-    description: 'CRM integrado para acompanhamento completo de cada negociação.',
+    title: 'Presença em Campo',
+    description: 'Realizamos visitas para avaliação dos lotes e captação de imagens, assegurando informações confiáveis e padronizadas.',
     color: 'primary'
   },
   {
     icon: Truck,
-    title: 'Logística Integrada',
-    description: 'Carga ideal calculada para otimizar custos e garantir bem-estar animal.',
+    title: 'Visibilidade Qualificada',
+    description: 'Os lotes ganham exposição dentro da base da CNB e em canais estratégicos, sendo direcionados para compradores com demanda real.',
     color: 'secondary'
   },
   {
     icon: Award,
-    title: 'Qualidade',
-    description: 'Apartação, pesagem e marcação realizadas com rigor e precisão.',
+    title: 'Negociação com Segurança Operacional',
+    description: 'Atuamos diretamente na condução da negociação, alinhando condições e reduzindo riscos entre as partes.',
     color: 'primary-light'
   },
   {
     icon: Shield,
-    title: 'Segurança',
-    description: 'Gado apartado, pesado e embarcado pela nossa equipe de campo especializada.',
+    title: 'Documentação e Logística Organizadas',
+    description: 'Auxiliamos na organização documental e no alinhamento logístico, garantindo fluidez e clareza na operação.',
     color: 'accent'
   },
   {
     icon: Lock,
-    title: 'Garantia',
-    description: 'Transações financeiras 100% seguras com total transparência.',
+    title: 'Segurança Financeira nas Transações',
+    description: 'As transações são realizadas com transparência, de forma direta entre as partes, sempre com pagamento à vista e alinhamento prévio das condições.',
     color: 'primary'
   }
 ];

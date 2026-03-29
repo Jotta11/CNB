@@ -67,9 +67,12 @@ const LotesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="section-title">Lotes em Destaque</h2>
+          <h2 className="section-title">Vitrine de Negócios CNB</h2>
           <p className="section-subtitle max-w-2xl mx-auto">
-            Seleção curada com informações claras para sua decisão
+            Além da nossa curadoria de lotes exclusivos, operamos sob demanda
+            personalizada para encontrar o rebanho exato que sua fazenda precisa.
+            Tem um lote pronto para negócio? Anuncie com a inteligência de mercado e
+            a segurança da CNB.
           </p>
         </motion.div>
 

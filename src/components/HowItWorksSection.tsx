@@ -5,26 +5,26 @@ const steps = [
   {
     number: '01',
     icon: Search,
-    title: 'Escolha seu Lote',
-    description: 'Navegue pelos lotes disponíveis com informações completas sobre raça, peso, idade e localização.',
+    title: 'Entrada da Demanda ou do Lote',
+    description: 'O cliente informa sua necessidade de compra ou disponibiliza os dados do lote para venda, com as informações essenciais da operação.',
   },
   {
     number: '02',
     icon: MessageCircle,
-    title: 'Entre em Contato',
-    description: 'Fale diretamente com nossa equipe via WhatsApp para tirar dúvidas e negociar condições.',
+    title: 'Validação em Campo e Padronização',
+    description: 'A CNB realiza a visita para avaliação e captação de imagens do lote, padroniza as informações e alinha as condições comerciais.',
   },
   {
     number: '03',
     icon: Truck,
-    title: 'Logística Facilitada',
-    description: 'Organizamos todo o transporte com parceiros confiáveis e acompanhamento em tempo real.',
+    title: 'Condução da Negociação',
+    description: 'A operação é conduzida entre as partes, com suporte na organização documental e definição logística.',
   },
   {
     number: '04',
     icon: CheckCircle,
-    title: 'Receba seus Animais',
-    description: 'Animais entregues com toda documentação sanitária e garantia de qualidade.',
+    title: 'Fechamento e Embarque',
+    description: 'A CNB acompanha o embarque dos animais, garantindo que a operação seja concluída conforme o que foi negociado.',
   },
 ];
 
@@ -64,7 +64,8 @@ const HowItWorksSection = () => {
               transition={{ delay: 0.2 }}
               className="section-subtitle max-w-2xl mx-auto"
             >
-              Em apenas 4 passos você fecha o melhor negócio para sua fazenda
+              Você entra com a demanda ou o lote. A CNB estrutura, conduz e acompanha
+              a operação até o embarque.
             </motion.p>
           </div>
 

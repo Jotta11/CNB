@@ -19,13 +19,15 @@ const ReferralSection = () => {
             className="flex-1 text-center lg:text-left"
           >
             <span className="inline-block bg-white/10 text-primary-light text-xs font-bold px-3 py-1.5 rounded-full mb-4 tracking-widest uppercase backdrop-blur-sm border border-white/10">
-              Programa de Parceria
+              Geração de Oportunidades
             </span>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-white tracking-wider mb-4">
               INDICAÇÃO <span className="text-primary-light">CONECTADA</span>
             </h2>
             <p className="text-white/80 text-lg max-w-xl leading-relaxed mb-8">
-              Tem bons contatos na pecuária? Transforme suas indicações em renda. A CNB cuida de toda a operação — você só conecta.
+              Indique oportunidades reais de negócio na pecuária e receba 1% de
+              comissão sobre operações convertidas. A CNB conduz a operação com
+              critério, padrão e acompanhamento comercial.
             </p>
             <Button asChild size="lg" className="bg-white text-primary hover:bg-primary-light font-bold text-lg group">
               <Link to="/indicacao-conectada" className="flex items-center gap-3">
@@ -44,9 +46,9 @@ const ReferralSection = () => {
             className="flex-1 grid grid-cols-2 gap-4 w-full max-w-md"
           >
             {[
-              { icon: Handshake, value: 'Até 8%', label: 'de comissão progressiva' },
-              { icon: TrendingUp, value: 'Pagamento', label: 'imediato por venda' },
-              { icon: Users, value: 'Suporte', label: 'completo ao parceiro' },
+              { icon: Handshake, value: '1%', label: 'de comissão por venda convertida' },
+              { icon: TrendingUp, value: 'Demanda', label: 'ou oferta imediata e futura' },
+              { icon: Users, value: 'Categoria', label: 'e número de cabeças informados' },
               { icon: ArrowRight, value: 'Zero', label: 'custo para participar' },
             ].map((item, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/10 text-center">

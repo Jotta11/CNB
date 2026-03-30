@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Loader2, ArrowLeft, Calendar, User, Share2 } from "lucide-react";
+import { Loader2, ArrowLeft, Calendar, User, Share2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -135,11 +135,55 @@ const NewsDetail = () => {
                             </div>
                         )}
 
-                        <div
+                        {/* Conteúdo do artigo com paywall na metade */}
+                        <div className="relative">
+                          {/* Primeira metade — visível normalmente */}
+                          <div
                             className="prose prose-lg prose-stone max-w-none text-muted-foreground leading-relaxed text-lg"
                             style={{ whiteSpace: 'pre-wrap' }}
-                        >
-                            {noticia.conteudo}
+                          >
+                            {noticia.conteudo.slice(0, Math.floor(noticia.conteudo.length / 2))}
+                          </div>
+
+                          {/* Segunda metade — com blur */}
+                          <div className="relative mt-0 overflow-hidden">
+                            <div
+                              className="prose prose-lg prose-stone max-w-none text-muted-foreground leading-relaxed text-lg blur-sm select-none pointer-events-none"
+                              style={{ whiteSpace: 'pre-wrap' }}
+                              aria-hidden="true"
+                            >
+                              {noticia.conteudo.slice(Math.floor(noticia.conteudo.length / 2))}
+                            </div>
+
+                            {/* Gradiente de fade acima do card */}
+                            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-cream to-transparent pointer-events-none" />
+
+                            {/* Card de cadastro sobreposto */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <motion.div
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                className="bg-primary rounded-3xl px-8 py-10 shadow-2xl shadow-primary/30 flex flex-col items-center gap-4 text-center max-w-md mx-4"
+                              >
+                                <Lock className="w-8 h-8 text-accent" />
+                                <p className="font-display text-3xl md:text-4xl text-white tracking-wide leading-none">
+                                  QUER LER A MATÉRIA COMPLETA?
+                                </p>
+                                <p className="text-white/70 text-sm">
+                                  Cadastre-se gratuitamente e tenha acesso a todo o conteúdo exclusivo da CNB.
+                                </p>
+                                <Link to="/auth">
+                                  <Button
+                                    size="lg"
+                                    className="bg-accent hover:bg-accent/90 text-white font-bold px-8 h-12 shadow-lg shadow-accent/30 mt-2"
+                                  >
+                                    CADASTRE-SE AGORA
+                                  </Button>
+                                </Link>
+                              </motion.div>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="mt-20 pt-16 border-t border-cream-dark flex flex-col items-center bg-white/30 rounded-[3rem] p-12 shadow-sm">

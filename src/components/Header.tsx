@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import logoHorizontal from '@/assets/logo-horizontal2.png';
+import AuthModal from '@/components/AuthModal';
 
 const navLinks = [
   { label: 'Início', href: '#inicio' },
@@ -17,6 +18,7 @@ const navLinks = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,15 +109,14 @@ const Header = () => {
               Sair
             </Button>
           ) : (
-            <Link to="/auth">
-              <Button
-                variant="outline"
-                className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white gap-2"
-              >
-                <User className="w-4 h-4" />
-                Entrar
-              </Button>
-            </Link>
+            <Button
+              variant="outline"
+              onClick={() => setAuthModalOpen(true)}
+              className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white gap-2"
+            >
+              <User className="w-4 h-4" />
+              Entrar
+            </Button>
           )}
         </nav>
 
@@ -164,18 +165,18 @@ const Header = () => {
                 Sair
               </button>
             ) : (
-              <Link
-                to="/auth"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button
+                onClick={() => { setAuthModalOpen(true); setIsMobileMenuOpen(false); }}
                 className="text-white/90 hover:text-white font-medium transition-colors duration-200 py-2 flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 Entrar / Cadastrar
-              </Link>
+              </button>
             )}
           </div>
         </nav>
       )}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </header>
   );
 };

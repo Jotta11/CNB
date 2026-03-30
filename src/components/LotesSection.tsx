@@ -69,10 +69,9 @@ const LotesSection = () => {
         >
           <h2 className="section-title">Vitrine de Negócios CNB</h2>
           <p className="section-subtitle max-w-2xl mx-auto">
-            Além da nossa curadoria de lotes exclusivos, operamos sob demanda
-            personalizada para encontrar o rebanho exato que sua fazenda precisa.
-            Tem um lote pronto para negócio? Anuncie com a inteligência de mercado e
-            a segurança da CNB.
+            Curadoria exclusiva de lotes bovinos selecionados para sua fazenda.
+            <br />
+            Anuncie com a inteligência de mercado e a segurança da CNB.
           </p>
         </motion.div>
 
@@ -82,42 +81,64 @@ const LotesSection = () => {
           </div>
         ) : (
           <>
-            {/* Carousel Navigation */}
-            <div className="flex justify-end gap-2 mb-4">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={scrollPrev}
-                disabled={!canScrollPrev}
-                className="rounded-full"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={scrollNext}
-                disabled={!canScrollNext}
-                className="rounded-full"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </Button>
-            </div>
+            {/* Carousel wrapper com overlay Em Breve */}
+            <div className="relative">
+              {/* Carousel Navigation */}
+              <div className="flex justify-end gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={scrollPrev}
+                  disabled={!canScrollPrev}
+                  className="rounded-full"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={scrollNext}
+                  disabled={!canScrollNext}
+                  className="rounded-full"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </Button>
+              </div>
 
-            {/* Carousel */}
-            <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex gap-6">
-                {displayLotes.slice(0, 6).map((lote, index) => (
-                  <div 
-                    key={lote.id} 
-                    className="flex-none w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
-                  >
-                    <LoteCard
-                      lote={lote}
-                      index={index}
-                    />
-                  </div>
-                ))}
+              {/* Carousel */}
+              <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex gap-6">
+                  {displayLotes.slice(0, 6).map((lote, index) => (
+                    <div
+                      key={lote.id}
+                      className="flex-none w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+                    >
+                      <LoteCard lote={lote} index={index} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Overlay Em Breve */}
+              <div className="absolute inset-0 backdrop-blur-sm bg-primary/75 rounded-2xl flex flex-col items-center justify-center z-10 pointer-events-none">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="flex flex-col items-center gap-4 text-center px-6"
+                >
+                  <span className="inline-block bg-accent text-white font-display text-sm tracking-[0.3em] px-4 py-1 rounded-full">
+                    EM BREVE
+                  </span>
+                  <p className="font-display text-5xl md:text-7xl text-white tracking-wide leading-none">
+                    NOVOS LOTES
+                  </p>
+                  <p className="text-white/80 text-sm md:text-base max-w-sm font-medium">
+                    Nossa vitrine de negócios está sendo preparada com curadoria exclusiva.
+                    Fique de olho!
+                  </p>
+                </motion.div>
               </div>
             </div>
 

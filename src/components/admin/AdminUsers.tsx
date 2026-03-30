@@ -121,13 +121,13 @@ const AdminUsers = () => {
             </Card>
             <Card>
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-green-600">{stats.ultimaSemana}</div>
+                <div className="text-2xl font-bold text-accent">{stats.ultimaSemana}</div>
                 <p className="text-sm text-muted-foreground">Novos (última semana)</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-blue-600">{Object.keys(usersByRegion || {}).length}</div>
+                <div className="text-2xl font-bold text-secondary">{Object.keys(usersByRegion || {}).length}</div>
                 <p className="text-sm text-muted-foreground">Regiões</p>
               </CardContent>
             </Card>
@@ -217,7 +217,7 @@ const AdminUsers = () => {
             </Card>
             <Card>
               <CardContent className="pt-6">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-accent">
                   {leitores?.filter(l => {
                     const d = new Date(l.created_at);
                     const semana = new Date();

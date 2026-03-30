@@ -279,7 +279,11 @@ const AuthModal = ({ open, onOpenChange, onSuccess }: AuthModalProps) => {
             {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
             <button
               type="button"
-              onClick={() => { setIsLogin(!isLogin); }}
+              onClick={() => {
+                setIsLogin(prev => !prev);
+                setFormData({ nome: '', email: '', telefone: '', estado: '', cidade: '', password: '', receber_tabela_precos: false });
+                setCiclosProdutivos([]);
+              }}
               className="ml-1 text-primary font-semibold hover:underline"
             >
               {isLogin ? 'Cadastre-se' : 'Entrar'}

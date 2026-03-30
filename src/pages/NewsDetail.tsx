@@ -35,12 +35,13 @@ const NewsDetail = () => {
         if (!leitorForm.nome || !leitorForm.email || !leitorForm.telefone || !leitorForm.area_atuacao) return;
         setLeitorLoading(true);
         try {
-            await supabase.from('leitores').insert({
+            const { error: insertError } = await supabase.from('leitores').insert({
                 nome: leitorForm.nome,
                 email: leitorForm.email,
                 telefone: leitorForm.telefone,
                 area_atuacao: leitorForm.area_atuacao,
             });
+            if (insertError) console.error('[leitor] Erro ao salvar leitor:', insertError);
             localStorage.setItem('cnb_leitor', JSON.stringify({ nome: leitorForm.nome, email: leitorForm.email }));
             setLeitorLiberado(true);
         } catch {

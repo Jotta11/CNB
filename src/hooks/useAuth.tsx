@@ -8,8 +8,20 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, regiao?: string) => Promise<{ error: Error | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+    options?: {
+      regiao?: string;
+      telefone?: string;
+      ciclo_produtivo?: string[];
+      receber_tabela_precos?: boolean;
+    }
+  ) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  requestWhatsAppCode: (telefone: string) => Promise<{ error: string | null }>;
+  verifyWhatsAppCode: (telefone: string, codigo: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -74,12 +86,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string, regiao?: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName: string,
+    options?: {
+      regiao?: string;
+      telefone?: string;
+      ciclo_produtivo?: string[];
+      receber_tabela_precos?: boolean;
+    }
+  ) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, regiao }
+        data: {
+          full_name: fullName,
+          regiao: options?.regiao,
+          telefone: options?.telefone,
+          ciclo_produtivo: options?.ciclo_produtivo ?? [],
+          receber_tabela_precos: options?.receber_tabela_precos ?? false,
+        }
       }
     });
     return { error };
@@ -90,8 +118,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAdmin(false);
   };
 
+  const requestWhatsAppCode = async (telefone: string): Promise<{ error: string | null }> => {
+    try {
+      console.info('[WhatsApp OTP] requestWhatsAppCode chamado para:', telefone, '— integração pendente');
+      return { error: null };
+    } catch {
+      return { error: 'Erro ao solicitar código WhatsApp' };
+    }
+  };
+
+  const verifyWhatsAppCode = async (telefone: string, codigo: string): Promise<{ error: string | null }> => {
+    try {
+      console.info('[WhatsApp OTP] verifyWhatsAppCode chamado para:', telefone, 'código:', codigo, '— integração pendente');
+      return { error: null };
+    } catch {
+      return { error: 'Erro ao verificar código WhatsApp' };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{
+      user, session, loading, isAdmin,
+      signIn, signUp, signOut,
+      requestWhatsAppCode, verifyWhatsAppCode
+    }}>
       {children}
     </AuthContext.Provider>
   );

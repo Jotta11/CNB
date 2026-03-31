@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { trackWhatsApp } from '@/utils/analytics';
 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg
@@ -26,6 +27,7 @@ const FloatingWhatsApp = () => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackWhatsApp('flutuante')}
       className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}

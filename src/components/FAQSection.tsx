@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle, MessageCircle } from 'lucide-react';
+import { trackWhatsApp, trackFAQAberta } from '@/utils/analytics';
 import bgFaq from '@/assets/bg-faq.png';
 
 const faqItems = [
@@ -30,7 +31,9 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleItem = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+    const next = openIndex === index ? null : index;
+    if (next !== null) trackFAQAberta(faqItems[next].question, next);
+    setOpenIndex(next);
   };
 
   return (
@@ -193,10 +196,11 @@ const FAQSection = () => {
                 Fale diretamente conosco pelo WhatsApp
               </p>
             </div>
-            <a 
+            <a
               href="https://wa.me/5563992628916"
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWhatsApp('faq')}
               className="btn-whatsapp px-6 py-3 rounded-lg flex items-center gap-2"
             >
               <MessageCircle size={18} />

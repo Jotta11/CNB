@@ -140,4 +140,4 @@ VITE_SUPABASE_PUBLISHABLE_KEY=...
 
 ## Deploy
 
-O projeto foi construído com integração ao [Lovable.dev](https://lovable.dev). O build de produção é gerado pelo Vite e pode ser publicado em qualquer hosting estático (Netlify, Vercel, etc.).
+O build de produção é gerado pelo Vite e pode ser publicado em qualquer hosting estático (Netlify, Vercel, etc.).

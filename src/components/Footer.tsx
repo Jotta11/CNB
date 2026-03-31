@@ -71,13 +71,6 @@ const Footer = () => {
           Curadoria especializada para negociações com confiança
         </p>
 
-        {/* Admin link */}
-        <Link
-          to="/admin/login"
-          className="text-white/20 hover:text-white/40 text-xs transition-colors"
-        >
-          Admin
-        </Link>
       </div>
     </footer>
   );

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Eye, BarChart3, Truck, Award, Shield, Lock, MessageCircle } from 'lucide-react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { trackWhatsApp } from '@/utils/analytics';
 import bgBio from '@/assets/bg-bio.png';
 
 // Logo symbol component with dynamic color
@@ -89,6 +90,7 @@ const DiferenciaisSection = () => {
   const whatsappNumber = settings.whatsapp_number || '5563992628916';
   
   const handleWhatsAppClick = () => {
+    trackWhatsApp('diferenciais');
     const message = encodeURIComponent('Olá! Gostaria de saber mais sobre os serviços da Conexão Norte Bovino.');
     window.open(`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${message}`, '_blank');
   };

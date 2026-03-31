@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { trackFormSubmit } from '@/utils/analytics';
 
 type LeadTipo = 'comprar' | 'vender' | 'tabela_precos' | 'ofertas_direcionadas';
 
@@ -41,6 +42,7 @@ export function useLeadSubmit() {
     });
     setIsSubmitting(false);
     if (error) throw error;
+    trackFormSubmit(payload.tipo);
     setSubmitted(true);
   }
 

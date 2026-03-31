@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { trackFormInicio, trackFormSubmit } from "@/utils/analytics";
 import { motion } from "framer-motion";
 import { Loader2, ArrowLeft, Calendar, User, Share2, Lock, Phone, Mail, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ const NewsDetail = () => {
     const [leitorLiberado, setLeitorLiberado] = useState(false);
     const [leitorForm, setLeitorForm] = useState({ nome: '', email: '', telefone: '', area_atuacao: '' });
     const [leitorLoading, setLeitorLoading] = useState(false);
+    const formIniciadoRef = useRef(false);
 
     useEffect(() => {
         const salvo = localStorage.getItem('cnb_leitor');
@@ -43,9 +45,11 @@ const NewsDetail = () => {
             });
             if (insertError) console.error('[leitor] Erro ao salvar leitor:', insertError);
             localStorage.setItem('cnb_leitor', JSON.stringify({ nome: leitorForm.nome, email: leitorForm.email }));
+            trackFormSubmit('noticia_leitor');
             setLeitorLiberado(true);
         } catch {
             localStorage.setItem('cnb_leitor', JSON.stringify({ nome: leitorForm.nome, email: leitorForm.email }));
+            trackFormSubmit('noticia_leitor');
             setLeitorLiberado(true);
         } finally {
             setLeitorLoading(false);
@@ -223,7 +227,13 @@ const NewsDetail = () => {
                                         type="text"
                                         placeholder="Nome completo *"
                                         value={leitorForm.nome}
-                                        onChange={(e) => setLeitorForm(prev => ({ ...prev, nome: e.target.value }))}
+                                        onChange={(e) => {
+                                          if (!formIniciadoRef.current) {
+                                            formIniciadoRef.current = true;
+                                            trackFormInicio('noticia_leitor');
+                                          }
+                                          setLeitorForm(prev => ({ ...prev, nome: e.target.value }));
+                                        }}
                                         className="w-full pl-9 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-accent focus:bg-white/15"
                                         required
                                       />

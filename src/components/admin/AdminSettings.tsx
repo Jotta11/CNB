@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,13 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Upload, X, Image, Phone } from 'lucide-react';
+import { Loader2, Upload, X, Image, Phone, Tag } from 'lucide-react';
 
 const AdminSettings = () => {
   const { settings, loading, updateSetting, fetchSettings } = useSiteSettings();
   const [uploading, setUploading] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [whatsapp, setWhatsapp] = useState(settings.whatsapp_number || '5563992628916');
+  const [gtmId, setGtmId] = useState('');
+  const [ga4Id, setGa4Id] = useState('');
+
+  useEffect(() => {
+    if (!loading) {
+      setGtmId(settings.gtm_id || '');
+      setGa4Id(settings.ga4_id || '');
+    }
+  }, [loading, settings.gtm_id, settings.ga4_id]);
 
   const handleImageUpload = async (key: string, file: File) => {
     try {
@@ -46,6 +55,19 @@ const AdminSettings = () => {
       toast.success('Imagem removida');
     } catch (err) {
       toast.error('Erro ao remover imagem');
+    }
+  };
+
+  const handleSaveTags = async () => {
+    try {
+      setSaving(true);
+      await updateSetting('gtm_id', gtmId.trim() || null);
+      await updateSetting('ga4_id', ga4Id.trim() || null);
+      toast.success('Tags de rastreamento salvas');
+    } catch {
+      toast.error('Erro ao salvar tags');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -254,6 +276,56 @@ const AdminSettings = () => {
                 )}
               </label>
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Tag className="w-5 h-5" />
+              Tags de Rastreamento
+            </CardTitle>
+            <CardDescription>
+              IDs do Google Tag Manager e Google Analytics 4. Alterações entram em vigor no próximo carregamento da página.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="gtm_id">Google Tag Manager (GTM)</Label>
+                <Input
+                  id="gtm_id"
+                  value={gtmId}
+                  onChange={(e) => setGtmId(e.target.value)}
+                  placeholder="GTM-XXXXXXX"
+                />
+                <p className="text-xs text-muted-foreground">Formato: GTM-XXXXXXX</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ga4_id">Google Analytics 4 (GA4)</Label>
+                <Input
+                  id="ga4_id"
+                  value={ga4Id}
+                  onChange={(e) => setGa4Id(e.target.value)}
+                  placeholder="G-XXXXXXXXXX"
+                />
+                <p className="text-xs text-muted-foreground">Formato: G-XXXXXXXXXX</p>
+              </div>
+            </div>
+            <Button
+              onClick={handleSaveTags}
+              disabled={saving}
+              className="bg-primary hover:bg-primary-medium"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                'Salvar Tags'
+              )}
+            </Button>
           </CardContent>
         </Card>
 

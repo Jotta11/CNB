@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { getDistanceBetweenStates, formatDistance } from '@/utils/distance';
 import type { Lote } from '@/hooks/useLotes';
+import { trackLoteClick } from '@/utils/analytics';
 
 // Helper to extract YouTube video ID
 const getYouTubeVideoId = (url: string | null): string | null => {
@@ -46,6 +47,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    trackLoteClick({ lote_id: lote.id, lote_numero: lote.numero, lote_titulo: lote.titulo, acao: 'whatsapp' });
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
@@ -79,6 +81,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
         {/* Video Section - Larger for horizontal */}
         <Link
           to={`/lotes/${lote.id}`}
+          onClick={() => trackLoteClick({ lote_id: lote.id, lote_numero: lote.numero, lote_titulo: lote.titulo, acao: 'card_imagem' })}
           className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0 overflow-hidden"
         >
           {(() => {
@@ -163,6 +166,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
             <div className="flex gap-2">
               <Link
                 to={`/lotes/${lote.id}`}
+                onClick={() => trackLoteClick({ lote_id: lote.id, lote_numero: lote.numero, lote_titulo: lote.titulo, acao: 'ver_lote' })}
                 className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 text-center"
               >
                 Ver lote
@@ -192,6 +196,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
       {/* Video Section */}
       <Link
         to={`/lotes/${lote.id}`}
+        onClick={() => trackLoteClick({ lote_id: lote.id, lote_numero: lote.numero, lote_titulo: lote.titulo, acao: 'card_imagem' })}
         className="relative h-48 bg-primary flex items-center justify-center overflow-hidden"
       >
         {(() => {
@@ -276,6 +281,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
           <div className="flex gap-2">
             <Link
               to={`/lotes/${lote.id}`}
+              onClick={() => trackLoteClick({ lote_id: lote.id, lote_numero: lote.numero, lote_titulo: lote.titulo, acao: 'ver_lote' })}
               className="flex-1 bg-muted hover:bg-muted/80 text-foreground py-3 px-4 rounded-xl font-medium text-sm transition-all duration-200 text-center"
             >
               Ver lote

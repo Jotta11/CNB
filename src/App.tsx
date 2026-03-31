@@ -1,9 +1,22 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { trackPageView } from "@/utils/analytics";
+import { useScrollDepth } from "@/hooks/useScrollDepth";
+import TrackingScripts from "@/components/TrackingScripts";
+
+const RouteTracker = () => {
+  const { pathname } = useLocation();
+  useScrollDepth();
+  useEffect(() => {
+    trackPageView(pathname);
+  }, [pathname]);
+  return null;
+};
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
@@ -14,6 +27,9 @@ import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
 import IndicacaoConectada from "./pages/IndicacaoConectada";
 import LandingVender from "./pages/LandingVender";
+import LandingPrecos from "./pages/LandingPrecos";
+import LandingOfertas from "./pages/LandingOfertas";
+import LandingComprar from "./pages/LandingComprar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +40,9 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <TrackingScripts />
         <BrowserRouter>
+          <RouteTracker />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/admin" element={<Admin />} />
@@ -36,6 +54,9 @@ const App = () => (
             <Route path="/noticias/:slug" element={<NewsDetail />} />
             <Route path="/indicacao-conectada" element={<IndicacaoConectada />} />
             <Route path="/vender" element={<LandingVender />} />
+            <Route path="/precos" element={<LandingPrecos />} />
+            <Route path="/ofertas" element={<LandingOfertas />} />
+            <Route path="/comprar" element={<LandingComprar />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

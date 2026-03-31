@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Database } from "@/integrations/supabase/types";
+import { trackNoticiaClick } from "@/utils/analytics";
 
 type Noticia = Database["public"]["Tables"]["noticias"]["Row"];
 
@@ -51,7 +52,10 @@ const NewsCard = ({ noticia }: NewsCardProps) => {
                 </div>
 
                 <h3 className="text-xl font-bebas text-primary mb-3 line-clamp-2 leading-tight group-hover:text-primary-light transition-colors uppercase tracking-wide">
-                    <Link to={`/noticias/${noticia.slug}`}>
+                    <Link
+                        to={`/noticias/${noticia.slug}`}
+                        onClick={() => trackNoticiaClick({ noticia_slug: noticia.slug, noticia_titulo: noticia.titulo, acao: 'titulo' })}
+                    >
                         {noticia.titulo}
                     </Link>
                 </h3>
@@ -62,6 +66,7 @@ const NewsCard = ({ noticia }: NewsCardProps) => {
 
                 <Link
                     to={`/noticias/${noticia.slug}`}
+                    onClick={() => trackNoticiaClick({ noticia_slug: noticia.slug, noticia_titulo: noticia.titulo, acao: 'ler_materia' })}
                     className="inline-flex items-center gap-2 text-primary font-bold text-xs group/link hover:text-primary-light transition-colors tracking-widest"
                 >
                     LER MATÉRIA COMPLETA

@@ -1,8 +1,11 @@
 // src/components/admin/parceiros/ParceiroMetricas.tsx
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { INDICACAO_STATUS_LABELS } from '@/data/parceiros-constants';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -18,7 +21,7 @@ const COLORS = [
 const db = supabase as any;
 
 export default function ParceiroMetricas() {
-  const { data: indicacoes = [] } = useQuery({
+  const { data: indicacoes = [], isLoading: isLoadingIndicacoes, error: errorIndicacoes } = useQuery({
     queryKey: ['crm-indicacoes'],
     queryFn: async () => {
       const { data } = await db
@@ -28,7 +31,7 @@ export default function ParceiroMetricas() {
     },
   });
 
-  const { data: parceiros = [] } = useQuery({
+  const { data: parceiros = [], isLoading: isLoadingParceiros, error: errorParceiros } = useQuery({
     queryKey: ['crm-parceiros'],
     queryFn: async () => {
       const { data } = await db.from('parceiros').select('*');
@@ -36,13 +39,35 @@ export default function ParceiroMetricas() {
     },
   });
 
-  const { data: contratos = [] } = useQuery({
+  const { data: contratos = [], isLoading: isLoadingContratos, error: errorContratos } = useQuery({
     queryKey: ['crm-contratos'],
     queryFn: async () => {
       const { data } = await db.from('contratos').select('*');
       return data ?? [];
     },
   });
+
+  // Check if any query is loading
+  const isLoading = isLoadingIndicacoes || isLoadingParceiros || isLoadingContratos;
+
+  // Handle errors
+  useEffect(() => {
+    if (errorIndicacoes) {
+      toast.error('Erro ao carregar indicações');
+    }
+  }, [errorIndicacoes]);
+
+  useEffect(() => {
+    if (errorParceiros) {
+      toast.error('Erro ao carregar parceiros');
+    }
+  }, [errorParceiros]);
+
+  useEffect(() => {
+    if (errorContratos) {
+      toast.error('Erro ao carregar contratos');
+    }
+  }, [errorContratos]);
 
   // ─── Stat card metrics ────────────────────────────────────────────────────
 
@@ -83,6 +108,14 @@ export default function ParceiroMetricas() {
   }));
 
   // ─── Render ───────────────────────────────────────────────────────────────
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

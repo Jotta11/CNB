@@ -1,14 +1,53 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Handshake, TrendingUp, Shield, Users, Phone, ArrowRight, CheckCircle2, DollarSign, ClipboardList, HeartHandshake, Star, Zap, Target, Award } from 'lucide-react';
+import { Handshake, TrendingUp, Shield, Users, Phone, ArrowRight, CheckCircle2, ClipboardList, HeartHandshake, Star, Zap, Target, Send, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import BackToTop from '@/components/BackToTop';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import logoSymbol from '@/assets/logo-symbol.svg';
 
 const IndicacaoConectada = () => {
-  const whatsappLink = "https://wa.me/5594991230099?text=Olá! Tenho interesse no programa Indicação Conectada da CNB.";
+  const [formData, setFormData] = useState({ nome: '', telefone: '', email: '', cidade: '', estado: '', mensagem: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const db = supabase as any;
+      const { error } = await db.from('parceiros').insert([{
+        nome_completo: formData.nome,
+        telefone: formData.telefone,
+        email: formData.email,
+        cidade: formData.cidade,
+        uf: formData.estado,
+        notas: formData.mensagem || null,
+        cpf: null,
+        status_funil: 'prospeccao',
+        origem: 'landing_page',
+      }]);
+      if (error) throw error;
+      setSubmitted(true);
+      toast.success('Cadastro realizado com sucesso! Entraremos em contato em breve.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Erro ao enviar cadastro. Tente novamente.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +81,7 @@ const IndicacaoConectada = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base px-8 h-14 shadow-lg shadow-accent/25 border-0">
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
+                    <a href="#quero-ser-parceiro" className="flex items-center gap-3">
                       <Handshake className="w-5 h-5" />
                       QUERO SER PARCEIRO
                     </a>
@@ -305,193 +344,136 @@ const IndicacaoConectada = () => {
         </div>
       </section>
 
-      {/* Remuneração — dark section with accent highlights */}
-      <section className="py-24 bg-secondary relative overflow-hidden">
+      {/* Formulário — Quero ser Parceiro */}
+      <section id="quero-ser-parceiro" className="py-24 bg-secondary relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-            className="text-center mb-16">
-            <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Ganhos Reais</span>
-            <h2 className="font-display text-4xl md:text-6xl text-white tracking-wide">
-              REMUNERAÇÃO DO <span className="text-accent">PARCEIRO</span>
-            </h2>
-            <p className="text-white/50 text-lg mt-4">Sempre calculada sobre a comissão da CNB</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-              className="bg-white/[0.04] backdrop-blur-sm rounded-3xl p-10 border border-white/[0.06]">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-accent" />
-                </div>
-                <h3 className="font-display text-2xl text-white tracking-wide">COMISSÃO CNB</h3>
-              </div>
-              <div className="space-y-5">
-                {[
-                  { pct: '5%', desc: 'Demandas ou ofertas imediatas' },
-                  { pct: '4%', desc: 'Demandas ou ofertas futuras' },
-                  { pct: 'Flex', desc: 'Grandes volumes negociáveis' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <span className="font-display text-2xl text-accent w-14">{item.pct}</span>
-                    <span className="text-white/60 text-sm">{item.desc}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
-              className="bg-white/[0.04] backdrop-blur-sm rounded-3xl p-10 border border-white/[0.06]">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-accent" />
-                </div>
-                <h3 className="font-display text-2xl text-white tracking-wide">PROGRESSÃO</h3>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { range: 'Até R$ 700 mil', pct: '4%' },
-                  { range: 'R$ 700 mil +', pct: '5%' },
-                  { range: 'R$ 1,5 milhão +', pct: '6%' },
-                  { range: 'R$ 2,0 milhões +', pct: '7%' },
-                  { range: 'R$ 2,5 milhões +', pct: '8%', highlight: true },
-                ].map((item, i) => (
-                  <div key={i} className={`flex justify-between items-center py-3 px-4 rounded-xl transition-colors ${
-                    item.highlight ? 'bg-accent/10 border border-accent/20' : 'border-b border-white/[0.06]'
-                  }`}>
-                    <span className="text-white/70 text-sm">{item.range}</span>
-                    <span className={`font-display text-xl ${item.highlight ? 'text-accent' : 'text-white'}`}>{item.pct}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Apuração e Pagamento */}
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-              className="text-center mb-16">
-              <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Transparência Total</span>
-              <h2 className="font-display text-4xl md:text-6xl text-foreground tracking-wide">
-                APURAÇÃO E <span className="text-primary">PAGAMENTO</span>
-              </h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {[
-                { icon: DollarSign, title: 'POR INDICAÇÃO', desc: 'Pagamento imediato por indicação convertida em venda, conforme a faixa de comissão em que o valor se enquadra.', color: 'accent' },
-                { icon: TrendingUp, title: 'POR VOLUME MENSAL', desc: 'Todas as conversões do período são somadas para definição da faixa. Maior volume, maior percentual de ganho.', color: 'primary' },
-              ].map((item, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.15 }}
-                  className="bg-card rounded-3xl p-10 border border-border hover:shadow-lg transition-shadow"
-                >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                    item.color === 'accent' ? 'bg-accent/10' : 'bg-primary/10'
-                  }`}>
-                    <item.icon className={`w-7 h-7 ${item.color === 'accent' ? 'text-accent' : 'text-primary'}`} />
-                  </div>
-                  <h3 className="font-display text-2xl text-foreground mb-3 tracking-wide">{item.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Exemplo de Resultado */}
-      <section className="py-24 bg-cream">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-              className="text-center mb-16">
-              <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Simulação Real</span>
-              <h2 className="font-display text-4xl md:text-6xl text-foreground tracking-wide">
-                EXEMPLO DE <span className="text-primary">RESULTADO</span>
-              </h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              {[
-                { label: 'DEMANDA IMEDIATA', qtd: '250 Garrotes', valor: '× R$ 3.500', total: '= R$ 875.000', ganho: 'R$ 2.187,50', badge: 'bg-primary' },
-                { label: 'OFERTA FUTURA', qtd: '150 Bezerros', valor: '× R$ 2.800', total: '= R$ 420.000', ganho: 'R$ 840,00', badge: 'bg-accent' },
-                { label: 'NÃO CONVERTIDA', qtd: '100 Bezerras', valor: '× R$ 2.500', total: null, ganho: 'R$ 840,00', badge: 'bg-muted-foreground' },
-              ].map((item, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="bg-card rounded-3xl p-8 border border-border text-center relative overflow-hidden"
-                >
-                  <span className={`inline-block ${item.badge} text-white text-[10px] font-bold px-3 py-1 rounded-full tracking-widest mb-4`}>
-                    {item.label}
-                  </span>
-                  <p className="font-display text-3xl text-foreground">{item.qtd}</p>
-                  <p className="text-muted-foreground text-sm mt-2">{item.valor}</p>
-                  {item.total && <p className="text-foreground font-bold text-sm mt-1">{item.total}</p>}
-                  <div className="mt-6 pt-6 border-t border-border">
-                    <span className="text-muted-foreground text-xs tracking-wider uppercase">Seu ganho</span>
-                    <p className="font-display text-2xl text-primary mt-1">{item.ganho}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="bg-secondary rounded-3xl p-10 text-center relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-full blur-[80px]" />
-              <span className="text-white/40 text-xs tracking-[0.3em] font-bold uppercase">Total do Período</span>
-              <p className="font-display text-5xl md:text-7xl text-white mt-3 relative z-10">
-                R$ <span className="text-accent">3.027,50</span>
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Final */}
-      <section className="py-32 bg-secondary relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary/60 to-primary/80" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[200px]" />
         <div className="absolute bottom-10 right-10 opacity-[0.03]">
           <img src={logoSymbol} alt="" className="w-[300px] h-[300px]" />
         </div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
-            <Award className="w-12 h-12 text-accent mx-auto mb-8" />
-            <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-white mb-6 tracking-wide leading-[0.95]">
-              CONECTE OPORTUNIDADES
-              <br />
-              <span className="text-accent">E CRESÇA JUNTO CONOSCO</span>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-12">
+            <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Candidate-se agora</span>
+            <h2 className="font-display text-4xl md:text-6xl text-white tracking-wide leading-[0.95]">
+              QUERO SER
+              <br /><span className="text-accent">PARCEIRO CNB</span>
             </h2>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto mb-12 leading-relaxed">
-              Se você possui bons contatos na pecuária, a Indicação Conectada é a oportunidade de transformar indicações em vendas estruturadas e gerar renda de forma organizada.
+            <p className="text-white/60 text-lg mt-4 max-w-xl mx-auto">
+              Preencha o formulário abaixo e nossa equipe entrará em contato para finalizar seu cadastro e gerar seu código de parceiro.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-12 h-16 shadow-xl shadow-accent/20 border-0">
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
-                  <Handshake className="w-6 h-6" />
-                  QUERO SER PARCEIRO
-                  <ArrowRight className="w-5 h-5" />
-                </a>
-              </Button>
-            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="max-w-2xl mx-auto"
+          >
+            {submitted ? (
+              <div className="bg-white/[0.06] backdrop-blur-sm rounded-3xl p-12 border border-white/[0.08] text-center">
+                <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 className="w-8 h-8 text-accent" />
+                </div>
+                <h3 className="font-display text-3xl text-white tracking-wide mb-3">CANDIDATURA ENVIADA!</h3>
+                <p className="text-white/60 leading-relaxed">
+                  Recebemos seus dados. Em breve nossa equipe entrará em contato para confirmar seu cadastro e gerar seu código de parceiro exclusivo.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="bg-white/[0.06] backdrop-blur-sm rounded-3xl p-8 md:p-10 border border-white/[0.08] space-y-5">
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="nome" className="text-white/80 text-sm font-medium">Nome completo *</Label>
+                    <Input
+                      id="nome"
+                      value={formData.nome}
+                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                      placeholder="Seu nome"
+                      required
+                      className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefone" className="text-white/80 text-sm font-medium">WhatsApp / Telefone *</Label>
+                    <Input
+                      id="telefone"
+                      value={formData.telefone}
+                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                      placeholder="(00) 00000-0000"
+                      required
+                      className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 h-11"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white/80 text-sm font-medium">E-mail *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="seu@email.com"
+                    required
+                    className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 h-11"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="cidade" className="text-white/80 text-sm font-medium">Cidade *</Label>
+                    <Input
+                      id="cidade"
+                      value={formData.cidade}
+                      onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                      placeholder="Sua cidade"
+                      required
+                      className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="estado" className="text-white/80 text-sm font-medium">Estado *</Label>
+                    <Input
+                      id="estado"
+                      value={formData.estado}
+                      onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+                      placeholder="UF"
+                      maxLength={2}
+                      required
+                      className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 h-11 uppercase"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mensagem" className="text-white/80 text-sm font-medium">Sobre sua atuação na pecuária (opcional)</Label>
+                  <Textarea
+                    id="mensagem"
+                    value={formData.mensagem}
+                    onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
+                    placeholder="Conte um pouco sobre sua experiência e rede de contatos..."
+                    rows={4}
+                    className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 resize-none"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  size="lg"
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base h-14 shadow-lg shadow-accent/20 border-0"
+                >
+                  {submitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  ) : (
+                    <Send className="w-5 h-5 mr-2" />
+                  )}
+                  {submitting ? 'ENVIANDO...' : 'ENVIAR CANDIDATURA'}
+                </Button>
+              </form>
+            )}
           </motion.div>
         </div>
       </section>

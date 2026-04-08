@@ -112,18 +112,23 @@ function ContratoDialog({
   const [status, setStatus] = useState<ContratoStatus>('rascunho');
 
   useEffect(() => {
-    if (open) {
-      if (editing) {
-        setIndicacaoId(editing.indicacao_id);
-        setModeloId(editing.modelo_id ?? '');
-        setConteudo(editing.conteudo);
-        setStatus(editing.status);
-      } else {
-        setIndicacaoId('');
-        setModeloId('');
-        setConteudo('');
-        setStatus('rascunho');
-      }
+    if (!open) {
+      setIndicacaoId('');
+      setModeloId('');
+      setConteudo('');
+      setStatus('rascunho');
+      return;
+    }
+    if (editing) {
+      setIndicacaoId(editing.indicacao_id);
+      setModeloId(editing.modelo_id ?? '');
+      setConteudo(editing.conteudo);
+      setStatus(editing.status);
+    } else {
+      setIndicacaoId('');
+      setModeloId('');
+      setConteudo('');
+      setStatus('rascunho');
     }
   }, [open, editing]);
 
@@ -275,16 +280,20 @@ function ModeloDialog({ open, onOpenChange, editing, onSaved }: ModeloDialogProp
   const [variaveis, setVariaveis] = useState<string[]>([]);
 
   useEffect(() => {
-    if (open) {
-      if (editing) {
-        setNome(editing.nome);
-        setConteudoTemplate(editing.conteudo_template);
-        setVariaveis(editing.variaveis ?? []);
-      } else {
-        setNome('');
-        setConteudoTemplate('');
-        setVariaveis([]);
-      }
+    if (!open) {
+      setNome('');
+      setConteudoTemplate('');
+      setVariaveis([]);
+      return;
+    }
+    if (editing) {
+      setNome(editing.nome);
+      setConteudoTemplate(editing.conteudo_template);
+      setVariaveis(editing.variaveis ?? []);
+    } else {
+      setNome('');
+      setConteudoTemplate('');
+      setVariaveis([]);
     }
   }, [open, editing]);
 

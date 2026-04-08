@@ -21,6 +21,13 @@ export const URGENCIAS = ['Imediata', 'Futura'] as const;
 export const CATEGORIAS = ['Bezerro', 'Garrote', 'Boi Magro', 'Boi Gordo', 'Novilha', 'Vaca', 'Matriz'] as const;
 export const RACAS = ['Nelore', 'Cruzamento Industrial', 'Angus', 'Brahman', 'Senepol', 'Outros'] as const;
 
+export type Profissao = typeof PROFISSOES[number];
+export type Uf = typeof UFS[number];
+export type Fluxo = typeof FLUXOS[number];
+export type Urgencia = typeof URGENCIAS[number];
+export type Categoria = typeof CATEGORIAS[number];
+export type Raca = typeof RACAS[number];
+
 export const FUNIL_STATUS = ['prospeccao', 'fechamento', 'ativo', 'com_indicacao'] as const;
 export type FunilStatus = typeof FUNIL_STATUS[number];
 export const FUNIL_LABELS: Record<FunilStatus, string> = {
@@ -39,7 +46,10 @@ export const INDICACAO_STATUS_LABELS: Record<IndicacaoStatus, string> = {
   finalizada:     'Finalizada',
 };
 
-export const CONTATO_TIPO_LABELS: Record<string, string> = {
+export const CONTATO_TIPOS = ['indicacao_criada', 'contrato_gerado', 'contato_manual', 'edicao_cadastro'] as const;
+export type ContatoTipo = typeof CONTATO_TIPOS[number];
+
+export const CONTATO_TIPO_LABELS: Record<ContatoTipo, string> = {
   indicacao_criada:  'Indicação Criada',
   contrato_gerado:   'Contrato Gerado',
   contato_manual:    'Contato Manual',
@@ -47,6 +57,7 @@ export const CONTATO_TIPO_LABELS: Record<string, string> = {
 };
 
 export const CONTATO_MANUAL_TIPOS = ['Ligação', 'WhatsApp', 'Visita', 'Outro'] as const;
+export type ContatoManualTipo = typeof CONTATO_MANUAL_TIPOS[number];
 
 export const TEMPLATE_VARS_PARCERIA = [
   { key: '{{nome_parceiro}}',    label: 'Nome do Parceiro' },

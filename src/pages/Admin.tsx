@@ -1,44 +1,130 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/Admin.tsx
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { LogOut, Package, Settings, ArrowLeft, Loader2, Users, UserCheck, Handshake } from 'lucide-react';
-import AdminLotes from '@/components/admin/AdminLotes';
-import AdminSettings from '@/components/admin/AdminSettings';
+import { LogOut, Lock, Mail, Loader2 } from 'lucide-react';
+
+import AdminSidebar, { type SectionKey, ALL_SECTIONS } from '@/components/admin/AdminSidebar';
 import AdminLeads from '@/components/admin/AdminLeads';
 import AdminUsers from '@/components/admin/AdminUsers';
+import AdminLotes from '@/components/admin/AdminLotes';
 import AdminPartners from '@/components/admin/AdminPartners';
 import AdminNews from '@/components/admin/AdminNews';
-import { Newspaper } from 'lucide-react';
+import AdminCalendario from '@/components/admin/AdminCalendario';
+import AdminSettings from '@/components/admin/AdminSettings';
+
+// Placeholders for Parceiros module — will be replaced in Tasks 5-9
+const ParceiroDashboard  = () => <div className="p-8 text-muted-foreground">Dashboard de Parceiros — em breve</div>;
+const ParceiroCRM        = () => <div className="p-8 text-muted-foreground">CRM Parceiros — em breve</div>;
+const ParceiroIndicacoes = () => <div className="p-8 text-muted-foreground">Indicações — em breve</div>;
+const ParceiroMetricas   = () => <div className="p-8 text-muted-foreground">Métricas — em breve</div>;
+const ParceiroContratos  = () => <div className="p-8 text-muted-foreground">Contratos — em breve</div>;
+
+const SECTION_COMPONENTS: Record<SectionKey, React.ComponentType> = {
+  'leads':               AdminLeads,
+  'usuarios':            AdminUsers,
+  'lotes':               AdminLotes,
+  'parceiros':           AdminPartners,
+  'noticias':            AdminNews,
+  'calendario':          AdminCalendario,
+  'settings':            AdminSettings,
+  'parceiro-dashboard':  ParceiroDashboard,
+  'parceiro-crm':        ParceiroCRM,
+  'parceiro-indicacoes': ParceiroIndicacoes,
+  'parceiro-metricas':   ParceiroMetricas,
+  'parceiro-contratos':  ParceiroContratos,
+};
+
+// ─── Formulário de login ──────────────────────────────────────────────────────
+
+const AdminLoginForm = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await signIn(email, password);
+      if (error) toast.error('Credenciais inválidas');
+    } catch {
+      toast.error('Erro ao fazer login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-cream flex items-center justify-center p-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bebas text-primary">Área Administrativa</h1>
+            <p className="text-muted-foreground mt-2">Faça login para acessar o CMS</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@exemplo.com" className="pl-10" required />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••" className="pl-10" required />
+              </div>
+            </div>
+            <Button type="submit" className="w-full bg-primary hover:bg-primary-medium" disabled={loading}>
+              {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Entrando...</> : 'Entrar'}
+            </Button>
+          </form>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// ─── Página Admin ─────────────────────────────────────────────────────────────
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
-  const navigate = useNavigate();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [activeSection, setActiveSection] = useState<SectionKey>('leads');
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate('/admin/login');
-      } else if (!isAdmin) {
-        toast.error('Você não tem permissão para acessar esta área');
-        navigate('/');
-      } else {
-        setCheckingAuth(false);
-      }
-    }
-  }, [user, loading, isAdmin, navigate]);
+  const { data: permissionsData, isLoading: permissionsLoading } = useQuery({
+    queryKey: ['minha-permissao', user?.id],
+    enabled: !!user && isAdmin,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('admin_permissions')
+        .select('tabs')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      return data?.tabs as string[] | null;
+    },
+  });
 
   const handleSignOut = async () => {
     await signOut();
     toast.success('Logout realizado com sucesso');
-    navigate('/');
   };
 
-  if (loading || checkingAuth) {
+  if (loading || (isAdmin && permissionsLoading)) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -46,93 +132,41 @@ const Admin = () => {
     );
   }
 
+  if (!user || !isAdmin) return <AdminLoginForm />;
+
+  const visibleKeys = permissionsData
+    ? ALL_SECTIONS.filter((s) => permissionsData.includes(s.key)).map((s) => s.key)
+    : ALL_SECTIONS.map((s) => s.key);
+
+  const currentSection = (visibleKeys.includes(activeSection) ? activeSection : visibleKeys[0]) as SectionKey ?? 'leads';
+  const ActiveComponent = SECTION_COMPONENTS[currentSection];
+
   return (
-    <div className="min-h-screen bg-cream">
-      <header className="bg-primary text-white py-4 px-6 sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-cream flex flex-col">
+      <header className="bg-primary text-white py-3 px-6 sticky top-0 z-50 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bebas">CNB — Painel Administrativo</h1>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-xl font-bebas">CNB - Painel Administrativo</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-white/80">{user?.email}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-white hover:text-white hover:bg-white/10"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
+            <span className="text-sm text-white/80">{user.email}</span>
+            <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-white hover:text-white hover:bg-white/10">
+              <LogOut className="w-4 h-4 mr-2" />Sair
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto py-8 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Tabs defaultValue="leads" className="w-full">
-            <TabsList className="mb-8">
-              <TabsTrigger value="leads" className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Leads
-              </TabsTrigger>
-              <TabsTrigger value="usuarios" className="flex items-center gap-2">
-                <UserCheck className="w-4 h-4" />
-                Usuários
-              </TabsTrigger>
-              <TabsTrigger value="lotes" className="flex items-center gap-2">
-                <Package className="w-4 h-4" />
-                Lotes
-              </TabsTrigger>
-              <TabsTrigger value="parceiros" className="flex items-center gap-2">
-                <Handshake className="w-4 h-4" />
-                Parceiros
-              </TabsTrigger>
-              <TabsTrigger value="noticias" className="flex items-center gap-2">
-                <Newspaper className="w-4 h-4" />
-                Notícias
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                Configurações
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="leads">
-              <AdminLeads />
-            </TabsContent>
-
-            <TabsContent value="usuarios">
-              <AdminUsers />
-            </TabsContent>
-
-            <TabsContent value="lotes">
-              <AdminLotes />
-            </TabsContent>
-
-            <TabsContent value="parceiros">
-              <AdminPartners />
-            </TabsContent>
-
-            <TabsContent value="noticias">
-              <AdminNews />
-            </TabsContent>
-
-            <TabsContent value="settings">
-              <AdminSettings />
-            </TabsContent>
-          </Tabs>
-        </motion.div>
-      </main>
+      <div className="flex flex-1 overflow-hidden">
+        <AdminSidebar
+          allowedKeys={permissionsData ?? null}
+          activeSection={currentSection}
+          onSelect={setActiveSection}
+        />
+        <main className="flex-1 overflow-y-auto p-8">
+          <motion.div key={currentSection} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }}>
+            <ActiveComponent />
+          </motion.div>
+        </main>
+      </div>
     </div>
   );
 };

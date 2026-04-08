@@ -28,7 +28,7 @@ CREATE POLICY "Admins can manage parceiros"
 
 -- Público: apenas INSERT (formulário da landing page)
 CREATE POLICY "Public can insert parceiros"
-  ON public.parceiros FOR INSERT TO anon, authenticated
+  ON public.parceiros FOR INSERT TO anon
   WITH CHECK (true);
 
 CREATE TRIGGER update_parceiros_updated_at
@@ -54,7 +54,7 @@ CREATE TABLE public.indicacoes (
   data_projetada    DATE,
   observacoes_ia    TEXT,
   status            TEXT        NOT NULL DEFAULT 'em_validacao' CHECK (status IN ('em_validacao','validada','em_negociacao','finalizada')),
-  origem            TEXT        NOT NULL DEFAULT 'manual',
+  origem            TEXT        NOT NULL DEFAULT 'manual' CHECK (origem IN ('manual','landing_page')),
   cupom_utilizado   TEXT,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -95,7 +95,8 @@ CREATE TABLE public.contratos (
   tipo         TEXT        NOT NULL CHECK (tipo IN ('parceria','negocio')),
   parceiro_id  UUID        NOT NULL REFERENCES public.parceiros(id) ON DELETE CASCADE,
   indicacao_id UUID        REFERENCES public.indicacoes(id) ON DELETE SET NULL,
-  gerado_em    TIMESTAMPTZ NOT NULL DEFAULT now()
+  gerado_em    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 ALTER TABLE public.contratos ENABLE ROW LEVEL SECURITY;
@@ -105,12 +106,17 @@ CREATE POLICY "Admins can manage contratos"
   USING  (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+CREATE TRIGGER update_contratos_updated_at
+  BEFORE UPDATE ON public.contratos
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
 
 -- ─── modelos_contrato ─────────────────────────────────────────────────────────
 CREATE TABLE public.modelos_contrato (
   id         UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   tipo       TEXT        NOT NULL UNIQUE,
   conteudo   TEXT        NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -77,19 +77,18 @@ const ALL_TEMPLATE_VARS = [
 // ─── Badge helper ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: ContratoStatus }) {
-  const classMap: Record<ContratoStatus, string> = {
-    rascunho: 'bg-gray-100 text-gray-600 border-gray-300',
-    enviado: 'bg-blue-100 text-blue-700 border-blue-300',
-    assinado: 'bg-green-100 text-green-700 border-green-300',
-    cancelado: 'bg-red-100 text-red-600 border-red-300',
-  };
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border ${classMap[status]}`}
-    >
-      {STATUS_LABELS[status]}
-    </span>
-  );
+  switch (status) {
+    case 'rascunho':
+      return <Badge variant="outline">{STATUS_LABELS.rascunho}</Badge>;
+    case 'enviado':
+      return <Badge variant="secondary">{STATUS_LABELS.enviado}</Badge>;
+    case 'assinado':
+      return <Badge className="bg-green-600 text-white">{STATUS_LABELS.assinado}</Badge>;
+    case 'cancelado':
+      return <Badge variant="destructive">{STATUS_LABELS.cancelado}</Badge>;
+    default:
+      return <Badge variant="outline">{STATUS_LABELS[status]}</Badge>;
+  }
 }
 
 // ─── Contrato Dialog ──────────────────────────────────────────────────────────
@@ -675,8 +674,8 @@ export default function ParceiroContratos() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground font-mono bg-secondary/30 rounded p-2 text-[11px] leading-relaxed line-clamp-3">
-                      {modelo.conteudo_template.slice(0, 200)}
-                      {modelo.conteudo_template.length > 200 ? '...' : ''}
+                      {modelo.conteudo_template.slice(0, 100)}
+                      {modelo.conteudo_template.length > 100 ? '...' : ''}
                     </p>
                     {modelo.variaveis?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">

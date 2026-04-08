@@ -48,7 +48,7 @@ export default function ParceiroMetricas() {
 
   const totalIndicacoes = indicacoes.length;
   const negociosFechados = indicacoes.filter(
-    (i: any) => i.status === 'concluida' || i.status === 'finalizada',
+    (i: any) => i.status === 'finalizada',
   ).length;
   const taxaConversao =
     totalIndicacoes === 0

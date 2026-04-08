@@ -19,9 +19,9 @@ import AdminNews from '@/components/admin/AdminNews';
 import AdminCalendario from '@/components/admin/AdminCalendario';
 import AdminSettings from '@/components/admin/AdminSettings';
 import ParceiroDashboard from '@/components/admin/parceiros/ParceiroDashboard';
+import ParceiroCRM from '@/components/admin/parceiros/ParceiroCRM';
 
 // Placeholders for Parceiros module — will be replaced in Tasks 5-9
-const ParceiroCRM        = () => <div className="p-8 text-muted-foreground">CRM Parceiros — em breve</div>;
 const ParceiroIndicacoes = () => <div className="p-8 text-muted-foreground">Indicações — em breve</div>;
 const ParceiroMetricas   = () => <div className="p-8 text-muted-foreground">Métricas — em breve</div>;
 const ParceiroContratos  = () => <div className="p-8 text-muted-foreground">Contratos — em breve</div>;

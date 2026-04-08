@@ -124,6 +124,7 @@ const ParceiroCRM = () => {
       setContatoOpen(false); setContatoTipo(''); setContatoDesc('');
       toast.success('Contato registrado!');
     },
+    onError: (err: any) => toast.error(err.message ?? 'Erro ao registrar contato'),
   });
 
   const openEdit = (p: Parceiro) => {

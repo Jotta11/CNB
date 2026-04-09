@@ -1,5 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MessageCircle, Truck, CheckCircle, ArrowRight } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
 
 const steps = [
   {
@@ -29,6 +31,27 @@ const steps = [
 ];
 
 const HowItWorksSection = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'center',
+    loop: false,
+    slidesToScroll: 1,
+    containScroll: 'trimSnaps',
+  });
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    return () => { emblaApi.off('select', onSelect); };
+  }, [emblaApi, onSelect]);
+
   return (
     <section className="py-12 md:py-16 bg-background overflow-hidden">
       <div className="container mx-auto px-4">
@@ -39,7 +62,7 @@ const HowItWorksSection = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <motion.span
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -69,106 +92,105 @@ const HowItWorksSection = () => {
             </motion.p>
           </div>
 
-          {/* Steps - Horizontal Scroll on Mobile, Grid on Desktop */}
-          <div className="relative">
-            {/* Desktop Grid */}
-            <div className="hidden md:grid md:grid-cols-4 gap-6">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <motion.div
-                    key={step.number}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.15 }}
-                    className="relative group"
-                  >
-                    {/* Connector Line */}
-                    {index < steps.length - 1 && (
-                      <div className="absolute top-12 left-[60%] w-full h-0.5 bg-gradient-to-r from-primary/30 to-transparent z-0 hidden lg:block" />
-                    )}
-                    
-                    <div className="relative z-10 bg-card rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-border hover:border-primary/30 h-full">
-                      {/* Number Badge */}
-                      <div className="absolute -top-3 -right-3 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-display text-lg shadow-lg">
-                        {step.number}
-                      </div>
-                      
-                      {/* Icon */}
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-4"
-                      >
-                        <Icon className="w-8 h-8 text-primary" />
-                      </motion.div>
-                      
-                      <h3 className="font-display text-xl text-foreground mb-2">
-                        {step.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Mobile Horizontal Scroll */}
-            <div className="md:hidden overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-              <div className="flex gap-4" style={{ width: 'max-content' }}>
+          {/* Mobile Carousel */}
+          <div className="md:hidden">
+            <div className="overflow-hidden -mx-4" ref={emblaRef}>
+              <div className="flex">
                 {steps.map((step, index) => {
                   const Icon = step.icon;
                   return (
-                    <motion.div
+                    <div
                       key={step.number}
-                      initial={{ opacity: 0, x: 30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="relative w-72 flex-shrink-0"
+                      className="flex-none w-[85%] pl-4 first:pl-4 last:pr-4"
                     >
-                      <div className="bg-card rounded-2xl p-6 shadow-md border border-border h-full">
-                        {/* Number Badge */}
-                        <div className="absolute -top-3 -right-3 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-display text-lg shadow-lg">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="bg-card rounded-2xl p-6 shadow-md border border-border h-full relative"
+                      >
+                        {/* Step number — top right */}
+                        <div className="absolute top-4 right-4 w-9 h-9 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-display text-base shadow">
                           {step.number}
                         </div>
-                        
+
                         {/* Icon */}
                         <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                           <Icon className="w-7 h-7 text-primary" />
                         </div>
-                        
-                        <h3 className="font-display text-lg text-foreground mb-2">
+
+                        <h3 className="font-display text-xl text-foreground mb-2 pr-8">
                           {step.title}
                         </h3>
                         <p className="text-muted-foreground text-sm leading-relaxed">
                           {step.description}
                         </p>
-                      </div>
-                      
-                      {/* Arrow between cards */}
-                      {index < steps.length - 1 && (
-                        <div className="absolute top-1/2 -right-2 transform -translate-y-1/2 z-10">
-                          <ArrowRight className="w-4 h-4 text-primary/50" />
-                        </div>
-                      )}
-                    </motion.div>
+                      </motion.div>
+                    </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Mobile Scroll Indicator */}
-            <div className="md:hidden flex justify-center mt-4 gap-1">
+            {/* Dot indicators */}
+            <div className="flex justify-center mt-5 gap-2">
               {steps.map((_, index) => (
-                <div
+                <button
                   key={index}
-                  className="w-2 h-2 rounded-full bg-primary/30"
+                  onClick={() => emblaApi?.scrollTo(index)}
+                  className={`transition-all duration-300 rounded-full ${
+                    index === selectedIndex
+                      ? 'w-6 h-2 bg-primary'
+                      : 'w-2 h-2 bg-primary/25'
+                  }`}
                 />
               ))}
             </div>
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-4 gap-6">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={step.number}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.15 }}
+                  className="relative group"
+                >
+                  {/* Connector Line */}
+                  {index < steps.length - 1 && (
+                    <div className="absolute top-12 left-[60%] w-full h-0.5 bg-gradient-to-r from-primary/30 to-transparent z-0 hidden lg:block" />
+                  )}
+
+                  <div className="relative z-10 bg-card rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-border hover:border-primary/30 h-full">
+                    {/* Number Badge */}
+                    <div className="absolute -top-3 -right-3 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-display text-lg shadow-lg">
+                      {step.number}
+                    </div>
+
+                    {/* Icon */}
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-4"
+                    >
+                      <Icon className="w-8 h-8 text-primary" />
+                    </motion.div>
+
+                    <h3 className="font-display text-xl text-foreground mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* CTA */}
@@ -177,7 +199,7 @@ const HowItWorksSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="text-center mt-12"
+            className="text-center mt-10 md:mt-12"
           >
             <a
               href="#lotes"

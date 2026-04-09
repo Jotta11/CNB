@@ -1,0 +1,82 @@
+<h2>Como separar os dois módulos do CMS?</h2>
+<p class="subtitle">O admin atual usa abas horizontais. Com dois módulos distintos — <strong>Site</strong> e <strong>Parceiros</strong> — qual estrutura de navegação faz mais sentido?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f4f0e8;padding:12px;border-radius:6px;font-family:sans-serif">
+      <div style="background:#1a3a2a;color:white;padding:8px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin-bottom:8px">CNB — Painel Administrativo</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <div style="background:#2d6a4f;color:white;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:bold">🌐 Gerenciar Site</div>
+        <div style="background:white;border:1px solid #ccc;padding:5px 12px;border-radius:20px;font-size:10px;color:#555">🤝 Parceiros</div>
+      </div>
+      <div style="background:white;border-radius:4px;padding:8px">
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">Leads</span>
+          <span style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">Lotes</span>
+          <span style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">Notícias</span>
+          <span style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">Calendário</span>
+          <span style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">Settings</span>
+        </div>
+        <div style="background:#f9f9f9;border-radius:3px;padding:6px;margin-top:8px;font-size:9px;color:#888">Conteúdo da aba ativa...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Dois botões no topo (toggle)</h3>
+      <p>Mantém o layout atual de abas, mas adiciona um seletor de módulo no header antes das abas. Ao alternar, as abas mudam para o módulo selecionado.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f4f0e8;padding:12px;border-radius:6px;font-family:sans-serif">
+      <div style="background:#1a3a2a;color:white;padding:8px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin-bottom:8px">CNB — Painel Administrativo</div>
+      <div style="display:flex;height:90px">
+        <div style="background:#1a3a2a;color:white;padding:8px;border-radius:4px;width:90px;font-size:9px;margin-right:8px">
+          <div style="font-weight:bold;margin-bottom:6px;font-size:10px">Módulos</div>
+          <div style="background:rgba(255,255,255,0.2);padding:3px 6px;border-radius:3px;margin-bottom:3px">🌐 Site</div>
+          <div style="padding:3px 6px;border-radius:3px;color:#aaa">🤝 Parceiros</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:4px;padding:8px">
+          <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="background:#1a3a2a;color:white;padding:2px 7px;border-radius:3px;font-size:9px">Leads</span>
+            <span style="background:#eee;padding:2px 7px;border-radius:3px;font-size:9px">Lotes</span>
+            <span style="background:#eee;padding:2px 7px;border-radius:3px;font-size:9px">Notícias</span>
+          </div>
+          <div style="background:#f9f9f9;border-radius:3px;padding:6px;font-size:9px;color:#888">Conteúdo da aba ativa...</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Sidebar lateral de módulos</h3>
+      <p>Sidebar fixa na esquerda com os dois módulos. Ao clicar, as abas do módulo aparecem na área principal. Layout estilo painel SaaS.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f4f0e8;padding:12px;border-radius:6px;font-family:sans-serif">
+      <div style="background:#1a3a2a;color:white;padding:8px 12px;border-radius:4px;font-size:11px;font-weight:bold;margin-bottom:8px">CNB — Painel Administrativo</div>
+      <div style="background:white;border-radius:4px;padding:10px;text-align:center">
+        <p style="font-size:10px;color:#888;margin-bottom:8px">Selecione um módulo para continuar</p>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <div style="background:#1a3a2a;color:white;padding:10px 14px;border-radius:6px;font-size:10px;cursor:pointer">
+            🌐<br/><strong>Gerenciar Site</strong><br/><span style="font-size:8px;opacity:0.8">Leads, Lotes, Notícias...</span>
+          </div>
+          <div style="background:#c17f24;color:white;padding:10px 14px;border-radius:6px;font-size:10px;cursor:pointer">
+            🤝<br/><strong>Parceiros</strong><br/><span style="font-size:8px;opacity:0.8">CRM, Indicações, Métricas...</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:6px;background:white;border-radius:4px;padding:6px;display:flex;gap:4px">
+        <div style="background:#eee;padding:3px 8px;border-radius:3px;font-size:9px">← Voltar</div>
+        <span style="background:#1a3a2a;color:white;padding:2px 8px;border-radius:3px;font-size:9px">Dashboard</span>
+        <span style="background:#eee;padding:2px 8px;border-radius:3px;font-size:9px">Parceiros</span>
+        <span style="background:#eee;padding:2px 8px;border-radius:3px;font-size:9px">Indicações</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Tela de seleção de módulo</h3>
+      <p>Ao entrar no admin, exibe uma tela de boas-vindas com os dois módulos como cards grandes. Cada módulo tem sua própria navegação interna independente.</p>
+    </div>
+  </div>
+
+</div>

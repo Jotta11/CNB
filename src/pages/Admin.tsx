@@ -124,7 +124,7 @@ const Admin = () => {
 
   if (loading || (isAdmin && permissionsLoading)) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="h-screen bg-cream flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -140,7 +140,7 @@ const Admin = () => {
   const ActiveComponent = SECTION_COMPONENTS[currentSection];
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
+    <div className="h-screen bg-cream flex flex-col overflow-hidden">
       <header className="bg-primary text-white py-3 px-6 sticky top-0 z-50 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bebas">CNB — Painel Administrativo</h1>

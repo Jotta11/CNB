@@ -1,0 +1,67 @@
+<h2>Layout Final — Estrutura definitiva do Admin</h2>
+<p class="subtitle">Sidebar sem "Candidatos". Clique nos itens para navegar.</p>
+
+<div class="mockup" style="max-width:900px;margin:0 auto">
+  <div class="mockup-header">CNB — Painel Administrativo &nbsp;|&nbsp; <span style="opacity:0.7;font-size:12px">admin@cnb.com</span> &nbsp; <span style="opacity:0.5;font-size:11px">[ Sair ]</span></div>
+  <div class="mockup-body" style="display:flex;min-height:480px;padding:0;gap:0">
+
+    <!-- SIDEBAR -->
+    <div style="width:196px;background:#1a3a2a;color:white;padding:16px 0;flex-shrink:0;border-radius:0 0 0 6px">
+
+      <div style="padding:0 12px 6px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:4px">🌐 Site</div>
+      <div class="nav-item active" onclick="setActive(this,'Leads','Contatos recebidos pelas landing pages')" style="padding:7px 16px;font-size:12px;cursor:pointer;background:rgba(255,255,255,0.12);border-left:3px solid #c17f24;color:white">👥 Leads</div>
+      <div class="nav-item" onclick="setActive(this,'Usuários','Gerenciar usuários e permissões de admin')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">👤 Usuários</div>
+      <div class="nav-item" onclick="setActive(this,'Lotes','Cadastro e edição de lotes de gado')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📦 Lotes</div>
+      <div class="nav-item" onclick="setActive(this,'Empresas','Parceiros institucionais exibidos no site (logo, link)')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">🏢 Empresas</div>
+      <div class="nav-item" onclick="setActive(this,'Notícias','Artigos e notícias publicados no site')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📰 Notícias</div>
+      <div class="nav-item" onclick="setActive(this,'Calendário','Agenda de eventos e compromissos')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📅 Calendário</div>
+      <div class="nav-item" onclick="setActive(this,'Configurações','Configurações globais do site')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">⚙️ Configurações</div>
+
+      <div style="margin:12px 12px;border-top:1px solid rgba(255,255,255,0.1)"></div>
+
+      <div style="padding:0 12px 6px;font-size:10px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.4);text-transform:uppercase">🤝 Parceiros</div>
+      <div class="nav-item" onclick="setActive(this,'Dashboard','Visão geral — parceiros, indicações, cabeças em demanda/oferta')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📊 Dashboard</div>
+      <div class="nav-item" onclick="setActive(this,'CRM Parceiros','Kanban de parceiros por estágio do funil de indicação')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">🤝 CRM Parceiros</div>
+      <div class="nav-item" onclick="setActive(this,'Indicações','Oportunidades indicadas — kanban por status de validação')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">🎯 Indicações</div>
+      <div class="nav-item" onclick="setActive(this,'Métricas','KPIs e gráficos de performance do programa')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📈 Métricas</div>
+      <div class="nav-item" onclick="setActive(this,'Contratos','Contratos vinculados às indicações')" style="padding:7px 16px;font-size:12px;cursor:pointer;color:rgba(255,255,255,0.7)">📄 Contratos</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div style="flex:1;background:#f4f0e8;padding:24px;border-radius:0 0 6px 0">
+      <div id="ct" style="font-size:20px;font-weight:700;color:#1a3a2a;margin-bottom:4px">Leads</div>
+      <div id="cs" style="font-size:12px;color:#888;margin-bottom:20px">Contatos recebidos pelas landing pages</div>
+      <div style="background:white;border-radius:6px;padding:14px;font-size:12px;color:#777;line-height:1.8">
+        Clique nos itens da sidebar para ver o conteúdo de cada seção.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+  <div style="flex:1;min-width:200px;background:#f0faf4;border:1px solid #b2dfcc;border-radius:6px;padding:12px;font-size:12px">
+    <div style="font-weight:700;color:#2d6a4f;margin-bottom:6px">Módulo Site — 7 seções</div>
+    Leads · Usuários · Lotes · Empresas · Notícias · Calendário · Configurações
+  </div>
+  <div style="flex:1;min-width:200px;background:#fffbf0;border:1px solid #e8d89a;border-radius:6px;padding:12px;font-size:12px">
+    <div style="font-weight:700;color:#a06020;margin-bottom:6px">Módulo Parceiros — 5 seções</div>
+    Dashboard · CRM Parceiros · Indicações · Métricas · Contratos
+  </div>
+</div>
+
+<div style="margin-top:12px;padding:12px 16px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#555;line-height:1.8">
+  <strong>Fluxos automáticos:</strong><br>
+  📝 Formulário "Quero ser parceiro" → <strong>CRM Parceiros: Em Prospecção</strong> (direto, sem aprovação)<br>
+  🎯 Indicação submetida → <strong>Indicações: Em Validação</strong>
+</div>
+
+<script>
+function setActive(el, t, s) {
+  document.querySelectorAll('.nav-item').forEach(i => {
+    i.style.background='transparent'; i.style.borderLeft='none'; i.style.color='rgba(255,255,255,0.7)';
+  });
+  el.style.background='rgba(255,255,255,0.12)'; el.style.borderLeft='3px solid #c17f24'; el.style.color='white';
+  document.getElementById('ct').textContent=t;
+  document.getElementById('cs').textContent=s;
+}
+</script>

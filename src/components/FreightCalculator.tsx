@@ -55,7 +55,7 @@ const FreightCalculator = ({ lote, onClose }: FreightCalculatorProps) => {
         <div className="relative">
           {/* Blurred content */}
           <div className="blur-md select-none pointer-events-none">
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div className="bg-card p-4 rounded-lg">
                 <span className="text-sm text-muted-foreground block">Preço</span>
                 <span className="font-display text-2xl">R$ XX,XX</span>
@@ -131,21 +131,21 @@ const FreightCalculator = ({ lote, onClose }: FreightCalculatorProps) => {
       </div>
 
       {/* Price comparison cards */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="bg-card p-4 rounded-lg border border-border">
           <span className="text-sm text-muted-foreground block mb-1">Preço</span>
           <div className="flex items-baseline gap-1">
-            <span className="font-display text-2xl">{formatPrice(precoLivre)}</span>
+            <span className="font-display text-xl sm:text-2xl">{formatPrice(precoLivre)}</span>
             <span className="text-muted-foreground text-sm">/cab</span>
           </div>
         </div>
         <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-sm text-primary font-medium">Preço posto</span>
             <span className="text-xs text-primary/70">(aprox.)</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="font-display text-2xl text-primary">{formatPrice(precoPosto)}</span>
+            <span className="font-display text-xl sm:text-2xl text-primary">{formatPrice(precoPosto)}</span>
             <span className="text-primary/70 text-sm">/cab</span>
           </div>
         </div>

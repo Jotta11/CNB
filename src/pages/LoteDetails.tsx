@@ -266,25 +266,25 @@ const LoteDetails = () => {
               className="space-y-6"
             >
               {/* Specs Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-lg bg-card border border-border">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 sm:p-4 rounded-lg bg-card border border-border">
                   <span className="text-xs block mb-1 text-muted-foreground">Quantidade</span>
-                  <span className="font-semibold text-lg text-foreground">{lote.quantidade} cabeças</span>
+                  <span className="font-semibold text-base sm:text-lg text-foreground">{lote.quantidade} cabeças</span>
                 </div>
-                <div className="p-4 rounded-lg bg-card border border-border">
+                <div className="p-3 sm:p-4 rounded-lg bg-card border border-border">
                   <span className="text-xs block mb-1 text-muted-foreground">Categoria</span>
-                  <span className="font-semibold text-lg text-foreground">{lote.raca}</span>
+                  <span className="font-semibold text-base sm:text-lg text-foreground">{lote.raca}</span>
                 </div>
-                <div className="p-4 rounded-lg bg-card border border-border">
+                <div className="p-3 sm:p-4 rounded-lg bg-card border border-border">
                   <span className="text-xs block mb-1 text-muted-foreground">Localização</span>
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    <span className="font-semibold text-lg text-foreground">{loteLocation}</span>
+                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
+                    <span className="font-semibold text-base sm:text-lg text-foreground truncate">{loteLocation}</span>
                   </div>
                 </div>
-                <div className="p-4 rounded-lg bg-card border border-border">
+                <div className="p-3 sm:p-4 rounded-lg bg-card border border-border">
                   <span className="text-xs block mb-1 text-muted-foreground">Peso</span>
-                  <span className="font-semibold text-lg text-foreground">{lote.peso}</span>
+                  <span className="font-semibold text-base sm:text-lg text-foreground">{lote.peso}</span>
                 </div>
               </div>
 
@@ -294,11 +294,11 @@ const LoteDetails = () => {
                 {user ? (
                   <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
                 ) : (
-                  <div className="flex items-center gap-3">
-                    <span className="font-display text-3xl text-primary blur-md select-none">R$ X.XXX</span>
-                    <Link 
-                      to="/auth" 
-                      className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="font-display text-2xl sm:text-3xl text-primary blur-md select-none">R$ X.XXX</span>
+                    <Link
+                      to="/auth"
+                      className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
                     >
                       <Lock className="w-4 h-4" />
                       Cadastre-se para ver

@@ -33,6 +33,27 @@ const getCupom = (nome: string) => {
   return partes.length > 1 ? partes[1].toUpperCase() : '';
 };
 
+const UTM_COLORS: Record<string, string> = {
+  instagram: 'bg-purple-100 text-purple-700 border-purple-200',
+  facebook:  'bg-blue-900/10 text-blue-900 border-blue-900/20',
+  meta:      'bg-blue-900/10 text-blue-900 border-blue-900/20',
+  google:    'bg-blue-100 text-blue-700 border-blue-200',
+  tiktok:    'bg-gray-900/10 text-gray-900 border-gray-900/20',
+};
+
+const getOrigemLabel = (p: Parceiro) => {
+  if (p.utm_source) {
+    const source = p.utm_source.toLowerCase();
+    const color = UTM_COLORS[source] ?? 'bg-gray-100 text-gray-700 border-gray-200';
+    const label = p.utm_campaign ? `${p.utm_source} / ${p.utm_campaign}` : p.utm_source;
+    return { color, label };
+  }
+  if (p.origem === 'landing_page') {
+    return { color: 'bg-accent/20 text-accent-foreground border-accent/30', label: 'Landing Page' };
+  }
+  return null;
+};
+
 const ParceiroCRM = () => {
   const qc = useQueryClient();
   const [viewMode, setViewMode]           = useState<'kanban' | 'list'>('kanban');
@@ -213,9 +234,7 @@ const ParceiroCRM = () => {
                         className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow">
                         <CardContent className="p-3">
                           <p className="font-semibold text-sm">{p.nome_completo}</p>
-                          {p.origem === 'landing_page' && (
-                            <Badge className="text-[10px] bg-accent text-accent-foreground mt-1">Landing Page</Badge>
-                          )}
+                          {(() => { const o = getOrigemLabel(p); return o ? <Badge className={`text-[10px] mt-1 border ${o.color}`}>{o.label}</Badge> : null; })()}
                           <p className="text-xs text-muted-foreground">{p.profissao}</p>
                           <p className="text-xs text-muted-foreground">{p.cidade}/{p.uf}</p>
                           <div className="flex items-center justify-between mt-1.5">
@@ -266,7 +285,7 @@ const ParceiroCRM = () => {
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">
                       {p.nome_completo}
-                      {p.origem === 'landing_page' && <Badge className="ml-2 text-[10px] bg-accent text-accent-foreground">LP</Badge>}
+                      {(() => { const o = getOrigemLabel(p); return o ? <Badge className={`ml-2 text-[10px] border ${o.color}`}>{o.label}</Badge> : null; })()}
                     </TableCell>
                     <TableCell>{p.profissao}</TableCell>
                     <TableCell>{p.uf}</TableCell>

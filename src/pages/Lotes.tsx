@@ -141,9 +141,9 @@ const Lotes = () => {
               </div>
 
               {/* Quick filters */}
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Select value={selectedRaca} onValueChange={setSelectedRaca}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-full sm:w-[140px]">
                     <SelectValue>
                       {selectedRaca === 'Todas' ? 'Raça' : selectedRaca}
                     </SelectValue>
@@ -158,7 +158,7 @@ const Lotes = () => {
                 </Select>
 
                 <Select value={selectedSexo} onValueChange={setSelectedSexo}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger className="w-full sm:w-[120px]">
                     <SelectValue>
                       {selectedSexo === 'Todos' ? 'Sexo' : selectedSexo}
                     </SelectValue>
@@ -172,25 +172,27 @@ const Lotes = () => {
                   </SelectContent>
                 </Select>
 
-                <Button
-                  variant={showFilters ? 'default' : 'outline'}
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="gap-2"
-                >
-                  <Filter className="w-4 h-4" />
-                  <span className="hidden sm:inline">Mais filtros</span>
-                </Button>
-
-                {hasActiveFilters && (
+                <div className="flex gap-3">
                   <Button
-                    variant="ghost"
-                    onClick={clearFilters}
-                    className="gap-2 text-destructive hover:text-destructive"
+                    variant={showFilters ? 'default' : 'outline'}
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="gap-2"
                   >
-                    <X className="w-4 h-4" />
-                    <span className="hidden sm:inline">Limpar</span>
+                    <Filter className="w-4 h-4" />
+                    <span className="hidden sm:inline">Mais filtros</span>
                   </Button>
-                )}
+
+                  {hasActiveFilters && (
+                    <Button
+                      variant="ghost"
+                      onClick={clearFilters}
+                      className="gap-2 text-destructive hover:text-destructive"
+                    >
+                      <X className="w-4 h-4" />
+                      <span className="hidden sm:inline">Limpar</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
 

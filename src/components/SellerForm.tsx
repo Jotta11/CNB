@@ -180,7 +180,7 @@ const SellerForm = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h2 className="font-display text-3xl md:text-4xl text-white mb-3">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-white mb-3">
             O Próximo Passo para Modernizar Sua Pecuária
           </h2>
           <p className="text-white/80 max-w-2xl mx-auto">
@@ -195,7 +195,7 @@ const SellerForm = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="max-w-3xl mx-auto bg-card rounded-2xl shadow-xl p-8 md:p-12"
+          className="max-w-3xl mx-auto bg-card rounded-2xl shadow-xl p-5 sm:p-8 md:p-12"
         >
           {/* Header inside form */}
           <div className="text-center mb-10">

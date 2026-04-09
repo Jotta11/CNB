@@ -12,16 +12,17 @@ const AdminSettings = () => {
   const { settings, loading, updateSetting, fetchSettings } = useSiteSettings();
   const [uploading, setUploading] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [whatsapp, setWhatsapp] = useState(settings.whatsapp_number || '5563992628916');
+  const [whatsapp, setWhatsapp] = useState('');
   const [gtmId, setGtmId] = useState('');
   const [ga4Id, setGa4Id] = useState('');
 
   useEffect(() => {
     if (!loading) {
+      setWhatsapp(settings.whatsapp_number || '');
       setGtmId(settings.gtm_id || '');
       setGa4Id(settings.ga4_id || '');
     }
-  }, [loading, settings.gtm_id, settings.ga4_id]);
+  }, [loading, settings.whatsapp_number, settings.gtm_id, settings.ga4_id]);
 
   const handleImageUpload = async (key: string, file: File) => {
     try {

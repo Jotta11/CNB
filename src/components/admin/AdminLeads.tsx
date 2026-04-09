@@ -36,6 +36,9 @@ interface Lead {
   mensagem: string | null;
   status: LeadStatus;
   created_at: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
 }
 
 const statusLabels: Record<LeadStatus, string> = {
@@ -289,6 +292,12 @@ const AdminLeads = () => {
                       <Calendar className="w-4 h-4" />
                       <span>{format(new Date(lead.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}</span>
                     </div>
+                    {lead.utm_source && (
+                      <div className="text-xs text-muted-foreground">
+                        <span className="font-medium">Origem:</span>{' '}
+                        {[lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(' / ')}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">

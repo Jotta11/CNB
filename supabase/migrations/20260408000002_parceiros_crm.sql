@@ -14,6 +14,10 @@ CREATE TABLE public.parceiros (
   cidade       TEXT        NOT NULL,
   status_funil TEXT        NOT NULL DEFAULT 'prospeccao' CHECK (status_funil IN ('prospeccao','fechamento','ativo','com_indicacao')),
   origem       TEXT        NOT NULL DEFAULT 'manual' CHECK (origem IN ('manual','landing_page')),
+  utm_source   TEXT,
+  utm_medium   TEXT,
+  utm_campaign TEXT,
+  utm_content  TEXT,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );

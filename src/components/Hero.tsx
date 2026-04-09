@@ -46,7 +46,7 @@ const Hero = () => {
         duration: 0.8,
         ease: "easeOut"
       }}>
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white tracking-wider mb-6">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-white tracking-wider mb-6">
             Conectando os melhores
             <br />
             <span className="text-primary-light">lotes para a sua fazenda.</span>

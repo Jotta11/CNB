@@ -19,6 +19,9 @@ docs
 .env.*.local
 CLAUDE.md
 
+.worktrees
+.superpowers
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -320,7 +320,7 @@ const AdminHeroSlides = () => {
           onSave={() => handleSave(i)}
           onDelete={() => handleDelete(i)}
           saving={saving === (form.id ?? `new-${i}`)}
-          deleting={deleting === form.id}
+          deleting={form.id !== null && deleting === form.id}
         />
       ))}
     </div>

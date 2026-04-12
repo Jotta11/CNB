@@ -74,7 +74,9 @@ const HeroCarousel = () => {
   React.useEffect(() => {
     if (!api) return;
     setCurrent(api.selectedScrollSnap());
-    api.on('select', () => setCurrent(api.selectedScrollSnap()));
+    const onSelect = () => setCurrent(api.selectedScrollSnap());
+    api.on('select', onSelect);
+    return () => api.off('select', onSelect);
   }, [api]);
 
   if (loading) return null;
@@ -99,7 +101,7 @@ const HeroCarousel = () => {
                 {slide.imagem_mobile && (
                   <div
                     className="md:hidden absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${slide.imagem_mobile})` }}
+                    style={{ backgroundImage: `url("${slide.imagem_mobile}")` }}
                   />
                 )}
 
@@ -107,7 +109,7 @@ const HeroCarousel = () => {
                 {slide.imagem_desktop && (
                   <div
                     className="hidden md:block absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${slide.imagem_desktop})` }}
+                    style={{ backgroundImage: `url("${slide.imagem_desktop}")` }}
                   />
                 )}
 
@@ -117,7 +119,7 @@ const HeroCarousel = () => {
                 )}
 
                 {/* Overlay mobile: gradiente rodapé */}
-                <div className="md:hidden absolute inset-0 bg-gradient-to-t from-black/82 via-black/20 to-transparent" />
+                <div className="md:hidden absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                 {/* Overlay desktop: gradiente lateral */}
                 <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />

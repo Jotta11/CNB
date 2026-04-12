@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useHeroSlidesAdmin, type HeroSlide } from '@/hooks/useHeroSlides';
@@ -54,12 +54,68 @@ const slideToForm = (s: HeroSlide): SlideForm => ({
 // ── Upload helper ─────────────────────────────────────────────────────────────
 
 const uploadSlideImage = async (file: File, slot: 'mobile' | 'desktop', slideId: string): Promise<string> => {
-  const ext = file.name.split('.').pop();
-  const path = `hero-slides/${slideId}-${slot}-${Date.now()}.${ext}`;
+  const ext = file.name.includes('.') ? file.name.split('.').pop() : '';
+  const path = ext
+    ? `hero-slides/${slideId}-${slot}-${Date.now()}.${ext}`
+    : `hero-slides/${slideId}-${slot}-${Date.now()}`;
   const { error } = await supabase.storage.from('site-assets').upload(path, file);
   if (error) throw error;
   const { data } = supabase.storage.from('site-assets').getPublicUrl(path);
   return data.publicUrl;
+};
+
+// ── Campo de upload de imagem (módulo-nível para evitar re-montagem) ──────────
+
+const ImageUploadField = ({
+  slot,
+  label,
+  hint,
+  url,
+  uploading,
+  onUpload,
+  onClear,
+}: {
+  slot: 'mobile' | 'desktop';
+  label: string;
+  hint: string;
+  url: string | null;
+  uploading: 'mobile' | 'desktop' | null;
+  onUpload: (file: File) => void;
+  onClear: () => void;
+}) => {
+  return (
+    <div className="space-y-1">
+      <Label className="flex items-center gap-1">
+        <Image className="w-3.5 h-3.5" /> {label}
+        <span className="text-xs text-muted-foreground ml-1">({hint})</span>
+      </Label>
+      {url ? (
+        <div className="relative inline-block">
+          <img src={url} alt={label} className="h-20 object-cover rounded border" />
+          <button
+            onClick={onClear}
+            className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      ) : (
+        <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading === slot}
+            onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
+          />
+          {uploading === slot
+            ? <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            : <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-xs text-muted-foreground mt-1">Clique para enviar</span></>
+          }
+        </label>
+      )}
+    </div>
+  );
 };
 
 // ── Card de um slide ──────────────────────────────────────────────────────────
@@ -98,43 +154,6 @@ const SlideCard = ({
     } finally {
       setUploading(null);
     }
-  };
-
-  const ImageUploadField = ({ slot, label, hint }: { slot: 'mobile' | 'desktop'; label: string; hint: string }) => {
-    const url = slot === 'mobile' ? form.imagem_mobile : form.imagem_desktop;
-    return (
-      <div className="space-y-1">
-        <Label className="flex items-center gap-1">
-          <Image className="w-3.5 h-3.5" /> {label}
-          <span className="text-xs text-muted-foreground ml-1">({hint})</span>
-        </Label>
-        {url ? (
-          <div className="relative inline-block">
-            <img src={url} alt={label} className="h-20 object-cover rounded border" />
-            <button
-              onClick={() => onChange({ ...form, imagem_mobile: slot === 'mobile' ? null : form.imagem_mobile, imagem_desktop: slot === 'desktop' ? null : form.imagem_desktop })}
-              className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-0.5"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ) : (
-          <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={uploading === slot}
-              onChange={(e) => e.target.files?.[0] && handleImageUpload(slot, e.target.files[0])}
-            />
-            {uploading === slot
-              ? <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              : <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-xs text-muted-foreground mt-1">Clique para enviar</span></>
-            }
-          </label>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -195,8 +214,24 @@ const SlideCard = ({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <ImageUploadField slot="mobile" label="Imagem Mobile" hint="retrato, ex: 750×1200px" />
-          <ImageUploadField slot="desktop" label="Imagem Desktop" hint="paisagem, ex: 1920×800px" />
+          <ImageUploadField
+            slot="mobile"
+            label="Imagem Mobile"
+            hint="retrato, ex: 750×1200px"
+            url={form.imagem_mobile}
+            uploading={uploading}
+            onUpload={(file) => handleImageUpload('mobile', file)}
+            onClear={() => onChange({ ...form, imagem_mobile: null })}
+          />
+          <ImageUploadField
+            slot="desktop"
+            label="Imagem Desktop"
+            hint="paisagem, ex: 1920×800px"
+            url={form.imagem_desktop}
+            uploading={uploading}
+            onUpload={(file) => handleImageUpload('desktop', file)}
+            onClear={() => onChange({ ...form, imagem_desktop: null })}
+          />
         </div>
 
         <div className="flex justify-end">
@@ -212,7 +247,7 @@ const SlideCard = ({
 // ── Componente principal ──────────────────────────────────────────────────────
 
 const AdminHeroSlides = () => {
-  const { slides, loading, refetch } = useHeroSlidesAdmin();
+  const { slides, loading } = useHeroSlidesAdmin();
   const queryClient = useQueryClient();
   const [forms, setForms] = useState<SlideForm[]>([]);
   const [saving, setSaving] = useState<string | null>(null);
@@ -220,10 +255,12 @@ const AdminHeroSlides = () => {
   const [initialized, setInitialized] = useState(false);
 
   // Sincroniza forms com dados do banco (apenas na primeira carga)
-  if (!loading && !initialized) {
-    setInitialized(true);
-    setForms(slides.map(slideToForm));
-  }
+  useEffect(() => {
+    if (!loading && !initialized) {
+      setInitialized(true);
+      setForms(slides.map(slideToForm));
+    }
+  }, [loading, initialized, slides]);
 
   const updateForm = (index: number, updated: SlideForm) => {
     setForms((prev) => prev.map((f, i) => (i === index ? updated : f)));
@@ -235,6 +272,18 @@ const AdminHeroSlides = () => {
 
   const handleSave = async (index: number) => {
     const form = forms[index];
+    if (!form.titulo.trim()) {
+      toast.error('O título do slide é obrigatório');
+      return;
+    }
+    if (!form.botao_texto.trim()) {
+      toast.error('O texto do botão é obrigatório');
+      return;
+    }
+    if (!form.botao_url.trim()) {
+      toast.error('A URL do botão é obrigatória');
+      return;
+    }
     const key = form.id ?? `new-${index}`;
     try {
       setSaving(key);

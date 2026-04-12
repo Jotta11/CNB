@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, Upload, X, Image, Phone, Tag } from 'lucide-react';
+import AdminHeroSlides from '@/components/admin/AdminHeroSlides';
 
 const AdminSettings = () => {
   const { settings, loading, updateSetting, fetchSettings } = useSiteSettings();
@@ -98,6 +99,19 @@ const AdminSettings = () => {
         <h2 className="text-2xl font-bebas text-primary">Configurações do Site</h2>
         <p className="text-muted-foreground">Altere logos, imagens e configurações gerais</p>
       </div>
+
+      {/* ── Carrossel Hero ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="w-5 h-5" />
+            Carrossel Hero
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AdminHeroSlides />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>

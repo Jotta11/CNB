@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, Video } from 'lucide-react';
+import { convertToWebP, uploadVideo } from '@/utils/mediaUpload';
 
 interface LoteFormModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
   const { createLote, updateLote } = useLotes(true);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   const [form, setForm] = useState({
     numero: '',
@@ -111,22 +113,17 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `lotes/${Date.now()}.${fileExt}`;
-
+      const webpFile = await convertToWebP(file, 1200);
+      const fileName = `lotes/${Date.now()}.webp`;
       const { error: uploadError } = await supabase.storage
         .from('site-assets')
-        .upload(fileName, file);
-
+        .upload(fileName, webpFile, { contentType: 'image/webp' });
       if (uploadError) throw uploadError;
-
       const { data: urlData } = supabase.storage
         .from('site-assets')
         .getPublicUrl(fileName);
-
       setForm((prev) => ({ ...prev, imagem_url: urlData.publicUrl }));
       toast.success('Imagem enviada com sucesso');
     } catch (err) {
@@ -134,6 +131,24 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
       toast.error('Erro ao enviar imagem');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingVideo(true);
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `lotes/${Date.now()}-${safeName}`;
+      const url = await uploadVideo(file, path);
+      setForm((prev) => ({ ...prev, video_url: url }));
+      toast.success('Vídeo enviado com sucesso');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao enviar vídeo';
+      toast.error(message);
+    } finally {
+      setUploadingVideo(false);
     }
   };
 
@@ -370,14 +385,43 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="video_url">URL do Vídeo (YouTube)</Label>
-            <Input
-              id="video_url"
-              value={form.video_url}
-              onChange={(e) => setForm((prev) => ({ ...prev, video_url: e.target.value }))}
-              placeholder="https://youtube.com/watch?v=..."
-            />
-            <p className="text-xs text-muted-foreground">Cole o link completo do vídeo do YouTube.</p>
+            <Label>Vídeo do Lote</Label>
+            <div className="flex items-center gap-4">
+              {form.video_url ? (
+                <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30 flex-1">
+                  <Video className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-sm text-muted-foreground truncate flex-1">Vídeo enviado</span>
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, video_url: '' }))}
+                    className="text-destructive hover:text-destructive/80"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <input
+                    type="file"
+                    accept="video/mp4,video/quicktime,video/webm"
+                    onChange={handleVideoUpload}
+                    className="hidden"
+                    disabled={uploadingVideo}
+                  />
+                  {uploadingVideo ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground mt-1">Enviando vídeo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground mt-1">MP4 / MOV / WebM — máx. 200 MB, 2 min</span>
+                    </>
+                  )}
+                </label>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

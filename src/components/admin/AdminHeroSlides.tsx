@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { convertToWebP } from '@/utils/mediaUpload';
 import { useHeroSlidesAdmin, type HeroSlide } from '@/hooks/useHeroSlides';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -54,11 +55,12 @@ const slideToForm = (s: HeroSlide): SlideForm => ({
 // ── Upload helper ─────────────────────────────────────────────────────────────
 
 const uploadSlideImage = async (file: File, slot: 'mobile' | 'desktop', slideId: string): Promise<string> => {
-  const ext = file.name.includes('.') ? file.name.split('.').pop() : '';
-  const path = ext
-    ? `hero-slides/${slideId}-${slot}-${Date.now()}.${ext}`
-    : `hero-slides/${slideId}-${slot}-${Date.now()}`;
-  const { error } = await supabase.storage.from('site-assets').upload(path, file);
+  const maxWidth = slot === 'mobile' ? 768 : 1920;
+  const webpFile = await convertToWebP(file, maxWidth);
+  const path = `hero-slides/${slideId}-${slot}-${Date.now()}.webp`;
+  const { error } = await supabase.storage
+    .from('site-assets')
+    .upload(path, webpFile, { contentType: 'image/webp' });
   if (error) throw error;
   const { data } = supabase.storage.from('site-assets').getPublicUrl(path);
   return data.publicUrl;

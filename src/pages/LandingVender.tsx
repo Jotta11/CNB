@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +16,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { useLeadSubmit } from '@/hooks/useLeadSubmit';
+import { trackFormInicio } from '@/utils/analytics';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import logoHorizontal from '@/assets/logo-horizontal2.png';
@@ -39,6 +40,7 @@ const categorias = [
 
 const LandingVender = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
+  const formIniciadoRef = useRef(false);
   const { settings } = useSiteSettings();
   const whatsappNumber = settings.whatsapp_number || '5563992628916';
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Quero vender meu gado e gostaria de mais informações.')}`;
@@ -48,6 +50,12 @@ const LandingVender = () => {
   });
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const handleFormStart = () => {
+    if (formIniciadoRef.current) return;
+    formIniciadoRef.current = true;
+    trackFormInicio('vender');
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -244,7 +252,11 @@ const LandingVender = () => {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} className="bg-card rounded-3xl p-8 border border-border space-y-5">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                onFocusCapture={handleFormStart}
+                className="bg-card rounded-3xl p-8 border border-border space-y-5"
+              >
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="nome">Nome completo *</Label>

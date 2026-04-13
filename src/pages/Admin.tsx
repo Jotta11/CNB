@@ -113,7 +113,7 @@ const Admin = () => {
         .select('tabs')
         .eq('user_id', user!.id)
         .maybeSingle();
-      return data?.tabs as string[] | null;
+      return (data?.tabs as string[] | undefined) ?? null;
     },
   });
 

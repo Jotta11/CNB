@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import LandingLayout from '@/components/landing/LandingLayout';
 import { useLeadSubmit } from '@/hooks/useLeadSubmit';
+import { trackFormInicio } from '@/utils/analytics';
 
 const schema = z.object({
   nome: z.string().min(3, 'Informe seu nome completo'),
@@ -45,6 +47,7 @@ const volumes = [
 
 const LandingOfertas = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
+  const formIniciadoRef = useRef(false);
   const {
     register,
     handleSubmit,
@@ -60,6 +63,12 @@ const LandingOfertas = () => {
     } catch {
       toast.error('Erro ao enviar. Tente novamente.');
     }
+  };
+
+  const handleFormStart = () => {
+    if (formIniciadoRef.current) return;
+    formIniciadoRef.current = true;
+    trackFormInicio('ofertas_direcionadas');
   };
 
   if (submitted) {
@@ -98,7 +107,11 @@ const LandingOfertas = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onFocusCapture={handleFormStart}
+          className="space-y-4"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="nome" className="text-white/90">
               Nome completo

@@ -6,6 +6,7 @@ import { useHeroSlidesAdmin, type HeroSlide } from '@/hooks/useHeroSlides';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
@@ -189,8 +190,14 @@ const SlideCard = ({
       <CardContent className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1">
-            <Label>Título *</Label>
-            <Input value={form.titulo} onChange={(e) => onChange({ ...form, titulo: e.target.value })} placeholder="Ex: Nelore PO — Tocantins" />
+            <Label>Título</Label>
+            <Textarea
+              value={form.titulo}
+              onChange={(e) => onChange({ ...form, titulo: e.target.value })}
+              placeholder={"Ex: Conectando os melhores\nlotes para a sua fazenda"}
+              rows={2}
+              className="resize-none"
+            />
           </div>
           <div className="space-y-1">
             <Label>Subtítulo</Label>
@@ -274,10 +281,6 @@ const AdminHeroSlides = () => {
 
   const handleSave = async (index: number) => {
     const form = forms[index];
-    if (!form.titulo.trim()) {
-      toast.error('O título do slide é obrigatório');
-      return;
-    }
     if (!form.botao_texto.trim()) {
       toast.error('O texto do botão é obrigatório');
       return;

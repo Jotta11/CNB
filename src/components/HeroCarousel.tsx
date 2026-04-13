@@ -76,7 +76,7 @@ const HeroCarousel = () => {
     setCurrent(api.selectedScrollSnap());
     const onSelect = () => setCurrent(api.selectedScrollSnap());
     api.on('select', onSelect);
-    return () => api.off('select', onSelect);
+    return () => { api.off('select', onSelect); };
   }, [api]);
 
   if (loading) return null;
@@ -126,7 +126,7 @@ const HeroCarousel = () => {
 
                 {/* Conteúdo mobile: rodapé */}
                 <div className="md:hidden relative z-10 w-full px-5 pb-8">
-                  <h2 className="font-display text-3xl text-white tracking-wide leading-tight mb-2">
+                  <h2 className="font-display text-3xl text-white tracking-wide leading-tight mb-2 whitespace-pre-line">
                     {slide.titulo}
                   </h2>
                   {slide.subtitulo && (
@@ -145,7 +145,7 @@ const HeroCarousel = () => {
 
                 {/* Conteúdo desktop: lado esquerdo, verticalmente centrado */}
                 <div className="hidden md:flex relative z-10 flex-col items-start justify-center h-full min-h-[85vh] px-20 max-w-xl">
-                  <h2 className="font-display text-6xl lg:text-7xl text-white tracking-wider leading-tight mb-4">
+                  <h2 className="font-display text-4xl lg:text-5xl text-white tracking-wider leading-tight mb-4 whitespace-pre-line">
                     {slide.titulo}
                   </h2>
                   {slide.subtitulo && (

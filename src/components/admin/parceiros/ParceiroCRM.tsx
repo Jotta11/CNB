@@ -150,8 +150,8 @@ const ParceiroCRM = () => {
 
   const openEdit = (p: Parceiro) => {
     setEditingId(p.id);
-    setForm({ nome_completo: p.nome_completo, cpf: p.cpf, telefone: p.telefone,
-      email: p.email, endereco: p.endereco, chave_pix: p.chave_pix, profissao: p.profissao, uf: p.uf, cidade: p.cidade });
+    setForm({ nome_completo: p.nome_completo, cpf: p.cpf ?? '', telefone: p.telefone,
+      email: p.email, endereco: p.endereco, chave_pix: p.chave_pix, profissao: p.profissao ?? 'Corretor', uf: p.uf, cidade: p.cidade });
     setFormOpen(true);
   };
 

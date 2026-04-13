@@ -110,10 +110,9 @@ const LandingVender = () => {
               </div>
 
               {/* Quick stats */}
-              <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
+              <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
                 {[
                   { value: 'Rápido', label: 'Avaliação em 24h' },
-                  { value: 'Zero', label: 'Custo ao vendedor' },
                   { value: 'Total', label: 'Suporte da equipe' },
                 ].map((item, i) => (
                   <motion.div key={i}
@@ -200,7 +199,7 @@ const LandingVender = () => {
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 { icon: ClipboardList, num: '01', title: 'VOCÊ PREENCHE', desc: 'Informe os dados do seu lote no formulário abaixo. Leva menos de 2 minutos.' },
-                { icon: Handshake, num: '02', title: 'CNB AVALIA', desc: 'Nossa equipe analisa, faz a divulgação profissional e busca o melhor comprador.' },
+                { icon: Handshake, num: '02', title: 'CNB VAI ATÉ VOCÊ', desc: 'Nossa equipe vai até a sua propriedade, realiza a curadoria completa do lote, faz a apartação e a gravação profissional do gado.' },
                 { icon: CheckCircle2, num: '03', title: 'VENDA REALIZADA', desc: 'Você vende com segurança, documentação completa e suporte logístico da CNB.' },
               ].map((item, i) => (
                 <motion.div key={i}

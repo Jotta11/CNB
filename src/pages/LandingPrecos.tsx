@@ -85,11 +85,22 @@ const LandingPrecos = () => {
             Você receberá a tabela semanal de preços diretamente no seu e-mail.
             Bem-vindo à CNB!
           </p>
-          <img
-            src={tableImg}
-            alt="Tabela de Preços CNB"
-            className="w-full max-w-sm rounded-xl shadow-2xl"
-          />
+          <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-2xl">
+            <img
+              src={tableImg}
+              alt="Tabela de Preços CNB"
+              className="w-full blur-sm scale-105"
+            />
+            <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center gap-3">
+              <Lock className="w-10 h-10 text-accent" />
+              <p className="font-display text-2xl text-white tracking-wider text-center px-4">
+                Tabela desta semana
+              </p>
+              <p className="text-white/70 text-sm text-center px-4">
+                A tabela será enviada para o seu e-mail
+              </p>
+            </div>
+          </div>
         </main>
         <footer className="py-4 text-center text-xs text-white/30 px-4">
           © {new Date().getFullYear()} Conexão Norte Bovino — Todos os direitos reservados

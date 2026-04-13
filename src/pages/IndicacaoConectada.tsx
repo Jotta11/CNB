@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Handshake, TrendingUp, Shield, Users, Phone, ArrowRight, CheckCircle2, ClipboardList, HeartHandshake, Star, Zap, Target, Send, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -12,11 +12,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import logoSymbol from '@/assets/logo-symbol.svg';
+import { trackFormInicio, trackFormSubmit } from '@/utils/analytics';
 
 const IndicacaoConectada = () => {
   const [formData, setFormData] = useState({ nome: '', telefone: '', email: '', cidade: '', estado: '', mensagem: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const formIniciadoRef = useRef(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -32,6 +34,12 @@ const IndicacaoConectada = () => {
     };
   };
 
+  const handleFormStart = () => {
+    if (formIniciadoRef.current) return;
+    formIniciadoRef.current = true;
+    trackFormInicio('indicacao_conectada');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -42,14 +50,16 @@ const IndicacaoConectada = () => {
         telefone: formData.telefone,
         email: formData.email,
         cidade: formData.cidade,
-        uf: formData.estado,
+        uf: formData.estado.toUpperCase(),
         notas: formData.mensagem || null,
         cpf: null,
+        profissao: null,
         status_funil: 'prospeccao',
         origem: 'landing_page',
         ...getUTMs(),
       }]);
       if (error) throw error;
+      trackFormSubmit('indicacao_conectada');
       setSubmitted(true);
       toast.success('Cadastro realizado com sucesso! Entraremos em contato em breve.');
     } catch (err) {
@@ -393,7 +403,11 @@ const IndicacaoConectada = () => {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="bg-white/[0.06] backdrop-blur-sm rounded-3xl p-8 md:p-10 border border-white/[0.08] space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                onFocusCapture={handleFormStart}
+                className="bg-white/[0.06] backdrop-blur-sm rounded-3xl p-8 md:p-10 border border-white/[0.08] space-y-5"
+              >
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="nome" className="text-white/80 text-sm font-medium">Nome completo *</Label>

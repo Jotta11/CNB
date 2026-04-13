@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,33 +17,25 @@ import {
 import LandingLayout from '@/components/landing/LandingLayout';
 import { useLeadSubmit } from '@/hooks/useLeadSubmit';
 import { trackFormInicio } from '@/utils/analytics';
+import { cidadesPorEstado, estados as estadosList } from '@/data/cidadesPorEstado';
 
 const schema = z.object({
   nome: z.string().min(3, 'Informe seu nome completo'),
   telefone: z.string().min(10, 'Informe um telefone válido'),
-  email: z.string().email('Informe um e-mail válido'),
   estado: z.string().min(1, 'Selecione seu estado'),
-  categoria_gado: z.string().min(1, 'Selecione a categoria'),
+  cidade: z.string().min(1, 'Selecione sua cidade'),
+  ciclo_produtivo: z.string().min(1, 'Selecione o ciclo produtivo'),
   volume: z.string().min(1, 'Selecione o volume desejado'),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const estados = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT',
-  'PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO',
-];
-
-const categorias = [
-  'Boi Gordo',
-  'Vaca Gorda',
-  'Novilha',
-  'Garrote / Fraldinha',
-  'Bezerro',
-  'Bezerra',
-  'Touro',
-  'Vaca Parida',
-  'Reprodutor',
+const ciclosProdutivos = [
+  'Cria',
+  'Recria',
+  'Engorda',
+  'Reprodução',
+  'Leite',
   'Misto',
 ];
 
@@ -58,6 +50,7 @@ const volumes = [
 const LandingComprar = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
   const formIniciadoRef = useRef(false);
+  const [estadoSelecionado, setEstadoSelecionado] = useState('');
   const {
     register,
     handleSubmit,
@@ -67,15 +60,16 @@ const LandingComprar = () => {
     resolver: zodResolver(schema),
   });
 
+  const cidadesDisponiveis = estadoSelecionado ? cidadesPorEstado[estadoSelecionado] || [] : [];
+
   const onSubmit = async (data: FormData) => {
     try {
       await submitLead({
         tipo: 'comprar',
         nome: data.nome,
         telefone: data.telefone,
-        email: data.email,
-        localizacao: data.estado,
-        categoria_gado: data.categoria_gado,
+        localizacao: `${data.cidade} - ${data.estado}`,
+        ciclo_produtivo: data.ciclo_produtivo,
         volume_rebanho: data.volume,
       });
     } catch {
@@ -159,27 +153,17 @@ const LandingComprar = () => {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-white">E-mail</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              className="bg-white/90 border-white/30 placeholder:text-muted-foreground"
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="text-accent text-sm">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
             <Label className="text-white">Estado</Label>
-            <Select onValueChange={(v) => setValue('estado', v)}>
+            <Select onValueChange={(v) => {
+              setValue('estado', v);
+              setValue('cidade', '');
+              setEstadoSelecionado(v);
+            }}>
               <SelectTrigger className="bg-white/90 border-white/30">
                 <SelectValue placeholder="Selecione seu estado" />
               </SelectTrigger>
               <SelectContent>
-                {estados.map((e) => (
+                {estadosList.map((e) => (
                   <SelectItem key={e} value={e}>{e}</SelectItem>
                 ))}
               </SelectContent>
@@ -190,19 +174,39 @@ const LandingComprar = () => {
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-white">Categoria de interesse</Label>
-            <Select onValueChange={(v) => setValue('categoria_gado', v)}>
-              <SelectTrigger className="bg-white/90 border-white/30">
-                <SelectValue placeholder="Selecione a categoria" />
+            <Label className="text-white">Cidade</Label>
+            <Select
+              onValueChange={(v) => setValue('cidade', v)}
+              disabled={!estadoSelecionado}
+            >
+              <SelectTrigger className="bg-white/90 border-white/30 disabled:opacity-50">
+                <SelectValue placeholder={estadoSelecionado ? 'Selecione sua cidade' : 'Selecione o estado primeiro'} />
               </SelectTrigger>
               <SelectContent>
-                {categorias.map((c) => (
+                {cidadesDisponiveis.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {errors.categoria_gado && (
-              <p className="text-accent text-sm">{errors.categoria_gado.message}</p>
+            {errors.cidade && (
+              <p className="text-accent text-sm">{errors.cidade.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-white">Ciclo Produtivo</Label>
+            <Select onValueChange={(v) => setValue('ciclo_produtivo', v)}>
+              <SelectTrigger className="bg-white/90 border-white/30">
+                <SelectValue placeholder="Selecione o ciclo" />
+              </SelectTrigger>
+              <SelectContent>
+                {ciclosProdutivos.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.ciclo_produtivo && (
+              <p className="text-accent text-sm">{errors.ciclo_produtivo.message}</p>
             )}
           </div>
 

@@ -13,10 +13,10 @@ interface FormData {
   tipo: 'comprar' | 'vender';
   nome: string;
   telefone: string;
-  fazenda: string;
   estado: string;
   cidade: string;
   tipoCultura: string;
+  raca: string;
   numeroCabecas: string;
   mensagem: string;
 }
@@ -27,10 +27,10 @@ const SellerForm = () => {
     tipo: 'vender',
     nome: '',
     telefone: '',
-    fazenda: '',
     estado: '',
     cidade: '',
     tipoCultura: '',
+    raca: '',
     numeroCabecas: '',
     mensagem: ''
   });
@@ -78,17 +78,13 @@ const SellerForm = () => {
     if (!formData.telefone.trim() || formData.telefone.replace(/\D/g, '').length < 10) {
       newErrors.telefone = 'Telefone válido é obrigatório';
     }
-    
-    if (formData.tipo === 'vender') {
-      if (!formData.fazenda.trim()) newErrors.fazenda = 'Nome da fazenda é obrigatório';
-      if (!formData.estado) newErrors.estado = 'Selecione o estado';
-      if (!formData.cidade) newErrors.cidade = 'Selecione a cidade';
-      if (!formData.tipoCultura) newErrors.tipoCultura = 'Selecione o tipo de cultura';
-      if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
-        newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
-      }
+    if (!formData.estado) newErrors.estado = 'Selecione o estado';
+    if (!formData.cidade) newErrors.cidade = 'Selecione a cidade';
+    if (!formData.tipoCultura) newErrors.tipoCultura = 'Selecione a categoria';
+    if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
+      newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -101,15 +97,15 @@ const SellerForm = () => {
     
     try {
       // Save lead to database
-      const localizacaoCompleta = formData.tipo === 'vender' ? `${formData.cidade} - ${formData.estado}` : null;
+      const localizacaoCompleta = `${formData.cidade} - ${formData.estado}`;
       const { error } = await supabase.from('leads').insert({
         tipo: formData.tipo,
         nome: formData.nome.trim(),
         telefone: formData.telefone.trim(),
-        fazenda: formData.tipo === 'vender' ? formData.fazenda.trim() : null,
         localizacao: localizacaoCompleta,
-        tipo_cultura: formData.tipo === 'vender' ? formData.tipoCultura : null,
-        numero_cabecas: formData.tipo === 'vender' && formData.numeroCabecas ? parseInt(formData.numeroCabecas) : null,
+        tipo_cultura: formData.tipoCultura,
+        raca: formData.raca.trim() || null,
+        numero_cabecas: formData.numeroCabecas ? parseInt(formData.numeroCabecas) : null,
         mensagem: formData.mensagem.trim() || null
       });
 
@@ -120,16 +116,13 @@ const SellerForm = () => {
       let message = `*Novo Lead - ${tipoLabel} - CNB*\n\n`;
       message += `*Nome:* ${formData.nome}\n`;
       message += `*Telefone:* ${formData.telefone}\n`;
-      
-      if (formData.tipo === 'vender') {
-        message += `*Fazenda:* ${formData.fazenda}\n`;
-        message += `*Local:* ${formData.cidade} - ${formData.estado}\n`;
-        message += `*Tipo de Cultura:* ${formData.tipoCultura}\n`;
-        message += `*Número de Cabeças:* ${formData.numeroCabecas}\n`;
-      }
-      
+      message += `*Local:* ${formData.cidade} - ${formData.estado}\n`;
+      message += `*Categoria:* ${formData.tipoCultura}\n`;
+      if (formData.raca) message += `*Raça:* ${formData.raca}\n`;
+      message += `*Número de Cabeças:* ${formData.numeroCabecas}\n`;
+
       if (formData.mensagem) {
-        message += `\n*Mensagem:* ${formData.mensagem}\n`;
+        message += `\n*Informações adicionais:* ${formData.mensagem}\n`;
       }
 
       const whatsappNumber = settings.whatsapp_number || DEFAULT_WHATSAPP;
@@ -143,10 +136,10 @@ const SellerForm = () => {
         tipo: 'vender',
         nome: '',
         telefone: '',
-        fazenda: '',
         estado: '',
         cidade: '',
         tipoCultura: '',
+        raca: '',
         numeroCabecas: '',
         mensagem: ''
       });
@@ -277,116 +270,114 @@ const SellerForm = () => {
                 {errors.telefone && <span className="text-destructive text-xs mt-1">{errors.telefone}</span>}
               </div>
 
-              {/* Campos condicionais para Vender */}
-              {formData.tipo === 'vender' && (
-                <>
-                  {/* Fazenda */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Nome da Fazenda <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="fazenda"
-                      value={formData.fazenda}
-                      onChange={handleChange}
-                      placeholder="Nome da propriedade"
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.fazenda ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                    />
-                    {errors.fazenda && <span className="text-destructive text-xs mt-1">{errors.fazenda}</span>}
-                  </div>
+              {/* Estado */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Estado <span className="text-destructive">*</span>
+                </label>
+                <select
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.estado ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                >
+                  <option value="">Selecione o estado...</option>
+                  {estados.map((estado) => (
+                    <option key={estado} value={estado}>{estado}</option>
+                  ))}
+                </select>
+                {errors.estado && <span className="text-destructive text-xs mt-1">{errors.estado}</span>}
+              </div>
 
-                  {/* Estado */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Estado <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      name="estado"
-                      value={formData.estado}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.estado ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                    >
-                      <option value="">Selecione o estado...</option>
-                      {estados.map((estado) => (
-                        <option key={estado} value={estado}>{estado}</option>
-                      ))}
-                    </select>
-                    {errors.estado && <span className="text-destructive text-xs mt-1">{errors.estado}</span>}
-                  </div>
+              {/* Cidade */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Cidade <span className="text-destructive">*</span>
+                </label>
+                <select
+                  name="cidade"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                  disabled={!formData.estado}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <option value="">{formData.estado ? 'Selecione a cidade...' : 'Selecione o estado primeiro'}</option>
+                  {cidadesDisponiveis.map((cidade) => (
+                    <option key={cidade} value={cidade}>{cidade}</option>
+                  ))}
+                </select>
+                {errors.cidade && <span className="text-destructive text-xs mt-1">{errors.cidade}</span>}
+              </div>
 
-                  {/* Cidade */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Cidade <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      name="cidade"
-                      value={formData.cidade}
-                      onChange={handleChange}
-                      disabled={!formData.estado}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      <option value="">{formData.estado ? 'Selecione a cidade...' : 'Selecione o estado primeiro'}</option>
-                      {cidadesDisponiveis.map((cidade) => (
-                        <option key={cidade} value={cidade}>{cidade}</option>
-                      ))}
-                    </select>
-                    {errors.cidade && <span className="text-destructive text-xs mt-1">{errors.cidade}</span>}
-                  </div>
+              {/* Categoria */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Categoria <span className="text-destructive">*</span>
+                </label>
+                <select
+                  name="tipoCultura"
+                  value={formData.tipoCultura}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.tipoCultura ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                >
+                  <option value="">Selecione...</option>
+                  <option value="Bezerro">Bezerro</option>
+                  <option value="Bezerra">Bezerra</option>
+                  <option value="Novilha">Novilha</option>
+                  <option value="Garrote">Garrote</option>
+                  <option value="Boi Magro">Boi Magro</option>
+                  <option value="Boi Gordo">Boi Gordo</option>
+                  <option value="Vaca Magra">Vaca Magra</option>
+                  <option value="Vaca Prenha">Vaca Prenha</option>
+                  <option value="Vaca Parida">Vaca Parida</option>
+                  <option value="Vaca Gorda">Vaca Gorda</option>
+                </select>
+                {errors.tipoCultura && <span className="text-destructive text-xs mt-1">{errors.tipoCultura}</span>}
+              </div>
 
-                  {/* Categoria */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Categoria <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      name="tipoCultura"
-                      value={formData.tipoCultura}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.tipoCultura ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                    >
-                      <option value="">Selecione...</option>
-                      <option value="Cria">Cria</option>
-                      <option value="Recria">Recria</option>
-                      <option value="Engorda">Engorda</option>
-                      <option value="Reprodução">Reprodução</option>
-                      <option value="Leite">Leite</option>
-                      <option value="Misto">Misto</option>
-                    </select>
-                    {errors.tipoCultura && <span className="text-destructive text-xs mt-1">{errors.tipoCultura}</span>}
-                  </div>
+              {/* Raça */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Raça
+                </label>
+                <input
+                  type="text"
+                  name="raca"
+                  value={formData.raca}
+                  onChange={handleChange}
+                  placeholder="Ex: Nelore, Angus, Girolando..."
+                  className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                />
+              </div>
 
-                  {/* Número de Cabeças */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Número de Cabeças <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      name="numeroCabecas"
-                      value={formData.numeroCabecas}
-                      onChange={handleChange}
-                      placeholder="Ex: 100"
-                      min={1}
-                      className={`w-full px-4 py-3 rounded-lg border ${errors.numeroCabecas ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                    />
-                    {errors.numeroCabecas && <span className="text-destructive text-xs mt-1">{errors.numeroCabecas}</span>}
-                  </div>
-                </>
-              )}
+              {/* Número de Cabeças */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-2">
+                  Número de Cabeças <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="numeroCabecas"
+                  value={formData.numeroCabecas}
+                  onChange={handleChange}
+                  placeholder="Ex: 100"
+                  min={1}
+                  className={`w-full px-4 py-3 rounded-lg border ${errors.numeroCabecas ? 'border-destructive' : 'border-input'} bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                />
+                {errors.numeroCabecas && <span className="text-destructive text-xs mt-1">{errors.numeroCabecas}</span>}
+              </div>
             </div>
 
-            {/* Mensagem */}
+            {/* Informações adicionais */}
             <div>
               <label className="block text-sm font-medium mb-2">
-                Mensagem {formData.tipo === 'comprar' && <span className="text-muted-foreground">(descreva o que procura)</span>}
+                Informações adicionais
               </label>
               <textarea
                 name="mensagem"
                 value={formData.mensagem}
                 onChange={handleChange}
-                placeholder={formData.tipo === 'comprar' ? 'Ex: Procuro 50 novilhas nelore, entre 12-18 meses...' : 'Informações adicionais sobre seu lote...'}
+                placeholder="Ex: peso médio, condição corporal, data disponível..."
                 rows={3}
                 className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
               />

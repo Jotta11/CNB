@@ -7,16 +7,17 @@ import type {
 export interface Parceiro {
   id: string;
   nome_completo: string;
-  cpf: string;
+  cpf: string | null;
   telefone: string | null;
   email: string | null;
   endereco: string | null;
   chave_pix: string | null;
-  profissao: Profissao;
+  profissao: Profissao | null;
   uf: Uf;
   cidade: string;
   status_funil: FunilStatus;
   origem: 'manual' | 'landing_page';
+  notas?: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;

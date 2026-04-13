@@ -1,0 +1,6 @@
+ALTER TABLE public.parceiros
+  ALTER COLUMN cpf DROP NOT NULL,
+  ALTER COLUMN profissao DROP NOT NULL;
+
+ALTER TABLE public.parceiros
+  ADD COLUMN IF NOT EXISTS notas TEXT;

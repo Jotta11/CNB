@@ -1,81 +1,55 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Loader2, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import {
+  Loader2, CheckCircle2, ArrowRight, Shield, Users, Zap,
+  ClipboardList, Search, Send, MapPin, Star,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import LandingLayout from '@/components/landing/LandingLayout';
 import { useLeadSubmit } from '@/hooks/useLeadSubmit';
 import { trackFormInicio } from '@/utils/analytics';
-import { cidadesPorEstado, estados as estadosList } from '@/data/cidadesPorEstado';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
+import logoHorizontal from '@/assets/logo-horizontal2.png';
+import logoSymbol from '@/assets/logo-symbol.svg';
 
 const schema = z.object({
   nome: z.string().min(3, 'Informe seu nome completo'),
   telefone: z.string().min(10, 'Informe um telefone válido'),
-  estado: z.string().min(1, 'Selecione seu estado'),
-  cidade: z.string().min(1, 'Selecione sua cidade'),
-  ciclo_produtivo: z.string().min(1, 'Selecione o ciclo produtivo'),
-  volume: z.string().min(1, 'Selecione o volume desejado'),
+  localizacao: z.string().min(2, 'Informe seu estado/cidade'),
+  categoria_gado: z.string().min(1, 'Selecione a categoria'),
+  numero_cabecas: z.coerce.number().min(1, 'Informe o número de cabeças'),
+  mensagem: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const ciclosProdutivos = [
-  'Cria',
-  'Recria',
-  'Engorda',
-  'Reprodução',
-  'Leite',
-  'Misto',
-];
-
-const volumes = [
-  'Até 100 cabeças',
-  '101 – 500 cabeças',
-  '501 – 2.000 cabeças',
-  '2.001 – 10.000 cabeças',
-  'Acima de 10.000 cabeças',
+const categorias = [
+  'Boi Gordo', 'Vaca Gorda', 'Novilha', 'Garrote / Fraldinha',
+  'Bezerro', 'Bezerra', 'Touro', 'Vaca Parida', 'Reprodutor', 'Misto',
 ];
 
 const LandingComprar = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
   const formIniciadoRef = useRef(false);
-  const [estadoSelecionado, setEstadoSelecionado] = useState('');
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormData>({
+  const { settings } = useSiteSettings();
+  const whatsappNumber = settings.whatsapp_number || '5563992628916';
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Quero comprar gado e gostaria de mais informações.')}`;
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const cidadesDisponiveis = estadoSelecionado ? cidadesPorEstado[estadoSelecionado] || [] : [];
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      await submitLead({
-        tipo: 'comprar',
-        nome: data.nome,
-        telefone: data.telefone,
-        localizacao: `${data.cidade} - ${data.estado}`,
-        ciclo_produtivo: data.ciclo_produtivo,
-        volume_rebanho: data.volume,
-      });
-    } catch {
-      toast.error('Erro ao enviar. Tente novamente.');
-    }
-  };
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const handleFormStart = () => {
     if (formIniciadoRef.current) return;
@@ -83,168 +57,312 @@ const LandingComprar = () => {
     trackFormInicio('comprar');
   };
 
-  if (submitted) {
-    return (
-      <LandingLayout bgClass="bg-primary">
-        <div className="text-center space-y-4 py-12">
-          <CheckCircle2 className="w-16 h-16 mx-auto text-accent" />
-          <h2 className="font-display text-4xl text-white tracking-wider">
-            Cadastro Realizado!
-          </h2>
-          <p className="text-white/80 text-lg">
-            Nossa equipe vai buscar os melhores lotes para o seu perfil e entrará em
-            contato em breve. Bem-vindo à CNB!
-          </p>
-        </div>
-      </LandingLayout>
-    );
-  }
+  const onSubmit = async (data: FormData) => {
+    try {
+      await submitLead({ tipo: 'comprar', ...data });
+    } catch {
+      toast.error('Erro ao enviar. Tente novamente.');
+    }
+  };
 
   return (
-    <LandingLayout bgClass="bg-primary">
-      <div className="space-y-8">
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5">
-            <ShoppingCart className="w-4 h-4 text-accent" />
-            <span className="text-accent text-sm font-medium uppercase tracking-widest">
-              Para Compradores
-            </span>
-          </div>
-          <h1 className="font-display text-5xl text-white tracking-wider leading-tight">
-            Compre Gado com
-            <br />
-            Segurança e Agilidade
-          </h1>
-          <p className="text-white/80 text-lg max-w-sm mx-auto">
-            Acesse lotes selecionados e curados pela nossa equipe. Preencha o cadastro
-            e receba ofertas alinhadas ao seu perfil de compra.
-          </p>
+    <div className="min-h-screen bg-background">
+
+      {/* Minimal header */}
+      <header className="absolute top-0 left-0 right-0 z-20 py-5 px-6 flex justify-center">
+        <img src={logoHorizontal} alt="CNB" className="h-10 object-contain brightness-0 invert" />
+      </header>
+
+      {/* ── SEÇÃO 1: Hero ── */}
+      <section className="min-h-[85vh] flex items-center relative overflow-hidden bg-secondary">
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary/80 to-primary" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] -translate-y-1/3 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] translate-y-1/3 -translate-x-1/4" />
+        <div className="absolute bottom-8 right-8 opacity-[0.04]">
+          <img src={logoSymbol} alt="" className="w-[360px] h-[360px]" />
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          onFocusCapture={handleFormStart}
-          className="space-y-4 bg-white/10 border border-white/20 rounded-2xl p-6"
-        >
-          <div className="space-y-1.5">
-            <Label htmlFor="nome" className="text-white">Nome completo</Label>
-            <Input
-              id="nome"
-              placeholder="Seu nome completo"
-              className="bg-white/90 border-white/30 placeholder:text-muted-foreground"
-              {...register('nome')}
-            />
-            {errors.nome && (
-              <p className="text-accent text-sm">{errors.nome.message}</p>
-            )}
-          </div>
+        <div className="container mx-auto px-4 relative z-10 pt-24 pb-16">
+          <div className="max-w-3xl mx-auto text-center">
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+              <span className="inline-flex items-center gap-2 bg-accent/20 text-accent border border-accent/30 text-xs font-bold px-4 py-2 rounded-full mb-8 tracking-widest uppercase backdrop-blur-sm">
+                <Star className="w-3.5 h-3.5" />
+                Para Compradores
+              </span>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="telefone" className="text-white">Telefone / WhatsApp</Label>
-            <Input
-              id="telefone"
-              placeholder="(00) 00000-0000"
-              className="bg-white/90 border-white/30 placeholder:text-muted-foreground"
-              {...register('telefone')}
-            />
-            {errors.telefone && (
-              <p className="text-accent text-sm">{errors.telefone.message}</p>
-            )}
-          </div>
+              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white tracking-wider mb-6 leading-[0.9]">
+                ENCONTRE O GADO
+                <br />
+                <span className="text-accent">QUE VOCÊ PROCURA</span>
+              </h1>
 
-          <div className="space-y-1.5">
-            <Label className="text-white">Estado</Label>
-            <Select onValueChange={(v) => {
-              setValue('estado', v);
-              setValue('cidade', '');
-              setEstadoSelecionado(v);
-            }}>
-              <SelectTrigger className="bg-white/90 border-white/30">
-                <SelectValue placeholder="Selecione seu estado" />
-              </SelectTrigger>
-              <SelectContent>
-                {estadosList.map((e) => (
-                  <SelectItem key={e} value={e}>{e}</SelectItem>
+              <p className="text-white/70 text-lg md:text-xl max-w-xl mx-auto leading-relaxed mb-10">
+                A CNB conecta você a lotes curados e verificados em todo o Brasil, com segurança, agilidade e suporte completo na negociação.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
+                <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base px-8 h-14 shadow-lg shadow-accent/25 border-0">
+                  <a href="#formulario" className="flex items-center gap-3">
+                    Quero comprar gado
+                    <ArrowRight className="w-5 h-5" />
+                  </a>
+                </Button>
+              </div>
+
+              {/* Quick stats */}
+              <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                {[
+                  { value: 'Rápido', label: 'Atendimento em 24h' },
+                  { value: 'Total', label: 'Suporte da equipe' },
+                ].map((item, i) => (
+                  <motion.div key={i}
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
+                    className="bg-white/[0.06] backdrop-blur-md rounded-2xl p-4 border border-white/[0.08]"
+                  >
+                    <p className="font-display text-2xl text-white tracking-wide">{item.value}</p>
+                    <p className="text-white/50 text-xs mt-1">{item.label}</p>
+                  </motion.div>
                 ))}
-              </SelectContent>
-            </Select>
-            {errors.estado && (
-              <p className="text-accent text-sm">{errors.estado.message}</p>
-            )}
+              </div>
+            </motion.div>
           </div>
+        </div>
+      </section>
 
-          <div className="space-y-1.5">
-            <Label className="text-white">Cidade</Label>
-            <Select
-              onValueChange={(v) => setValue('cidade', v)}
-              disabled={!estadoSelecionado}
-            >
-              <SelectTrigger className="bg-white/90 border-white/30 disabled:opacity-50">
-                <SelectValue placeholder={estadoSelecionado ? 'Selecione sua cidade' : 'Selecione o estado primeiro'} />
-              </SelectTrigger>
-              <SelectContent>
-                {cidadesDisponiveis.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.cidade && (
-              <p className="text-accent text-sm">{errors.cidade.message}</p>
-            )}
+      {/* ── SEÇÃO 2: Por que comprar pela CNB? ── */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+              className="text-center mb-14">
+              <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Vantagens</span>
+              <h2 className="font-display text-4xl md:text-6xl text-foreground tracking-wide">
+                POR QUE COMPRAR
+                <br /><span className="text-primary">PELA CNB?</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  icon: Search,
+                  title: 'LOTES CURADOS E VERIFICADOS',
+                  desc: 'Cada lote passa pela avaliação da nossa equipe em campo antes de chegar até você — sem surpresas na hora da compra.',
+                },
+                {
+                  icon: Shield,
+                  title: 'NEGOCIAÇÃO COM SEGURANÇA',
+                  desc: 'Operação documentada do início ao fim, com suporte jurídico e financeiro para você comprar com total tranquilidade.',
+                },
+                {
+                  icon: Users,
+                  title: 'OFERTA ALINHADA AO SEU PERFIL',
+                  desc: 'Nossa equipe busca ativamente os lotes que combinam com o seu ciclo produtivo, volume e localização.',
+                },
+              ].map((item, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                  className="group bg-card rounded-3xl p-8 border border-border hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden"
+                >
+                  <span className="absolute top-5 right-5 font-display text-6xl text-primary/[0.06] group-hover:text-primary/[0.12] transition-colors">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                    <item.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-display text-xl text-foreground mb-3 tracking-wide">{item.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="space-y-1.5">
-            <Label className="text-white">Ciclo Produtivo</Label>
-            <Select onValueChange={(v) => setValue('ciclo_produtivo', v)}>
-              <SelectTrigger className="bg-white/90 border-white/30">
-                <SelectValue placeholder="Selecione o ciclo" />
-              </SelectTrigger>
-              <SelectContent>
-                {ciclosProdutivos.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.ciclo_produtivo && (
-              <p className="text-accent text-sm">{errors.ciclo_produtivo.message}</p>
-            )}
+      {/* ── SEÇÃO 3: Como funciona? ── */}
+      <section className="py-20 bg-secondary relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] -translate-y-1/2" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+              className="text-center mb-14">
+              <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Processo</span>
+              <h2 className="font-display text-4xl md:text-6xl text-white tracking-wide">
+                COMO <span className="text-accent">FUNCIONA</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { icon: ClipboardList, num: '01', title: 'VOCÊ PREENCHE', desc: 'Informe o que você procura no formulário abaixo. Leva menos de 2 minutos.' },
+                { icon: Zap, num: '02', title: 'CNB BUSCA POR VOCÊ', desc: 'Nossa equipe vai a campo para encontrar lotes curados e verificados que atendam ao seu perfil de compra.' },
+                { icon: CheckCircle2, num: '03', title: 'COMPRA REALIZADA', desc: 'Você compra com segurança, documentação completa e suporte logístico da CNB do início ao fim.' },
+              ].map((item, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.15 }}
+                  className="bg-white/[0.05] backdrop-blur-sm rounded-3xl p-8 border border-white/[0.07] relative overflow-hidden"
+                >
+                  <span className="absolute top-5 right-5 font-display text-6xl text-white/[0.05]">{item.num}</span>
+                  <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center mb-6">
+                    <item.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <h3 className="font-display text-2xl text-white mb-3 tracking-wide">{item.title}</h3>
+                  <p className="text-white/60 text-sm leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="space-y-1.5">
-            <Label className="text-white">Volume desejado</Label>
-            <Select onValueChange={(v) => setValue('volume', v)}>
-              <SelectTrigger className="bg-white/90 border-white/30">
-                <SelectValue placeholder="Selecione o volume" />
-              </SelectTrigger>
-              <SelectContent>
-                {volumes.map((v) => (
-                  <SelectItem key={v} value={v}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.volume && (
-              <p className="text-accent text-sm">{errors.volume.message}</p>
-            )}
-          </div>
+      {/* ── FORMULÁRIO ── */}
+      <section id="formulario" className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-12">
+            <span className="text-accent font-bold text-xs tracking-[0.3em] uppercase mb-4 block">Comece agora</span>
+            <h2 className="font-display text-4xl md:text-6xl text-foreground tracking-wide leading-[0.95]">
+              CADASTRAR
+              <br /><span className="text-primary">DEMANDA</span>
+            </h2>
+            <p className="text-muted-foreground text-lg mt-4 max-w-md mx-auto">
+              Preencha os dados abaixo e nossa equipe entra em contato com as melhores ofertas.
+            </p>
+          </motion.div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-accent hover:bg-accent/90 text-white font-bold text-lg py-6"
-          >
-            {isSubmitting ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
+            className="max-w-xl mx-auto">
+
+            {submitted ? (
+              <div className="bg-card rounded-3xl p-12 border border-border text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="font-display text-3xl text-foreground tracking-wide mb-3">CADASTRO RECEBIDO!</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Nossa equipe vai buscar os melhores lotes para o seu perfil e entrará em contato em breve. Bem-vindo à CNB!
+                </p>
+              </div>
             ) : (
-              'Quero Receber Ofertas'
-            )}
-          </Button>
-        </form>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                onFocusCapture={handleFormStart}
+                className="bg-card rounded-3xl p-8 border border-border space-y-5"
+              >
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="nome">Nome completo *</Label>
+                    <Input id="nome" placeholder="Seu nome" {...register('nome')} />
+                    {errors.nome && <p className="text-destructive text-xs">{errors.nome.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="telefone">WhatsApp *</Label>
+                    <Input id="telefone" placeholder="(00) 00000-0000" {...register('telefone')} />
+                    {errors.telefone && <p className="text-destructive text-xs">{errors.telefone.message}</p>}
+                  </div>
+                </div>
 
-        <p className="text-center text-white/60 text-xs">
-          Seus dados estão seguros. Não fazemos spam.
-        </p>
-      </div>
-    </LandingLayout>
+                <div className="space-y-2">
+                  <Label htmlFor="localizacao" className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" />
+                    Cidade / Estado *
+                  </Label>
+                  <Input id="localizacao" placeholder="Ex: Araguaína – TO" {...register('localizacao')} />
+                  {errors.localizacao && <p className="text-destructive text-xs">{errors.localizacao.message}</p>}
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label>Categoria desejada *</Label>
+                    <Select onValueChange={(v) => setValue('categoria_gado', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categorias.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.categoria_gado && <p className="text-destructive text-xs">{errors.categoria_gado.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="numero_cabecas">Nº de cabeças *</Label>
+                    <Input id="numero_cabecas" type="number" min={1} placeholder="Ex: 150" {...register('numero_cabecas')} />
+                    {errors.numero_cabecas && <p className="text-destructive text-xs">{errors.numero_cabecas.message}</p>}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mensagem">Informações adicionais <span className="text-muted-foreground font-normal">(opcional)</span></Label>
+                  <Textarea
+                    id="mensagem"
+                    placeholder="Raça, peso, localização preferida, prazo de compra..."
+                    rows={3}
+                    className="resize-none"
+                    {...register('mensagem')}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold text-base h-14"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  ) : (
+                    <Send className="w-5 h-5 mr-2" />
+                  )}
+                  {isSubmitting ? 'Enviando...' : 'QUERO COMPRAR GADO'}
+                </Button>
+
+                <p className="text-center text-muted-foreground text-xs">
+                  Seus dados estão seguros. Nossa equipe entrará em contato em breve.
+                </p>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── FALE CONOSCO ── */}
+      <section className="py-16 bg-secondary relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary/60 to-primary/80" />
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+            <h2 className="font-display text-3xl md:text-5xl text-white tracking-wide mb-3">
+              PREFERE FALAR <span className="text-accent">DIRETAMENTE?</span>
+            </h2>
+            <p className="text-white/60 mb-8 text-base max-w-md mx-auto">
+              Nossa equipe está disponível para tirar dúvidas e apresentar lotes disponíveis pelo WhatsApp.
+            </p>
+            <Button asChild size="lg" className="bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold text-base px-8 h-14 border-0 shadow-lg">
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+                Falar pelo WhatsApp
+              </a>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      <footer className="py-5 text-center text-xs text-muted-foreground border-t border-border">
+        © {new Date().getFullYear()} Conexão Norte Bovino — Todos os direitos reservados
+      </footer>
+
+      <FloatingWhatsApp />
+    </div>
   );
 };
 

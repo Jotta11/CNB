@@ -69,7 +69,15 @@ const LandingComprar = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await submitLead({ tipo: 'comprar', ...data });
+      await submitLead({
+        tipo: 'comprar',
+        nome: data.nome,
+        telefone: data.telefone,
+        email: data.email,
+        localizacao: data.estado,
+        categoria_gado: data.categoria_gado,
+        volume_rebanho: data.volume,
+      });
     } catch {
       toast.error('Erro ao enviar. Tente novamente.');
     }

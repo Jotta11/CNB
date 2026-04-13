@@ -13,6 +13,7 @@ const RouteTracker = () => {
   const { pathname } = useLocation();
   useScrollDepth();
   useEffect(() => {
+    window.scrollTo(0, 0);
     trackPageView(pathname);
   }, [pathname]);
   return null;

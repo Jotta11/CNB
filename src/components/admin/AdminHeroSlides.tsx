@@ -60,7 +60,7 @@ const uploadSlideImage = async (file: File, slot: 'mobile' | 'desktop', slideId:
   const path = `hero-slides/${slideId}-${slot}-${Date.now()}.webp`;
   const { error } = await supabase.storage
     .from('site-assets')
-    .upload(path, webpFile, { contentType: 'image/webp' });
+    .upload(path, webpFile, { contentType: 'image/webp', upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from('site-assets').getPublicUrl(path);
   return data.publicUrl;

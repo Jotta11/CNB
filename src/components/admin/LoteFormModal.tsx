@@ -119,7 +119,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
       const fileName = `lotes/${Date.now()}.webp`;
       const { error: uploadError } = await supabase.storage
         .from('site-assets')
-        .upload(fileName, webpFile, { contentType: 'image/webp' });
+        .upload(fileName, webpFile, { contentType: 'image/webp', upsert: true });
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage
         .from('site-assets')

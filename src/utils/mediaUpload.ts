@@ -93,7 +93,7 @@ export const uploadVideo = async (
     throw new Error('Vídeo muito grande. Tamanho máximo: 200 MB.');
   }
   const duration = await getVideoDuration(file);
-  if (duration > MAX_VIDEO_DURATION_SECONDS) {
+  if (!isFinite(duration) || duration > MAX_VIDEO_DURATION_SECONDS) {
     throw new Error('Vídeo muito longo. Duração máxima: 2 minutos.');
   }
   const { error } = await supabase.storage

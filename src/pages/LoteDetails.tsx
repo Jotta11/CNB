@@ -97,9 +97,9 @@ const LazyVideoPlayer = ({
                 className="w-full h-full object-cover"
                 loading="lazy"
                 onError={
-                  !isStorage
+                  !isStorage && videoId
                     ? (e) => {
-                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId!}/hqdefault.jpg`;
+                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
                       }
                     : undefined
                 }

@@ -22,7 +22,7 @@ const getYouTubeVideoId = (url: string): string | null => {
 };
 
 const isStorageVideo = (url: string): boolean =>
-  url.includes('supabase.co/storage');
+  url.includes('.supabase.co/storage/v1/object');
 
 // Lazy Video Player component
 const LazyVideoPlayer = ({
@@ -76,7 +76,6 @@ const LazyVideoPlayer = ({
       <video
         src={videoUrl}
         controls
-        autoPlay
         preload="none"
         poster={posterUrl ?? undefined}
         className="w-full h-full"
@@ -91,7 +90,7 @@ const LazyVideoPlayer = ({
       <div ref={containerRef} className="w-full h-full relative">
         {isVisible && (
           <>
-            {poster && (
+            {poster ? (
               <img
                 src={poster}
                 alt={`Vídeo do ${loteNumero}`}
@@ -100,11 +99,13 @@ const LazyVideoPlayer = ({
                 onError={
                   !isStorage
                     ? (e) => {
-                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId!}/hqdefault.jpg`;
                       }
                     : undefined
                 }
               />
+            ) : (
+              <div className="w-full h-full bg-black/60" />
             )}
             <button
               onClick={handlePlayClick}

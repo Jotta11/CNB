@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
  * Converte um File de imagem para WebP via Canvas API do browser.
  * Redimensiona proporcionalmente se largura > maxWidth.
  * @param file    Arquivo de imagem original (qualquer formato suportado pelo browser)
- * @param maxWidth Largura máxima em pixels (ex: 768, 1200, 1920)
+ * @param maxWidth Largura máxima em pixels (ex: 768, 1200, 1920). Se a imagem for menor, não é redimensionada.
  * @param quality  Qualidade WebP de 0 a 1, padrão 0.85
  */
 export const convertToWebP = (
@@ -43,7 +43,11 @@ export const convertToWebP = (
           quality,
         );
       };
-      img.src = e.target?.result as string;
+      const result = e.target?.result;
+      if (typeof result !== 'string') {
+        return reject(new Error('Falha ao ler o arquivo de imagem'));
+      }
+      img.src = result;
     };
     reader.readAsDataURL(file);
   });
@@ -95,7 +99,7 @@ export const uploadVideo = async (
   const { error } = await supabase.storage
     .from('lotes-videos')
     .upload(storagePath, file, { contentType: file.type });
-  if (error) throw error;
+  if (error) throw new Error(`Erro ao enviar vídeo: ${error.message}`);
   const { data } = supabase.storage
     .from('lotes-videos')
     .getPublicUrl(storagePath);

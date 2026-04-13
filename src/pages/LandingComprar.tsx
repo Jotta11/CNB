@@ -34,8 +34,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const categorias = [
-  'Boi Gordo', 'Vaca Gorda', 'Novilha', 'Garrote / Fraldinha',
-  'Bezerro', 'Bezerra', 'Touro', 'Vaca Parida', 'Reprodutor', 'Misto',
+  'Bezerro', 'Bezerra', 'Novilha', 'Garrote',
+  'Boi Magro', 'Boi Gordo', 'Vaca Magra', 'Vaca Prenha', 'Vaca Parida', 'Vaca Gorda',
 ];
 
 const LandingComprar = () => {

@@ -444,7 +444,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                <label className={`flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-muted-foreground/30 rounded-lg transition-colors ${uploading ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer hover:border-primary'}`}>
                   <input
                     type="file"
                     accept="image/*"

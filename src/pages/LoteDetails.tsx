@@ -21,8 +21,19 @@ const getYouTubeVideoId = (url: string): string | null => {
   return match && match[2].length === 11 ? match[2] : null;
 };
 
+const isStorageVideo = (url: string): boolean =>
+  url.includes('supabase.co/storage');
+
 // Lazy Video Player component
-const LazyVideoPlayer = ({ videoUrl, loteNumero }: { videoUrl: string | null; loteNumero: string }) => {
+const LazyVideoPlayer = ({
+  videoUrl,
+  loteNumero,
+  posterUrl,
+}: {
+  videoUrl: string | null;
+  loteNumero: string;
+  posterUrl?: string | null;
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,25 +46,22 @@ const LazyVideoPlayer = ({ videoUrl, loteNumero }: { videoUrl: string | null; lo
           observer.disconnect();
         }
       },
-      { threshold: 0.1, rootMargin: '100px' }
+      { threshold: 0.1, rootMargin: '100px' },
     );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
+    if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
   const videoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
-  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+  const isStorage = videoUrl ? isStorageVideo(videoUrl) : false;
+  const thumbnailUrl = videoId
+    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+    : null;
 
-  const handlePlayClick = () => {
-    setShouldLoad(true);
-  };
+  const handlePlayClick = () => setShouldLoad(true);
 
-  // No video URL
-  if (!videoUrl || !videoId) {
+  // Nenhuma URL válida reconhecida
+  if (!videoUrl || (!videoId && !isStorage)) {
     return (
       <div className="text-white/50 flex flex-col items-center gap-3">
         <Video size={60} />
@@ -62,22 +70,42 @@ const LazyVideoPlayer = ({ videoUrl, loteNumero }: { videoUrl: string | null; lo
     );
   }
 
-  // Show thumbnail with play button until clicked
+  // Vídeo do Supabase Storage — já carregado após clique
+  if (isStorage && shouldLoad) {
+    return (
+      <video
+        src={videoUrl}
+        controls
+        autoPlay
+        preload="none"
+        poster={posterUrl ?? undefined}
+        className="w-full h-full"
+      />
+    );
+  }
+
+  // Thumbnail + botão play (YouTube ou Storage antes do clique)
   if (!shouldLoad) {
+    const poster = isStorage ? posterUrl : thumbnailUrl;
     return (
       <div ref={containerRef} className="w-full h-full relative">
-        {isVisible && thumbnailUrl && (
+        {isVisible && (
           <>
-            <img
-              src={thumbnailUrl}
-              alt={`Vídeo do ${loteNumero}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                // Fallback to hqdefault if maxresdefault doesn't exist
-                (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-              }}
-            />
+            {poster && (
+              <img
+                src={poster}
+                alt={`Vídeo do ${loteNumero}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+                onError={
+                  !isStorage
+                    ? (e) => {
+                        (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                      }
+                    : undefined
+                }
+              />
+            )}
             <button
               onClick={handlePlayClick}
               className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
@@ -98,7 +126,7 @@ const LazyVideoPlayer = ({ videoUrl, loteNumero }: { videoUrl: string | null; lo
     );
   }
 
-  // Load the actual iframe
+  // YouTube iframe após clique
   return (
     <iframe
       src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
@@ -242,7 +270,7 @@ const LoteDetails = () => {
               transition={{ duration: 0.5 }}
             >
               <div className="relative aspect-video bg-primary rounded-2xl flex items-center justify-center overflow-hidden shadow-lg">
-                <LazyVideoPlayer videoUrl={lote.video_url} loteNumero={lote.numero} />
+                <LazyVideoPlayer videoUrl={lote.video_url} loteNumero={lote.numero} posterUrl={lote.imagem_url} />
 
                 {/* Lot number badge */}
                 <span className="badge-lot absolute top-4 left-4 text-lg z-10">{lote.numero}</span>

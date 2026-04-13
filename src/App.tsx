@@ -8,8 +8,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { trackPageView } from "@/utils/analytics";
 import { useScrollDepth } from "@/hooks/useScrollDepth";
 import TrackingScripts from "@/components/TrackingScripts";
-import EmBreve from "@/components/EmBreve";
-
 const RouteTracker = () => {
   const { pathname } = useLocation();
   useScrollDepth();
@@ -42,7 +40,6 @@ const App = () => (
         <Toaster />
         <Sonner />
         <TrackingScripts />
-        <EmBreve />
         <BrowserRouter>
           <RouteTracker />
           <Routes>

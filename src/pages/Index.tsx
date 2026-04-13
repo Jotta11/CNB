@@ -12,6 +12,7 @@ import SellerForm from '@/components/SellerForm';
 import FAQSection from '@/components/FAQSection';
 import NewsSection from '@/components/NewsSection';
 import Footer from '@/components/Footer';
+import EmBreve from '@/components/EmBreve';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import BackToTop from '@/components/BackToTop';
 
@@ -32,6 +33,7 @@ const Index = () => {
       <TabelaPrecosSection />
       <FAQSection />
       <Footer />
+      <EmBreve />
       <FloatingWhatsApp />
       <BackToTop />
     </div>

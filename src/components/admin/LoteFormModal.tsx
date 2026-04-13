@@ -128,7 +128,8 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
       toast.success('Imagem enviada com sucesso');
     } catch (err) {
       console.error('Error uploading image:', err);
-      toast.error('Erro ao enviar imagem');
+      const message = err instanceof Error ? err.message : 'Erro ao enviar imagem';
+      toast.error(message);
     } finally {
       setUploading(false);
     }
@@ -400,7 +401,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                <label className={`flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-muted-foreground/30 rounded-lg transition-colors ${uploadingVideo ? 'cursor-not-allowed pointer-events-none' : 'cursor-pointer hover:border-primary'}`}>
                   <input
                     type="file"
                     accept="video/mp4,video/quicktime,video/webm"
@@ -468,7 +469,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary-medium" disabled={loading}>
+            <Button type="submit" className="bg-primary hover:bg-primary-medium" disabled={loading || uploading || uploadingVideo}>
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

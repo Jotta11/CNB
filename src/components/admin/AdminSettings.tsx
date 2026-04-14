@@ -16,14 +16,16 @@ const AdminSettings = () => {
   const [whatsapp, setWhatsapp] = useState('');
   const [gtmId, setGtmId] = useState('');
   const [ga4Id, setGa4Id] = useState('');
+  const [metaPixelId, setMetaPixelId] = useState('');
 
   useEffect(() => {
     if (!loading) {
       setWhatsapp(settings.whatsapp_number || '');
       setGtmId(settings.gtm_id || '');
       setGa4Id(settings.ga4_id || '');
+      setMetaPixelId(settings.meta_pixel_id || '');
     }
-  }, [loading, settings.whatsapp_number, settings.gtm_id, settings.ga4_id]);
+  }, [loading, settings.whatsapp_number, settings.gtm_id, settings.ga4_id, settings.meta_pixel_id]);
 
   const handleImageUpload = async (key: string, file: File) => {
     try {
@@ -65,6 +67,7 @@ const AdminSettings = () => {
       setSaving(true);
       await updateSetting('gtm_id', gtmId.trim() || null);
       await updateSetting('ga4_id', ga4Id.trim() || null);
+      await updateSetting('meta_pixel_id', metaPixelId.trim() || null);
       toast.success('Tags de rastreamento salvas');
     } catch {
       toast.error('Erro ao salvar tags');
@@ -325,6 +328,16 @@ const AdminSettings = () => {
                   placeholder="G-XXXXXXXXXX"
                 />
                 <p className="text-xs text-muted-foreground">Formato: G-XXXXXXXXXX</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="meta_pixel_id">Meta Pixel (Facebook Ads)</Label>
+                <Input
+                  id="meta_pixel_id"
+                  value={metaPixelId}
+                  onChange={(e) => setMetaPixelId(e.target.value)}
+                  placeholder="1234567890123456"
+                />
+                <p className="text-xs text-muted-foreground">ID numérico do Pixel (ex: 1234567890123456)</p>
               </div>
             </div>
             <Button

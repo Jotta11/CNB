@@ -9,6 +9,7 @@ const TrackingScripts = () => {
 
     const gtmId = settings.gtm_id;
     const ga4Id = settings.ga4_id;
+    const pixelId = settings.meta_pixel_id;
 
     // Injeta GTM se ainda não foi carregado
     if (!document.getElementById('cnb-gtm')) {
@@ -40,7 +41,27 @@ const TrackingScripts = () => {
       gaInline.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');`;
       document.head.appendChild(gaInline);
     }
-  }, [loading, settings.gtm_id, settings.ga4_id]);
+
+    // Injeta Meta Pixel se ainda não foi carregado
+    if (pixelId && !document.getElementById('cnb-meta-pixel')) {
+      const pixelScript = document.createElement('script');
+      pixelScript.id = 'cnb-meta-pixel';
+      pixelScript.innerHTML = `
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+        (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init','${pixelId}');
+      `;
+      document.head.appendChild(pixelScript);
+
+      const pixelNoscript = document.createElement('noscript');
+      pixelNoscript.id = 'cnb-meta-pixel-noscript';
+      pixelNoscript.innerHTML = `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1"/>`;
+      document.head.appendChild(pixelNoscript);
+    }
+  }, [loading, settings.gtm_id, settings.ga4_id, settings.meta_pixel_id]);
 
   return null;
 };

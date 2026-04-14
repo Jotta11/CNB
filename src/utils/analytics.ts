@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     dataLayer: Record<string, unknown>[];
+    fbq: ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue: unknown[]; loaded: boolean; version: string; push: (...args: unknown[]) => void; _fbq?: unknown };
   }
 }
 
@@ -40,10 +41,12 @@ export function trackFormInicio(tipo: string) {
 
 export function trackFormSubmit(tipo: string) {
   push({ event: 'form_submit', tipo_formulario: tipo });
+  if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
 }
 
 export function trackPageView(pagina: string) {
   push({ event: 'page_view', pagina });
+  if (typeof window.fbq === 'function') window.fbq('track', 'PageView');
 }
 
 export function trackFAQAberta(pergunta: string, indice: number) {

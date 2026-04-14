@@ -22,7 +22,21 @@ import {
 } from '@/components/ui/alert-dialog';
 
 type LeadStatus = 'novo' | 'em_contato' | 'convertido' | 'perdido';
-type LeadTipo = 'comprar' | 'vender';
+type LeadTipo = 'comprar' | 'vender' | 'tabela_precos' | 'ofertas_direcionadas';
+
+const tipoLabels: Record<LeadTipo, string> = {
+  comprar: 'Quer Comprar',
+  vender: 'Quer Vender',
+  tabela_precos: 'Tabela de Preços',
+  ofertas_direcionadas: 'Ofertas Direcionadas',
+};
+
+const tipoColors: Record<LeadTipo, { bg: string; text: string; border: string; icon: string; iconBg: string }> = {
+  comprar:              { bg: 'bg-green-100',   text: 'text-green-600',   border: 'border-green-500',   icon: 'text-green-600',   iconBg: 'bg-green-100'   },
+  vender:               { bg: 'bg-blue-100',    text: 'text-blue-600',    border: 'border-blue-500',    icon: 'text-blue-600',    iconBg: 'bg-blue-100'    },
+  tabela_precos:        { bg: 'bg-emerald-100', text: 'text-emerald-600', border: 'border-emerald-500', icon: 'text-emerald-600', iconBg: 'bg-emerald-100' },
+  ofertas_direcionadas: { bg: 'bg-purple-100',  text: 'text-purple-600',  border: 'border-purple-500',  icon: 'text-purple-600',  iconBg: 'bg-purple-100'  },
+};
 
 interface Lead {
   id: string;
@@ -76,7 +90,7 @@ const AdminLeads = () => {
         .range(from, to);
 
       if (error) throw error;
-      return { leads: data as Lead[], totalCount: count || 0 };
+      return { leads: data as unknown as Lead[], totalCount: count || 0 };
     }
   });
 
@@ -113,8 +127,10 @@ const AdminLeads = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
       toast.success('Lead excluído!');
     },
-    onError: () => {
-      toast.error('Erro ao excluir lead');
+    onError: (error: unknown) => {
+      console.error('Erro ao excluir lead:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`Erro ao excluir lead: ${msg}`);
     }
   });
 
@@ -128,6 +144,8 @@ const AdminLeads = () => {
     total: leads?.length || 0,
     comprar: leads?.filter(l => l.tipo === 'comprar').length || 0,
     vender: leads?.filter(l => l.tipo === 'vender').length || 0,
+    tabela_precos: leads?.filter(l => l.tipo === 'tabela_precos').length || 0,
+    ofertas_direcionadas: leads?.filter(l => l.tipo === 'ofertas_direcionadas').length || 0,
     novos: leads?.filter(l => l.status === 'novo').length || 0
   };
 
@@ -142,29 +160,41 @@ const AdminLeads = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4">
             <div className="text-2xl font-bold text-primary">{stats.total}</div>
-            <p className="text-sm text-muted-foreground">Total de Leads</p>
+            <p className="text-xs text-muted-foreground leading-tight">Total</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4">
             <div className="text-2xl font-bold text-green-600">{stats.comprar}</div>
-            <p className="text-sm text-muted-foreground">Querem Comprar</p>
+            <p className="text-xs text-muted-foreground leading-tight">Comprar</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4">
             <div className="text-2xl font-bold text-blue-600">{stats.vender}</div>
-            <p className="text-sm text-muted-foreground">Querem Vender</p>
+            <p className="text-xs text-muted-foreground leading-tight">Vender</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4">
+            <div className="text-2xl font-bold text-emerald-600">{stats.tabela_precos}</div>
+            <p className="text-xs text-muted-foreground leading-tight">Tabela Preços</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4">
+            <div className="text-2xl font-bold text-purple-600">{stats.ofertas_direcionadas}</div>
+            <p className="text-xs text-muted-foreground leading-tight">Ofertas Dir.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4">
             <div className="text-2xl font-bold text-yellow-600">{stats.novos}</div>
-            <p className="text-sm text-muted-foreground">Novos</p>
+            <p className="text-xs text-muted-foreground leading-tight">Novos</p>
           </CardContent>
         </Card>
       </div>
@@ -177,8 +207,10 @@ const AdminLeads = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os tipos</SelectItem>
-            <SelectItem value="comprar">Quero Comprar</SelectItem>
-            <SelectItem value="vender">Quero Vender</SelectItem>
+            <SelectItem value="comprar">Quer Comprar</SelectItem>
+            <SelectItem value="vender">Quer Vender</SelectItem>
+            <SelectItem value="tabela_precos">Tabela de Preços</SelectItem>
+            <SelectItem value="ofertas_direcionadas">Ofertas Direcionadas</SelectItem>
           </SelectContent>
         </Select>
 
@@ -210,18 +242,18 @@ const AdminLeads = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${lead.tipo === 'comprar' ? 'bg-green-100' : 'bg-blue-100'}`}>
+                    <div className={`p-2 rounded-full ${tipoColors[lead.tipo]?.iconBg ?? 'bg-gray-100'}`}>
                       {lead.tipo === 'comprar' ? (
-                        <ShoppingCart className="w-5 h-5 text-green-600" />
+                        <ShoppingCart className={`w-5 h-5 ${tipoColors[lead.tipo]?.icon}`} />
                       ) : (
-                        <Tag className="w-5 h-5 text-blue-600" />
+                        <Tag className={`w-5 h-5 ${tipoColors[lead.tipo]?.icon}`} />
                       )}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{lead.nome}</CardTitle>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className={lead.tipo === 'comprar' ? 'border-green-500 text-green-600' : 'border-blue-500 text-blue-600'}>
-                          {lead.tipo === 'comprar' ? 'Quer Comprar' : 'Quer Vender'}
+                        <Badge variant="outline" className={`${tipoColors[lead.tipo]?.border ?? 'border-gray-400'} ${tipoColors[lead.tipo]?.text ?? 'text-gray-600'}`}>
+                          {tipoLabels[lead.tipo] ?? lead.tipo}
                         </Badge>
                         <Badge className={`${statusColors[lead.status]} text-white`}>
                           {statusLabels[lead.status]}

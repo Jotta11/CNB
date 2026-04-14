@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import {
   Loader2, User, MapPin, Calendar, Mail, Phone, Shield,
-  ShieldCheck, ShieldOff, Plus, Settings2
+  ShieldCheck, ShieldOff, Plus, Settings2, UserPlus, KeyRound
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -43,6 +43,8 @@ interface AdminUser {
   created_at: string;
   profile: Profile | null;
   permissions: string[] | null; // null = acesso total
+  auth_email: string | null;
+  auth_full_name: string | null;
 }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
@@ -71,6 +73,7 @@ const TODAS_ABAS: { key: string; label: string }[] = [
 
 const AdminUsers = () => {
   const [abaAtiva, setAbaAtiva] = useState<'usuarios' | 'leitores' | 'equipe'>('usuarios');
+  const [convidarOpen, setConvidarOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // ── Dados: Usuários do site ─────────────────────────────────────────────────
@@ -106,7 +109,6 @@ const AdminUsers = () => {
   const { data: adminUsers, isLoading: adminLoading } = useQuery({
     queryKey: ['admin-equipe'],
     queryFn: async () => {
-      // Busca roles admin + profiles + permissions
       const [rolesResult, permissionsResult] = await Promise.all([
         supabase.from('user_roles').select('user_id, role, created_at').eq('role', 'admin'),
         supabase.from('admin_permissions').select('user_id, tabs'),
@@ -117,8 +119,8 @@ const AdminUsers = () => {
       const roles = rolesResult.data || [];
       const permissions = permissionsResult.data || [];
 
-      // Busca profiles de cada admin
       const userIds = roles.map((r) => r.user_id);
+
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('*')
@@ -131,12 +133,42 @@ const AdminUsers = () => {
         permissions.map((p) => [p.user_id, p.tabs as string[]])
       );
 
+      // Busca dados do auth para todos os admins (garante email e nome mesmo sem profile legível)
+      let authInfoMap: Record<string, { email: string; full_name: string | null }> = {};
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+          const res = await fetch(`${supabaseUrl}/functions/v1/admin-user-actions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: anonKey,
+            },
+            body: JSON.stringify({ action: 'get-users-info', userIds }),
+          });
+          if (res.ok) {
+            const json = await res.json();
+            authInfoMap = Object.fromEntries(
+              (json.users || []).map((u: { id: string; email: string; full_name: string | null }) => [
+                u.id,
+                { email: u.email, full_name: u.full_name },
+              ])
+            );
+          }
+        }
+      } catch { /* silently ignore, fallback para UUID */ }
+
       return roles.map((r) => ({
         user_id: r.user_id,
         role: r.role,
         created_at: r.created_at,
         profile: profilesMap[r.user_id] ?? null,
-        permissions: permissionsMap[r.user_id] ?? null, // null = acesso total
+        permissions: permissionsMap[r.user_id] ?? null,
+        auth_email: authInfoMap[r.user_id]?.email ?? null,
+        auth_full_name: authInfoMap[r.user_id]?.full_name ?? null,
       })) as AdminUser[];
     },
   });
@@ -162,25 +194,35 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
-      {/* Seletor de aba */}
-      <div className="flex gap-2 flex-wrap">
-        {[
-          { key: 'usuarios', label: 'Usuários Cadastrados' },
-          { key: 'leitores', label: 'Leitores do Blog' },
-          { key: 'equipe',   label: 'Equipe Admin' },
-        ].map((aba) => (
-          <button
-            key={aba.key}
-            onClick={() => setAbaAtiva(aba.key as typeof abaAtiva)}
-            className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
-              abaAtiva === aba.key
-                ? 'bg-primary text-white'
-                : 'bg-white border border-input text-muted-foreground hover:border-primary'
-            }`}
-          >
-            {aba.label}
-          </button>
-        ))}
+      {/* Seletor de aba + botão convidar */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex gap-2 flex-wrap">
+          {[
+            { key: 'usuarios', label: 'Usuários Cadastrados' },
+            { key: 'leitores', label: 'Leitores do Blog' },
+            { key: 'equipe',   label: 'Equipe Admin' },
+          ].map((aba) => (
+            <button
+              key={aba.key}
+              onClick={() => setAbaAtiva(aba.key as typeof abaAtiva)}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
+                abaAtiva === aba.key
+                  ? 'bg-primary text-white'
+                  : 'bg-white border border-input text-muted-foreground hover:border-primary'
+              }`}
+            >
+              {aba.label}
+            </button>
+          ))}
+        </div>
+        <Button
+          onClick={() => setConvidarOpen(true)}
+          className="bg-primary hover:bg-primary-medium text-sm gap-2"
+          size="sm"
+        >
+          <UserPlus className="w-4 h-4" />
+          Criar Usuário
+        </Button>
       </div>
 
       {/* ── Usuários Cadastrados ──────────────────────────────────────────────── */}
@@ -312,6 +354,15 @@ const AdminUsers = () => {
           onRefresh={() => queryClient.invalidateQueries({ queryKey: ['admin-equipe'] })}
         />
       )}
+
+      <CriarUsuarioModal
+        open={convidarOpen}
+        onClose={() => setConvidarOpen(false)}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+          queryClient.invalidateQueries({ queryKey: ['admin-equipe'] });
+        }}
+      />
     </div>
   );
 };
@@ -330,6 +381,13 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [editPermissions, setEditPermissions] = useState<string[]>([]);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [trocarSenhaUser, setTrocarSenhaUser] = useState<AdminUser | null>(null);
+
+  // Helper: email de exibição
+  const displayEmail = (u: AdminUser) =>
+    u.profile?.email || u.auth_email || null;
+  const displayName = (u: AdminUser) =>
+    u.profile?.full_name || u.auth_full_name || displayEmail(u) || u.user_id.slice(0, 8) + '...';
 
   const handleAddAdmin = async () => {
     if (!addEmail.trim()) return;
@@ -492,11 +550,9 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
                         }
                       </div>
                       <div>
-                        <p className="font-semibold text-sm">
-                          {u.profile?.full_name || u.profile?.email || u.user_id}
-                        </p>
-                        {u.profile?.full_name && u.profile.email && (
-                          <p className="text-xs text-muted-foreground">{u.profile.email}</p>
+                        <p className="font-semibold text-sm">{displayName(u)}</p>
+                        {u.profile?.full_name && displayEmail(u) && (
+                          <p className="text-xs text-muted-foreground">{displayEmail(u)}</p>
                         )}
                         <div className="flex items-center gap-2 mt-1">
                           <Badge
@@ -512,7 +568,7 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
                       <Button
                         variant="outline"
                         size="sm"
@@ -523,9 +579,18 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
                         Permissões
                       </Button>
                       <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setTrocarSenhaUser(u)}
+                        className="text-xs gap-1 border-amber-300 text-amber-700 hover:bg-amber-50"
+                      >
+                        <KeyRound className="w-3.5 h-3.5" />
+                        Senha
+                      </Button>
+                      <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleRevokeAdmin(u.user_id, u.profile?.email ?? null)}
+                        onClick={() => handleRevokeAdmin(u.user_id, displayEmail(u))}
                         className="text-destructive hover:bg-destructive/10 text-xs gap-1"
                       >
                         <ShieldOff className="w-3.5 h-3.5" />
@@ -561,12 +626,20 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
         )}
       </div>
 
+      {/* Modal de trocar senha */}
+      {trocarSenhaUser && (
+        <TrocarSenhaModal
+          user={trocarSenhaUser}
+          onClose={() => setTrocarSenhaUser(null)}
+        />
+      )}
+
       {/* Modal de permissões */}
       <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
         <DialogContent className="max-w-md bg-cream border-2 border-primary">
           <DialogHeader>
             <DialogTitle className="font-bebas text-xl text-primary tracking-wider">
-              PERMISSÕES — {editingUser?.profile?.full_name || editingUser?.profile?.email || 'Admin'}
+              PERMISSÕES — {editingUser?.profile?.full_name || editingUser?.profile?.email || editingUser?.auth_email || 'Admin'}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
@@ -639,6 +712,290 @@ const EquipeAdmin = ({ adminUsers, loading, onRefresh }: EquipeAdminProps) => {
         </DialogContent>
       </Dialog>
     </div>
+  );
+};
+
+// ─── Modal: Trocar Senha ──────────────────────────────────────────────────────
+
+interface TrocarSenhaModalProps {
+  user: AdminUser;
+  onClose: () => void;
+}
+
+const TrocarSenhaModal = ({ user, onClose }: TrocarSenhaModalProps) => {
+  const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const displayLabel = user.profile?.full_name || user.profile?.email || user.auth_email || user.user_id.slice(0, 8) + '...';
+
+  const handleSubmit = async () => {
+    if (newPassword.length < 6) {
+      toast.error('A senha deve ter no mínimo 6 caracteres');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Sessão expirada');
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const res = await fetch(`${supabaseUrl}/functions/v1/admin-user-actions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: anonKey,
+        },
+        body: JSON.stringify({ action: 'change-password', targetUserId: user.user_id, newPassword }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Erro ao trocar senha');
+
+      toast.success(`Senha de ${displayLabel} alterada com sucesso`);
+      onClose();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao trocar senha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-sm bg-cream border-2 border-primary">
+        <DialogHeader>
+          <DialogTitle className="font-bebas text-xl text-primary tracking-wider flex items-center gap-2">
+            <KeyRound className="w-5 h-5" />
+            TROCAR SENHA
+          </DialogTitle>
+        </DialogHeader>
+        <div className="py-2 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Definindo nova senha para <span className="font-semibold text-foreground">{displayLabel}</span>
+          </p>
+          <div className="space-y-2">
+            <Label htmlFor="new-password">Nova senha</Label>
+            <Input
+              id="new-password"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            />
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={onClose}>CANCELAR</Button>
+          <Button
+            className="bg-primary hover:bg-primary-medium font-bold"
+            onClick={handleSubmit}
+            disabled={loading || newPassword.length < 6}
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'SALVAR SENHA'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// ─── Modal: Criar Usuário ─────────────────────────────────────────────────────
+
+interface CriarUsuarioModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const CriarUsuarioModal = ({ open, onClose, onSuccess }: CriarUsuarioModalProps) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [role, setRole] = useState<'user' | 'admin'>('user');
+  const [permissions, setPermissions] = useState<string[]>(TODAS_ABAS.map((a) => a.key));
+  const [loading, setLoading] = useState(false);
+
+  const toggleAba = (key: string) => {
+    setPermissions((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
+  };
+
+  const handleClose = () => {
+    setEmail('');
+    setPassword('');
+    setFullName('');
+    setRole('user');
+    setPermissions(TODAS_ABAS.map((a) => a.key));
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) return;
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Sessão expirada');
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const res = await fetch(`${supabaseUrl}/functions/v1/invite-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: supabaseAnonKey,
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+          fullName: fullName.trim() || undefined,
+          role,
+          permissions: role === 'admin' ? permissions : undefined,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Erro ao criar usuário');
+
+      if (json.confirmed === false) {
+        toast.success(`Usuário ${email} criado — aguardando confirmação de e-mail`);
+      } else {
+        toast.success(`Usuário ${email} criado com sucesso`);
+      }
+      onSuccess();
+      handleClose();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao criar usuário');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
+      <DialogContent className="max-w-md bg-cream border-2 border-primary">
+        <DialogHeader>
+          <DialogTitle className="font-bebas text-xl text-primary tracking-wider flex items-center gap-2">
+            <UserPlus className="w-5 h-5" />
+            CRIAR USUÁRIO
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="pt-3 pb-2 space-y-4 overflow-y-auto max-h-[65vh] px-1 -mx-1">
+          <div className="space-y-2">
+            <Label htmlFor="create-email">E-mail *</Label>
+            <Input
+              id="create-email"
+              type="email"
+              placeholder="email@exemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="create-password">Senha *</Label>
+            <Input
+              id="create-password"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="create-name">Nome completo</Label>
+            <Input
+              id="create-name"
+              placeholder="João da Silva"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+          </div>
+
+          {/* Tipo de usuário */}
+          <div className="space-y-2">
+            <Label>Tipo de acesso</Label>
+            <div className="flex gap-2">
+              {[
+                { value: 'user', label: 'Usuário Regular' },
+                { value: 'admin', label: 'Membro Admin' },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setRole(opt.value as 'user' | 'admin')}
+                  className={`flex-1 py-2 px-3 rounded-xl text-sm font-semibold border transition-colors ${
+                    role === opt.value
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-muted-foreground border-input hover:border-primary'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Permissões (só para admin) */}
+          {role === 'admin' && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Permissões de abas</Label>
+                <div className="flex gap-2 text-xs">
+                  <button onClick={() => setPermissions(TODAS_ABAS.map((a) => a.key))} className="text-primary underline">
+                    Marcar todas
+                  </button>
+                  <span className="text-muted-foreground">·</span>
+                  <button onClick={() => setPermissions([])} className="text-muted-foreground underline">
+                    Desmarcar
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1 max-h-52 overflow-y-auto pr-1">
+                {TODAS_ABAS.map((aba) => {
+                  const marcado = permissions.includes(aba.key);
+                  return (
+                    <button
+                      key={aba.key}
+                      onClick={() => toggleAba(aba.key)}
+                      className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white border border-cream-dark hover:border-primary/30 transition-colors"
+                    >
+                      <span className={`text-sm font-medium ${marcado ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {aba.label}
+                      </span>
+                      <span className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${marcado ? 'bg-primary' : 'bg-gray-200'}`}>
+                        <span className={`inline-block h-5 w-5 mt-0.5 rounded-full bg-white shadow-md ring-0 transition-transform duration-200 ${marcado ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {permissions.length === TODAS_ABAS.length && (
+                <p className="text-xs text-primary bg-primary/5 border border-primary/20 rounded-lg p-2">
+                  Todas as abas marcadas = acesso total
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={handleClose}>CANCELAR</Button>
+          <Button
+            className="bg-primary hover:bg-primary-medium font-bold"
+            onClick={handleSubmit}
+            disabled={loading || !email.trim() || !password.trim()}
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><UserPlus className="w-4 h-4 mr-1" />CRIAR USUÁRIO</>}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

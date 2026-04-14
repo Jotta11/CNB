@@ -58,24 +58,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkAdminRole(session.user.id).then(setIsAdmin);
+        checkAdminRole(session.user.id).then((result) => {
+          setIsAdmin(result);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       // Defer Supabase calls with setTimeout to avoid deadlock
       if (session?.user) {
         setTimeout(() => {
-          checkAdminRole(session.user.id).then(setIsAdmin);
+          checkAdminRole(session.user.id).then((result) => {
+            setIsAdmin(result);
+            setLoading(false);
+          });
         }, 0);
       } else {
         setIsAdmin(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();

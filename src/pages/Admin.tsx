@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { LogOut, Lock, Mail, Loader2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 import AdminSidebar, { type SectionKey, ALL_SECTIONS } from '@/components/admin/AdminSidebar';
 import AdminLeads from '@/components/admin/AdminLeads';
@@ -102,7 +103,14 @@ const AdminLoginForm = () => {
 
 const Admin = () => {
   const { user, loading, isAdmin, signOut } = useAuth();
-  const [activeSection, setActiveSection] = useState<SectionKey>('leads');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as SectionKey | null;
+  const [activeSection, setActiveSection] = useState<SectionKey>(tabParam ?? 'leads');
+
+  const handleSelectSection = (section: SectionKey) => {
+    setActiveSection(section);
+    setSearchParams({ tab: section }, { replace: true });
+  };
 
   const { data: permissionsData, isLoading: permissionsLoading } = useQuery({
     queryKey: ['minha-permissao', user?.id],
@@ -157,7 +165,7 @@ const Admin = () => {
         <AdminSidebar
           allowedKeys={permissionsData ?? null}
           activeSection={currentSection}
-          onSelect={setActiveSection}
+          onSelect={handleSelectSection}
         />
         <main className="flex-1 overflow-y-auto p-8">
           <motion.div key={currentSection} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }}>

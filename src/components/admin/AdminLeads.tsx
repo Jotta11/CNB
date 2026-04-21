@@ -1,5 +1,5 @@
 // src/components/admin/AdminLeads.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -128,8 +128,12 @@ const AdminLeads = () => {
     setDetailLead(prev => (prev?.id === id ? { ...prev, status } : prev));
   };
 
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [page]);
+
   const stats = {
-    total: leads.length,
+    total: totalCount,
     comprar: leads.filter(l => l.tipo === 'comprar').length,
     vender: leads.filter(l => l.tipo === 'vender').length,
     tabela_precos: leads.filter(l => l.tipo === 'tabela_precos').length,
@@ -345,7 +349,7 @@ const AdminLeads = () => {
         open={exportOpen}
         onOpenChange={setExportOpen}
         selectedIds={selectedIds}
-        allLeads={filteredLeads}
+        allLeads={leads}
       />
     </div>
   );

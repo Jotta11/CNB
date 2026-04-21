@@ -1,1 +1,1 @@
-export const SHOW_EM_BREVE = true;
+export const SHOW_EM_BREVE = false;

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import bgForm from '@/assets/bg-form.png';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 
 const DEFAULT_WHATSAPP = '5563992628916';
 
@@ -34,7 +35,8 @@ const SellerForm = () => {
     numeroCabecas: '',
     mensagem: ''
   });
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [errors, setErrors] = useState<Partial<FormData & { lgpd: string }>>({});
+  const [lgpdAceito, setLgpdAceito] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formatPhone = (value: string) => {
@@ -84,6 +86,8 @@ const SellerForm = () => {
     if (!formData.numeroCabecas || parseInt(formData.numeroCabecas) < 1) {
       newErrors.numeroCabecas = 'Número de cabeças é obrigatório';
     }
+
+    if (!lgpdAceito) newErrors.lgpd = 'Você precisa aceitar a Política de Privacidade para continuar';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -143,6 +147,7 @@ const SellerForm = () => {
         numeroCabecas: '',
         mensagem: ''
       });
+      setLgpdAceito(false);
     } catch (error) {
       console.error('Error submitting lead:', error);
       toast.error('Erro ao enviar. Tente novamente.');
@@ -382,6 +387,13 @@ const SellerForm = () => {
                 className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
               />
             </div>
+
+            {/* LGPD */}
+            <LgpdCheckbox
+              checked={lgpdAceito}
+              onChange={setLgpdAceito}
+              error={errors.lgpd}
+            />
 
             {/* Submit */}
             <button

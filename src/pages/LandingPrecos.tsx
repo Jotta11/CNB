@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -42,6 +43,8 @@ const tableImg = '/TABELA CNB.png';
 const LandingPrecos = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
   const formIniciadoRef = useRef(false);
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [lgpdError, setLgpdError] = useState('');
   const {
     register,
     handleSubmit,
@@ -52,6 +55,11 @@ const LandingPrecos = () => {
   });
 
   const onSubmit = async (data: FormData) => {
+    if (!lgpdAceito) {
+      setLgpdError('Você precisa aceitar a Política de Privacidade para continuar');
+      return;
+    }
+    setLgpdError('');
     try {
       await submitLead({
         tipo: 'tabela_precos',
@@ -208,6 +216,12 @@ const LandingPrecos = () => {
                 </Select>
                 {errors.area_atuacao && <p className="text-destructive text-sm">{errors.area_atuacao.message}</p>}
               </div>
+
+              <LgpdCheckbox
+                checked={lgpdAceito}
+                onChange={(v) => { setLgpdAceito(v); if (v) setLgpdError(''); }}
+                error={lgpdError}
+              />
 
               <Button
                 type="submit"

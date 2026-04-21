@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,12 +18,14 @@ import {
 import LandingLayout from '@/components/landing/LandingLayout';
 import { useLeadSubmit } from '@/hooks/useLeadSubmit';
 import { trackFormInicio } from '@/utils/analytics';
+import { cidadesPorEstado, estados } from '@/data/cidadesPorEstado';
 
 const schema = z.object({
   nome: z.string().min(3, 'Informe seu nome completo'),
   telefone: z.string().min(10, 'Informe um telefone válido'),
   email: z.string().email('Informe um e-mail válido'),
-  localizacao: z.string().min(2, 'Informe seu estado'),
+  estado: z.string().min(1, 'Selecione o estado'),
+  cidade: z.string().min(1, 'Selecione a cidade'),
   ciclo_produtivo: z.string().min(1, 'Selecione o ciclo produtivo'),
   volume_rebanho: z.string().min(1, 'Informe o volume aproximado'),
 });
@@ -48,6 +51,9 @@ const volumes = [
 const LandingOfertas = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
   const formIniciadoRef = useRef(false);
+  const [estadoSelecionado, setEstadoSelecionado] = useState('');
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [lgpdError, setLgpdError] = useState('');
   const {
     register,
     handleSubmit,
@@ -57,9 +63,24 @@ const LandingOfertas = () => {
     resolver: zodResolver(schema),
   });
 
+  const cidadesDisponiveis = estadoSelecionado ? cidadesPorEstado[estadoSelecionado] || [] : [];
+
   const onSubmit = async (data: FormData) => {
+    if (!lgpdAceito) {
+      setLgpdError('Você precisa aceitar a Política de Privacidade para continuar');
+      return;
+    }
+    setLgpdError('');
     try {
-      await submitLead({ tipo: 'ofertas_direcionadas', ...data });
+      await submitLead({
+        tipo: 'ofertas_direcionadas',
+        nome: data.nome,
+        telefone: data.telefone,
+        email: data.email,
+        ciclo_produtivo: data.ciclo_produtivo,
+        volume_rebanho: data.volume_rebanho,
+        localizacao: `${data.cidade} - ${data.estado}`,
+      });
     } catch {
       toast.error('Erro ao enviar. Tente novamente.');
     }
@@ -97,9 +118,9 @@ const LandingOfertas = () => {
             </span>
           </div>
           <h1 className="font-display text-5xl text-white tracking-wider leading-tight">
-            Receba Ofertas
+            Sua Demanda.
             <br />
-            Feitas para Você
+            Nossa Consultoria.
           </h1>
           <p className="text-white/75 text-lg max-w-sm mx-auto">
             Diga o que você busca e nós garimparemos os melhores lotes bovinos do mercado
@@ -155,17 +176,51 @@ const LandingOfertas = () => {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="localizacao" className="text-white/90">
-              Estado
-            </Label>
-            <Input
-              id="localizacao"
-              placeholder="Ex: Mato Grosso"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent"
-              {...register('localizacao')}
-            />
-            {errors.localizacao && (
-              <p className="text-accent text-sm">{errors.localizacao.message}</p>
+            <Label className="text-white/90">Estado</Label>
+            <Select
+              onValueChange={(v) => {
+                setValue('estado', v, { shouldValidate: true });
+                setValue('cidade', '', { shouldValidate: false });
+                setEstadoSelecionado(v);
+              }}
+            >
+              <SelectTrigger className="bg-white/10 border-white/20 text-white focus:border-accent">
+                <SelectValue placeholder="Selecione o estado" />
+              </SelectTrigger>
+              <SelectContent>
+                {estados.map((e) => (
+                  <SelectItem key={e} value={e}>
+                    {e}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.estado && (
+              <p className="text-accent text-sm">{errors.estado.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-white/90">Cidade</Label>
+            <Select
+              disabled={!estadoSelecionado}
+              onValueChange={(v) => setValue('cidade', v, { shouldValidate: true })}
+            >
+              <SelectTrigger className="bg-white/10 border-white/20 text-white focus:border-accent disabled:opacity-50">
+                <SelectValue
+                  placeholder={estadoSelecionado ? 'Selecione a cidade' : 'Selecione o estado primeiro'}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {cidadesDisponiveis.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.cidade && (
+              <p className="text-accent text-sm">{errors.cidade.message}</p>
             )}
           </div>
 
@@ -205,6 +260,14 @@ const LandingOfertas = () => {
             {errors.volume_rebanho && (
               <p className="text-accent text-sm">{errors.volume_rebanho.message}</p>
             )}
+          </div>
+
+          <div className="[&_span]:text-white/70 [&_a]:text-accent [&_p]:text-accent">
+            <LgpdCheckbox
+              checked={lgpdAceito}
+              onChange={(v) => { setLgpdAceito(v); if (v) setLgpdError(''); }}
+              error={lgpdError}
+            />
           </div>
 
           <Button

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -41,6 +42,8 @@ const categorias = [
 const LandingVender = () => {
   const { submitLead, isSubmitting, submitted } = useLeadSubmit();
   const formIniciadoRef = useRef(false);
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [lgpdError, setLgpdError] = useState('');
   const { settings } = useSiteSettings();
   const whatsappNumber = settings.whatsapp_number || '5563992628916';
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Quero vender meu gado e gostaria de mais informações.')}`;
@@ -58,6 +61,11 @@ const LandingVender = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+    if (!lgpdAceito) {
+      setLgpdError('Você precisa aceitar a Política de Privacidade para continuar');
+      return;
+    }
+    setLgpdError('');
     try {
       await submitLead({ tipo: 'vender', ...data });
     } catch {
@@ -310,6 +318,12 @@ const LandingVender = () => {
                     {...register('mensagem')}
                   />
                 </div>
+
+                <LgpdCheckbox
+                  checked={lgpdAceito}
+                  onChange={(v) => { setLgpdAceito(v); if (v) setLgpdError(''); }}
+                  error={lgpdError}
+                />
 
                 <Button
                   type="submit"

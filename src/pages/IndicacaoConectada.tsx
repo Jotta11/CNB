@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 import { motion } from 'framer-motion';
 import { Handshake, TrendingUp, Shield, Users, Phone, ArrowRight, CheckCircle2, ClipboardList, HeartHandshake, Star, Zap, Target, Send, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -18,6 +19,8 @@ const IndicacaoConectada = () => {
   const [formData, setFormData] = useState({ nome: '', telefone: '', email: '', cidade: '', estado: '', mensagem: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [lgpdError, setLgpdError] = useState('');
   const formIniciadoRef = useRef(false);
 
   useEffect(() => {
@@ -42,6 +45,11 @@ const IndicacaoConectada = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!lgpdAceito) {
+      setLgpdError('Você precisa aceitar a Política de Privacidade para continuar');
+      return;
+    }
+    setLgpdError('');
     setSubmitting(true);
     try {
       const db = supabase as any;
@@ -481,6 +489,14 @@ const IndicacaoConectada = () => {
                     placeholder="Conte um pouco sobre sua experiência e rede de contatos..."
                     rows={4}
                     className="bg-white/[0.08] border-white/[0.12] text-white placeholder:text-white/30 focus:border-accent/50 resize-none"
+                  />
+                </div>
+
+                <div className="[&_span]:text-white/70 [&_a]:text-accent [&_p]:text-accent">
+                  <LgpdCheckbox
+                    checked={lgpdAceito}
+                    onChange={(v) => { setLgpdAceito(v); if (v) setLgpdError(''); }}
+                    error={lgpdError}
                   />
                 </div>
 

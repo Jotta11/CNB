@@ -30,6 +30,7 @@ import LandingPrecos from "./pages/LandingPrecos";
 import LandingOfertas from "./pages/LandingOfertas";
 import LandingComprar from "./pages/LandingComprar";
 import NotFound from "./pages/NotFound";
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/precos" element={<LandingPrecos />} />
             <Route path="/ofertas" element={<LandingOfertas />} />
             <Route path="/comprar" element={<LandingComprar />} />
+            <Route path="/politica-de-privacidade" element={<PoliticaPrivacidade />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

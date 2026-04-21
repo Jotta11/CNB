@@ -1,5 +1,6 @@
 import { MapPin, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 import logoVertical from '@/assets/logo-vertical.svg';
 
 const navLinks = [
@@ -69,6 +70,27 @@ const Footer = () => {
         </p>
         <p className="text-white/40 text-xs mb-4">
           Curadoria especializada para negociações com confiança
+        </p>
+
+        {/* Legal */}
+        <Link
+          to="/politica-de-privacidade"
+          className="text-white/40 text-xs hover:text-white/70 transition-colors"
+        >
+          Política de Privacidade
+        </Link>
+
+        {/* Dev credit */}
+        <p className="text-white/25 text-xs mt-3">
+          Desenvolvido por{' '}
+          <a
+            href="https://www.afadigital.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white/50 transition-colors"
+          >
+            AFA | Posicionamento Digital
+          </a>
         </p>
 
       </div>

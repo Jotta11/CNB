@@ -121,7 +121,37 @@ export const cidadesPorEstado: Record<string, string[]> = {
   'Tocantins': [
     'Palmas', 'Araguaína', 'Gurupi', 'Porto Nacional', 'Paraíso do Tocantins',
     'Colinas do Tocantins', 'Guaraí', 'Tocantinópolis', 'Dianópolis', 'Miracema do Tocantins',
-    'Formoso do Araguaia', 'Pedro Afonso', 'Augustinópolis', 'Araguatins', 'Alvorada'
+    'Formoso do Araguaia', 'Pedro Afonso', 'Augustinópolis', 'Araguatins', 'Alvorada',
+    'Almas', 'Ananás', 'Angico', 'Aparecida do Rio Negro', 'Aragominas',
+    'Araguacema', 'Araguaçu', 'Araguanã', 'Arapoema', 'Arraias',
+    'Aurora do Tocantins', 'Axixá do Tocantins', 'Babaçulândia', 'Bandeirantes do Tocantins',
+    'Barra do Ouro', 'Barrolândia', 'Bernardo Sayão', 'Bom Jesus do Tocantins',
+    'Brasilândia do Tocantins', 'Brejinho de Nazaré', 'Buriti do Tocantins',
+    'Cachoeirinha', 'Campos Lindos', 'Cariri do Tocantins', 'Carmolândia',
+    'Carrasco Bonito', 'Caseara', 'Centenário', 'Chapada da Natividade',
+    'Chapada de Areia', 'Colméia', 'Combinado', 'Conceição do Tocantins',
+    'Couto Magalhães', 'Cristalândia', 'Crixás do Tocantins', 'Darcinópolis',
+    'Divinópolis do Tocantins', 'Dois Irmãos do Tocantins', 'Duerê', 'Esperantina',
+    'Fátima', 'Figueirópolis', 'Filadélfia', 'Fortaleza do Tabocão',
+    'Goianorte', 'Goiatins', 'Ipueiras', 'Itacajá', 'Itaguatins',
+    'Itapiratins', 'Itaporã do Tocantins', 'Jaú do Tocantins', 'Juarina',
+    'Lagoa da Confusão', 'Lagoa do Tocantins', 'Lajeado', 'Lavandeira',
+    'Lizarda', 'Luzinópolis', 'Marianópolis do Tocantins', 'Mateiros',
+    'Maurilândia do Tocantins', 'Miranorte', 'Monte do Carmo', 'Monte Santo do Tocantins',
+    'Muricilândia', 'Natividade', 'Nazaré', 'Nova Olinda', 'Nova Rosalândia',
+    'Novo Acordo', 'Novo Alegre', 'Novo Jardim', 'Oliveira de Fátima',
+    'Palmeirante', 'Palmeirópolis', 'Paranã', 'Pau D\'Arco', 'Peixe',
+    'Pequizeiro', 'Pindorama do Tocantins', 'Piraquê', 'Pium',
+    'Ponte Alta do Bom Jesus', 'Ponte Alta do Tocantins', 'Porto Alegre do Tocantins',
+    'Praia Norte', 'Presidente Kennedy', 'Pugmil', 'Recursolândia',
+    'Riachinho', 'Rio da Conceição', 'Rio dos Bois', 'Rio Sono',
+    'Sampaio', 'Sandolândia', 'Santa Fé do Araguaia', 'Santa Maria do Tocantins',
+    'Santa Rita do Tocantins', 'Santa Rosa do Tocantins', 'Santa Tereza do Tocantins',
+    'Santa Terezinha do Tocantins', 'São Bento do Tocantins', 'São Félix do Tocantins',
+    'São Miguel do Tocantins', 'São Salvador do Tocantins', 'São Sebastião do Tocantins',
+    'São Valério', 'Silvanópolis', 'Sítio Novo do Tocantins', 'Sucupira',
+    'Taguatinga', 'Taipas do Tocantins', 'Talismã', 'Tocantínia',
+    'Tupirama', 'Tupiratins', 'Wanderlândia', 'Xambioá'
   ]
 };
 

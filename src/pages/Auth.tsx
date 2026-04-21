@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LgpdCheckbox from '@/components/LgpdCheckbox';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,8 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [lgpdError, setLgpdError] = useState('');
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -30,6 +33,13 @@ const Auth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!isLogin && !lgpdAceito) {
+      setLgpdError('Você precisa aceitar a Política de Privacidade para criar sua conta');
+      setLoading(false);
+      return;
+    }
+    if (!isLogin) setLgpdError('');
 
     try {
       if (isLogin) {
@@ -207,6 +217,14 @@ const Auth = () => {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <LgpdCheckbox
+                checked={lgpdAceito}
+                onChange={(v) => { setLgpdAceito(v); if (v) setLgpdError(''); }}
+                error={lgpdError}
+              />
+            )}
 
             <Button
               type="submit"

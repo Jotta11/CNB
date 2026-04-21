@@ -9,17 +9,30 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Loader2, Upload, X, Plus, Trash2, Image, Layers } from 'lucide-react';
+
+type BotaoModo = 'nenhum' | 'url' | 'secao';
+
+const SECOES_SITE: { id: string; label: string }[] = [
+  { id: '#inicio', label: 'Início' },
+  { id: '#lotes', label: 'Lotes' },
+  { id: '#vender', label: 'Quero Vender' },
+  { id: '#sobre', label: 'Sobre Nós' },
+  { id: '#faq', label: 'FAQ' },
+];
 
 // ── Tipos locais ──────────────────────────────────────────────────────────────
 
 interface SlideForm {
-  id: string | null; // null = novo, ainda não salvo no banco
+  id: string | null;
   titulo: string;
   subtitulo: string;
+  botao_modo: BotaoModo;
   botao_texto: string;
-  botao_url: string;
+  botao_url: string;   // URL livre
+  botao_secao: string; // âncora ex: #lotes
   imagem_mobile: string | null;
   imagem_desktop: string | null;
   ordem: number;
@@ -27,12 +40,20 @@ interface SlideForm {
   isNew: boolean;
 }
 
+const deriveModo = (url: string | null): BotaoModo => {
+  if (!url) return 'nenhum';
+  if (url.startsWith('#')) return 'secao';
+  return 'url';
+};
+
 const emptySlide = (): SlideForm => ({
   id: null,
   titulo: '',
   subtitulo: '',
+  botao_modo: 'url',
   botao_texto: 'Ver Lotes',
   botao_url: '/lotes',
+  botao_secao: '#lotes',
   imagem_mobile: null,
   imagem_desktop: null,
   ordem: 0,
@@ -40,18 +61,23 @@ const emptySlide = (): SlideForm => ({
   isNew: true,
 });
 
-const slideToForm = (s: HeroSlide): SlideForm => ({
-  id: s.id,
-  titulo: s.titulo,
-  subtitulo: s.subtitulo ?? '',
-  botao_texto: s.botao_texto,
-  botao_url: s.botao_url,
-  imagem_mobile: s.imagem_mobile,
-  imagem_desktop: s.imagem_desktop,
-  ordem: s.ordem,
-  ativo: s.ativo,
-  isNew: false,
-});
+const slideToForm = (s: HeroSlide): SlideForm => {
+  const modo = deriveModo(s.botao_url);
+  return {
+    id: s.id,
+    titulo: s.titulo,
+    subtitulo: s.subtitulo ?? '',
+    botao_modo: modo,
+    botao_texto: s.botao_texto ?? '',
+    botao_url: modo === 'url' ? (s.botao_url ?? '') : '/lotes',
+    botao_secao: modo === 'secao' ? (s.botao_url ?? '#lotes') : '#lotes',
+    imagem_mobile: s.imagem_mobile,
+    imagem_desktop: s.imagem_desktop,
+    ordem: s.ordem,
+    ativo: s.ativo,
+    isNew: false,
+  };
+};
 
 // ── Upload helper ─────────────────────────────────────────────────────────────
 
@@ -203,14 +229,52 @@ const SlideCard = ({
             <Label>Subtítulo</Label>
             <Input value={form.subtitulo} onChange={(e) => onChange({ ...form, subtitulo: e.target.value })} placeholder="Texto opcional abaixo do título" />
           </div>
-          <div className="space-y-1">
-            <Label>Texto do botão *</Label>
-            <Input value={form.botao_texto} onChange={(e) => onChange({ ...form, botao_texto: e.target.value })} placeholder="Ex: Ver Lotes" />
+          <div className="space-y-1 sm:col-span-2">
+            <Label>Botão de ação</Label>
+            <div className="flex flex-wrap gap-2">
+              {(['nenhum', 'url', 'secao'] as BotaoModo[]).map((modo) => (
+                <button
+                  key={modo}
+                  type="button"
+                  onClick={() => onChange({ ...form, botao_modo: modo })}
+                  className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+                    form.botao_modo === modo
+                      ? 'bg-primary text-white border-primary'
+                      : 'border-input hover:border-primary/50'
+                  }`}
+                >
+                  {modo === 'nenhum' ? 'Sem botão' : modo === 'url' ? 'URL' : 'Seção do site'}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label>URL do botão *</Label>
-            <Input value={form.botao_url} onChange={(e) => onChange({ ...form, botao_url: e.target.value })} placeholder="Ex: /lotes ou https://..." />
-          </div>
+          {form.botao_modo !== 'nenhum' && (
+            <div className="space-y-1">
+              <Label>Texto do botão</Label>
+              <Input value={form.botao_texto} onChange={(e) => onChange({ ...form, botao_texto: e.target.value })} placeholder="Ex: Ver Lotes" />
+            </div>
+          )}
+          {form.botao_modo === 'url' && (
+            <div className="space-y-1">
+              <Label>URL do botão</Label>
+              <Input value={form.botao_url} onChange={(e) => onChange({ ...form, botao_url: e.target.value })} placeholder="Ex: /lotes ou https://..." />
+            </div>
+          )}
+          {form.botao_modo === 'secao' && (
+            <div className="space-y-1">
+              <Label>Seção do site</Label>
+              <Select value={form.botao_secao} onValueChange={(v) => onChange({ ...form, botao_secao: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolha uma seção" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SECOES_SITE.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div className="space-y-1">
             <Label>Ordem</Label>
             <Input
@@ -281,22 +345,28 @@ const AdminHeroSlides = () => {
 
   const handleSave = async (index: number) => {
     const form = forms[index];
-    if (!form.botao_texto.trim()) {
-      toast.error('O texto do botão é obrigatório');
+    if (form.botao_modo !== 'nenhum' && !form.botao_texto.trim()) {
+      toast.error('Informe o texto do botão ou selecione "Sem botão"');
       return;
     }
-    if (!form.botao_url.trim()) {
-      toast.error('A URL do botão é obrigatória');
+    if (form.botao_modo === 'url' && !form.botao_url.trim()) {
+      toast.error('Informe a URL do botão');
       return;
     }
+
+    const resolvedUrl =
+      form.botao_modo === 'nenhum' ? null :
+      form.botao_modo === 'secao' ? form.botao_secao :
+      form.botao_url;
+
     const key = form.id ?? `new-${index}`;
     try {
       setSaving(key);
       const payload = {
         titulo: form.titulo,
         subtitulo: form.subtitulo || null,
-        botao_texto: form.botao_texto,
-        botao_url: form.botao_url,
+        botao_texto: form.botao_modo === 'nenhum' ? null : form.botao_texto,
+        botao_url: resolvedUrl,
         imagem_mobile: form.imagem_mobile,
         imagem_desktop: form.imagem_desktop,
         ordem: form.ordem,

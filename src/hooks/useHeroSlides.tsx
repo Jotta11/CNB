@@ -5,8 +5,8 @@ export interface HeroSlide {
   id: string;
   titulo: string;
   subtitulo: string | null;
-  botao_texto: string;
-  botao_url: string;
+  botao_texto: string | null;
+  botao_url: string | null;
   imagem_mobile: string | null;
   imagem_desktop: string | null;
   ordem: number;

@@ -11,6 +11,15 @@ import {
 } from '@/components/ui/carousel';
 import { useHeroSlides } from '@/hooks/useHeroSlides';
 
+// ── Utilitário de navegação ──────────────────────────────────────────────────
+const navigateTo = (url: string) => {
+  if (url.startsWith('#')) {
+    document.querySelector(url)?.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    window.location.href = url;
+  }
+};
+
 // ── Fallback (nenhum slide ativo cadastrado) ─────────────────────────────────
 const HeroFallback = () => {
   const scrollToSection = (id: string) => {
@@ -134,12 +143,14 @@ const HeroCarousel = () => {
                       {slide.subtitulo}
                     </p>
                   )}
-                  <a
-                    href={slide.botao_url}
-                    className="block w-full text-center bg-accent text-white font-bold py-3 rounded-lg text-sm tracking-wide mb-4"
-                  >
-                    {slide.botao_texto}
-                  </a>
+                  {slide.botao_url && (
+                    <button
+                      onClick={() => navigateTo(slide.botao_url!)}
+                      className="block w-full text-center bg-accent text-white font-bold py-3 rounded-lg text-sm tracking-wide mb-4"
+                    >
+                      {slide.botao_texto}
+                    </button>
+                  )}
                   <SlideDots count={slides.length} current={current} />
                 </div>
 
@@ -153,12 +164,14 @@ const HeroCarousel = () => {
                       {slide.subtitulo}
                     </p>
                   )}
-                  <a
-                    href={slide.botao_url}
-                    className="inline-block bg-accent text-white font-bold px-8 py-4 rounded-lg text-base tracking-wide"
-                  >
-                    {slide.botao_texto}
-                  </a>
+                  {slide.botao_url && (
+                    <button
+                      onClick={() => navigateTo(slide.botao_url!)}
+                      className="inline-block bg-accent text-white font-bold px-8 py-4 rounded-lg text-base tracking-wide"
+                    >
+                      {slide.botao_texto}
+                    </button>
+                  )}
                   <div className="mt-8">
                     <SlideDots count={slides.length} current={current} />
                   </div>

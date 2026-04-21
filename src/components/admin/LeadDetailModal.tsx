@@ -58,7 +58,7 @@ const LeadDetailModal = ({ lead, open, onOpenChange, onStatusChange }: LeadDetai
             </div>
           )}
 
-          {lead.numero_cabecas && (
+          {lead.numero_cabecas != null && (
             <div className="bg-muted/50 rounded-lg p-3">
               <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Cabeças</p>
               <p className="font-medium text-sm">{lead.numero_cabecas} cabeças</p>
@@ -96,7 +96,7 @@ const LeadDetailModal = ({ lead, open, onOpenChange, onStatusChange }: LeadDetai
 
         <div className="flex gap-2 pt-2">
           <Button
-            className="flex-1 bg-[#25d366] hover:bg-[#20b858] text-white"
+            className="flex-1 btn-whatsapp"
             onClick={() => {
               const message = `Olá ${lead.nome}! Recebemos seu contato através do nosso site CNB.`;
               const phone = lead.telefone.replace(/\D/g, '');

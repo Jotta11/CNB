@@ -8,15 +8,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { trackPageView } from "@/utils/analytics";
 import { useScrollDepth } from "@/hooks/useScrollDepth";
 import TrackingScripts from "@/components/TrackingScripts";
-const RouteTracker = () => {
-  const { pathname } = useLocation();
-  useScrollDepth();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    trackPageView(pathname);
-  }, [pathname]);
-  return null;
-};
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
@@ -31,6 +22,20 @@ import LandingOfertas from "./pages/LandingOfertas";
 import LandingComprar from "./pages/LandingComprar";
 import NotFound from "./pages/NotFound";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
+
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
+const RouteTracker = () => {
+  const { pathname } = useLocation();
+  useScrollDepth();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    trackPageView(pathname);
+  }, [pathname]);
+  return null;
+};
 
 const queryClient = new QueryClient();
 

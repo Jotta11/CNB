@@ -92,7 +92,7 @@ const HeroCarousel = () => {
   if (!slides.length) return <HeroFallback />;
 
   return (
-    <section id="inicio" className="min-h-[85vh] relative overflow-hidden pt-20">
+    <section id="inicio" className="min-h-[85vh] relative overflow-hidden pt-20 bg-black">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}

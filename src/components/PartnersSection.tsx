@@ -67,7 +67,7 @@ const PartnersSection = () => {
               <img
                 src={partner.logo_url}
                 alt={partner.nome}
-                className="h-16 md:h-20 max-w-[180px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg"
+                className="h-20 md:h-28 max-w-[220px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg"
               />
             </motion.a>
           ))}

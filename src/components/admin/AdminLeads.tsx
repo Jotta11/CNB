@@ -1,11 +1,13 @@
+// src/components/admin/AdminLeads.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Phone, MapPin, Users, Calendar, ShoppingCart, Tag, MessageSquare, Trash2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Trash2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -21,7 +23,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import type { Lead, LeadStatus, LeadTipo } from './leads.types';
-import { tipoLabels, tipoColors, statusLabels, statusColors } from './leads.types';
+import { tipoLabels, tipoColors, statusColors, statusLabels } from './leads.types';
+import LeadDetailModal from './LeadDetailModal';
+import LeadExportModal from './LeadExportModal';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -29,6 +33,10 @@ const AdminLeads = () => {
   const [filterTipo, setFilterTipo] = useState<'todos' | LeadTipo>('todos');
   const [filterStatus, setFilterStatus] = useState<'todos' | LeadStatus>('todos');
   const [page, setPage] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [detailLead, setDetailLead] = useState<Lead | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: leadsData, isLoading } = useQuery({
@@ -36,45 +44,35 @@ const AdminLeads = () => {
     queryFn: async () => {
       const from = page * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
-
       const { data, error, count } = await supabase
         .from('leads')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
-
       if (error) throw error;
       return { leads: data as unknown as Lead[], totalCount: count || 0 };
-    }
+    },
   });
 
-  const leads = leadsData?.leads;
+  const leads = leadsData?.leads ?? [];
   const totalCount = leadsData?.totalCount || 0;
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: LeadStatus }) => {
-      const { error } = await supabase
-        .from('leads')
-        .update({ status })
-        .eq('id', id);
+      const { error } = await supabase.from('leads').update({ status }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
       toast.success('Status atualizado!');
     },
-    onError: () => {
-      toast.error('Erro ao atualizar status');
-    }
+    onError: () => toast.error('Erro ao atualizar status'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('leads')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('leads').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -82,25 +80,61 @@ const AdminLeads = () => {
       toast.success('Lead excluído!');
     },
     onError: (error: unknown) => {
-      console.error('Erro ao excluir lead:', error);
       const msg = error instanceof Error ? error.message : String(error);
       toast.error(`Erro ao excluir lead: ${msg}`);
-    }
+    },
   });
 
-  const filteredLeads = leads?.filter(lead => {
+  const filteredLeads = leads.filter(lead => {
     if (filterTipo !== 'todos' && lead.tipo !== filterTipo) return false;
     if (filterStatus !== 'todos' && lead.status !== filterStatus) return false;
     return true;
   });
 
+  const allOnPageSelected =
+    filteredLeads.length > 0 && filteredLeads.every(l => selectedIds.has(l.id));
+
+  const toggleSelectAll = () => {
+    if (allOnPageSelected) {
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        filteredLeads.forEach(l => next.delete(l.id));
+        return next;
+      });
+    } else {
+      setSelectedIds(prev => {
+        const next = new Set(prev);
+        filteredLeads.forEach(l => next.add(l.id));
+        return next;
+      });
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const openDetail = (lead: Lead) => {
+    setDetailLead(lead);
+    setDetailOpen(true);
+  };
+
+  const handleStatusChange = (id: string, status: LeadStatus) => {
+    updateStatusMutation.mutate({ id, status });
+    setDetailLead(prev => (prev?.id === id ? { ...prev, status } : prev));
+  };
+
   const stats = {
-    total: leads?.length || 0,
-    comprar: leads?.filter(l => l.tipo === 'comprar').length || 0,
-    vender: leads?.filter(l => l.tipo === 'vender').length || 0,
-    tabela_precos: leads?.filter(l => l.tipo === 'tabela_precos').length || 0,
-    ofertas_direcionadas: leads?.filter(l => l.tipo === 'ofertas_direcionadas').length || 0,
-    novos: leads?.filter(l => l.status === 'novo').length || 0
+    total: leads.length,
+    comprar: leads.filter(l => l.tipo === 'comprar').length,
+    vender: leads.filter(l => l.tipo === 'vender').length,
+    tabela_precos: leads.filter(l => l.tipo === 'tabela_precos').length,
+    ofertas_direcionadas: leads.filter(l => l.tipo === 'ofertas_direcionadas').length,
+    novos: leads.filter(l => l.status === 'novo').length,
   };
 
   if (isLoading) {
@@ -115,46 +149,34 @@ const AdminLeads = () => {
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-primary">{stats.total}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Total</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-green-600">{stats.comprar}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Comprar</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-blue-600">{stats.vender}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Vender</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-emerald-600">{stats.tabela_precos}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Tabela Preços</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-purple-600">{stats.ofertas_direcionadas}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Ofertas Dir.</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <div className="text-2xl font-bold text-yellow-600">{stats.novos}</div>
-            <p className="text-xs text-muted-foreground leading-tight">Novos</p>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-primary">{stats.total}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Total</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-green-600">{stats.comprar}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Comprar</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-blue-600">{stats.vender}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Vender</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-emerald-600">{stats.tabela_precos}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Tabela Preços</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-purple-600">{stats.ofertas_direcionadas}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Ofertas Dir.</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-4">
+          <div className="text-2xl font-bold text-yellow-600">{stats.novos}</div>
+          <p className="text-xs text-muted-foreground leading-tight">Novos</p>
+        </CardContent></Card>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4">
+      {/* Toolbar */}
+      <div className="flex flex-wrap gap-3 items-center">
         <Select value={filterTipo} onValueChange={(v) => setFilterTipo(v as 'todos' | LeadTipo)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filtrar por tipo" />
@@ -180,62 +202,86 @@ const AdminLeads = () => {
             <SelectItem value="perdido">Perdido</SelectItem>
           </SelectContent>
         </Select>
+
+        <div className="ml-auto flex items-center gap-2">
+          {selectedIds.size > 0 && (
+            <span className="text-sm text-muted-foreground">{selectedIds.size} selecionado(s)</span>
+          )}
+          <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+            <Download className="w-4 h-4 mr-2" />
+            Exportar
+          </Button>
+        </div>
       </div>
 
-      {/* Leads List */}
-      <div className="space-y-4">
-        {filteredLeads?.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-muted-foreground">
-              Nenhum lead encontrado com os filtros selecionados.
-            </CardContent>
-          </Card>
-        ) : (
-          filteredLeads?.map(lead => (
-            <Card key={lead.id} className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${tipoColors[lead.tipo]?.iconBg ?? 'bg-gray-100'}`}>
-                      {lead.tipo === 'comprar' ? (
-                        <ShoppingCart className={`w-5 h-5 ${tipoColors[lead.tipo]?.icon}`} />
-                      ) : (
-                        <Tag className={`w-5 h-5 ${tipoColors[lead.tipo]?.icon}`} />
-                      )}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{lead.nome}</CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className={`${tipoColors[lead.tipo]?.border ?? 'border-gray-400'} ${tipoColors[lead.tipo]?.text ?? 'text-gray-600'}`}>
-                          {tipoLabels[lead.tipo] ?? lead.tipo}
-                        </Badge>
-                        <Badge className={`${statusColors[lead.status]} text-white`}>
-                          {statusLabels[lead.status]}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={lead.status}
-                      onValueChange={(v) => updateStatusMutation.mutate({ id: lead.id, status: v as LeadStatus })}
+      {/* Table */}
+      {filteredLeads.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            Nenhum lead encontrado com os filtros selecionados.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="rounded-md border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-3 py-3 w-10">
+                  <Checkbox
+                    checked={allOnPageSelected}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                </th>
+                <th className="px-3 py-3 text-left font-medium text-muted-foreground">Nome / Telefone</th>
+                <th className="px-3 py-3 text-left font-medium text-muted-foreground">Canal</th>
+                <th className="px-3 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <th className="px-3 py-3 text-left font-medium text-muted-foreground">Data</th>
+                <th className="px-3 py-3 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLeads.map(lead => (
+                <tr
+                  key={lead.id}
+                  className={`border-t transition-colors ${
+                    selectedIds.has(lead.id) ? 'bg-primary/5' : 'hover:bg-muted/30'
+                  }`}
+                >
+                  <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
+                    <Checkbox
+                      checked={selectedIds.has(lead.id)}
+                      onCheckedChange={() => toggleSelect(lead.id)}
+                    />
+                  </td>
+                  <td className="px-3 py-3 cursor-pointer" onClick={() => openDetail(lead)}>
+                    <div className="font-medium">{lead.nome}</div>
+                    <div className="text-xs text-muted-foreground">{lead.telefone}</div>
+                  </td>
+                  <td className="px-3 py-3 cursor-pointer" onClick={() => openDetail(lead)}>
+                    <Badge
+                      variant="outline"
+                      className={`${tipoColors[lead.tipo]?.border ?? 'border-gray-400'} ${tipoColors[lead.tipo]?.text ?? 'text-gray-600'}`}
                     >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="novo">Novo</SelectItem>
-                        <SelectItem value="em_contato">Em Contato</SelectItem>
-                        <SelectItem value="convertido">Convertido</SelectItem>
-                        <SelectItem value="perdido">Perdido</SelectItem>
-                      </SelectContent>
-                    </Select>
-
+                      {tipoLabels[lead.tipo] ?? lead.tipo}
+                    </Badge>
+                  </td>
+                  <td className="px-3 py-3 cursor-pointer" onClick={() => openDetail(lead)}>
+                    <Badge className={`${statusColors[lead.status]} text-white`}>
+                      {statusLabels[lead.status]}
+                    </Badge>
+                  </td>
+                  <td className="px-3 py-3 text-xs text-muted-foreground cursor-pointer" onClick={() => openDetail(lead)}>
+                    {format(new Date(lead.created_at), "dd/MM/yy HH:mm", { locale: ptBR })}
+                  </td>
+                  <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive h-7 w-7"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -253,95 +299,19 @@ const AdminLeads = () => {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Phone className="w-4 h-4" />
-                      <a href={`tel:${lead.telefone}`} className="hover:text-primary">
-                        {lead.telefone}
-                      </a>
-                    </div>
-                    
-                    {lead.localizacao && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="w-4 h-4" />
-                        <span>{lead.localizacao}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Calendar className="w-4 h-4" />
-                      <span>{format(new Date(lead.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}</span>
-                    </div>
-                    {lead.utm_source && (
-                      <div className="text-xs text-muted-foreground">
-                        <span className="font-medium">Origem:</span>{' '}
-                        {[lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(' / ')}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {lead.fazenda && (
-                      <div className="text-muted-foreground">
-                        <span className="font-medium">Fazenda:</span> {lead.fazenda}
-                      </div>
-                    )}
-                    
-                    {lead.tipo_cultura && (
-                      <div className="text-muted-foreground">
-                        <span className="font-medium">Cultura:</span> {lead.tipo_cultura}
-                      </div>
-                    )}
-                    
-                    {lead.numero_cabecas && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Users className="w-4 h-4" />
-                        <span>{lead.numero_cabecas} cabeças</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {lead.mensagem && (
-                  <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <MessageSquare className="w-4 h-4 text-muted-foreground mt-0.5" />
-                      <p className="text-sm text-muted-foreground">{lead.mensagem}</p>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const message = `Olá ${lead.nome}! Recebemos seu contato através do nosso site CNB.`;
-                      const phone = lead.telefone.replace(/\D/g, '');
-                      window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(message)}`, '_blank');
-                    }}
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Entrar em contato
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            Mostrando {page * ITEMS_PER_PAGE + 1} - {Math.min((page + 1) * ITEMS_PER_PAGE, totalCount)} de {totalCount}
+            Mostrando {page * ITEMS_PER_PAGE + 1}–{Math.min((page + 1) * ITEMS_PER_PAGE, totalCount)} de {totalCount}
           </p>
           <div className="flex gap-2">
             <Button
@@ -363,6 +333,20 @@ const AdminLeads = () => {
           </div>
         </div>
       )}
+
+      <LeadDetailModal
+        lead={detailLead}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        onStatusChange={handleStatusChange}
+      />
+
+      <LeadExportModal
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        selectedIds={selectedIds}
+        allLeads={filteredLeads}
+      />
     </div>
   );
 };

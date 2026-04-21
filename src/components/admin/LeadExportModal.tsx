@@ -1,5 +1,5 @@
 // src/components/admin/LeadExportModal.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -39,18 +39,27 @@ function leadsToCSV(leads: Lead[]): string {
 }
 
 function downloadCSV(content: string): void {
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['﻿' + content], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
   link.download = `leads-cnb-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
 const LeadExportModal = ({ open, onOpenChange, selectedIds, allLeads }: LeadExportModalProps) => {
   const [scope, setScope] = useState<ExportScope>('todos');
   const [selectedTipos, setSelectedTipos] = useState<Set<LeadTipo>>(new Set(ALL_TIPOS));
+
+  useEffect(() => {
+    if (open) {
+      setScope('todos');
+      setSelectedTipos(new Set(ALL_TIPOS));
+    }
+  }, [open]);
 
   const toggleTipo = (tipo: LeadTipo) => {
     setSelectedTipos(prev => {

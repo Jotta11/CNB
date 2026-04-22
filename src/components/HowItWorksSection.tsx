@@ -202,7 +202,7 @@ const HowItWorksSection = () => {
             className="text-center mt-10 md:mt-12"
           >
             <a
-              href="#lotes"
+              href="#vender"
               className="inline-flex items-center gap-3 bg-primary hover:bg-primary-medium text-primary-foreground font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
               Comece agora

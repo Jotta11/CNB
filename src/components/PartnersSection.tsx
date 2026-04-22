@@ -49,7 +49,7 @@ const PartnersSection = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center items-center gap-6 md:gap-8"
+          className="flex flex-wrap justify-center items-center gap-8 md:gap-16"
         >
           {partners.map((partner, index) => (
             <motion.a
@@ -61,13 +61,13 @@ const PartnersSection = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              whileHover={{ scale: 1.1, y: -4 }}
-              className="group flex items-center justify-center p-4 transition-all duration-300"
+              whileHover={{ scale: 1.05, y: -4 }}
+              className="group flex items-center justify-center p-5 bg-white rounded-2xl shadow-md transition-all duration-300"
             >
               <img
                 src={partner.logo_url}
                 alt={partner.nome}
-                className="h-20 md:h-28 max-w-[220px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-300 drop-shadow-lg"
+                className="h-24 md:h-32 max-w-[240px] object-contain opacity-90 group-hover:opacity-100 transition-all duration-300"
               />
             </motion.a>
           ))}

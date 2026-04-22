@@ -119,7 +119,7 @@ const LotesSection = () => {
               </div>
 
               {/* Overlay Em Breve */}
-              <div className="absolute inset-0 backdrop-blur-sm bg-primary/75 rounded-2xl flex flex-col items-center justify-center z-10 pointer-events-none">
+              <div className="absolute inset-0 backdrop-blur-sm bg-primary/75 rounded-2xl flex flex-col items-center justify-center z-10">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}

@@ -65,6 +65,7 @@ const NewsDetail = () => {
                     .from("noticias")
                     .select("*")
                     .eq("slug", slug)
+                    .lte("data_publicacao", new Date().toISOString())
                     .single();
 
                 if (error) throw error;

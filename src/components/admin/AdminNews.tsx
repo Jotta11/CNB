@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, Loader2, Image as ImageIcon, Calendar, User, Newspaper, Upload, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Image as ImageIcon, Calendar, User, Newspaper, Upload, X, Clock } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import {
     Dialog,
@@ -191,9 +191,16 @@ const AdminNews = () => {
                                             {n.imagem_url ? <img src={n.imagem_url} className="w-full h-full object-cover" /> : <Newspaper className="w-5 h-5 text-primary opacity-20" />}
                                         </div>
                                         <div>
-                                            <CardTitle className="text-lg font-bebas text-primary uppercase tracking-wide">{n.titulo}</CardTitle>
+                                            <div className="flex items-center gap-2">
+                                                <CardTitle className="text-lg font-bebas text-primary uppercase tracking-wide">{n.titulo}</CardTitle>
+                                                {new Date(n.data_publicacao) > new Date() && (
+                                                    <span className="flex items-center gap-1 text-[9px] font-bold uppercase bg-amber-100 text-amber-700 border border-amber-200 rounded-full px-2 py-0.5">
+                                                        <Clock className="w-2.5 h-2.5" />Agendada
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="flex gap-3 text-[10px] font-bold text-muted-foreground uppercase opacity-70">
-                                                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(n.data_publicacao), 'dd/MM/yy')}</span>
+                                                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(n.data_publicacao), 'dd/MM/yy HH:mm')}</span>
                                                 <span className="flex items-center gap-1"><User className="w-3 h-3" />{n.autor || 'CNB'}</span>
                                             </div>
                                         </div>
@@ -261,7 +268,13 @@ const AdminNews = () => {
                     </div>
                     <DialogFooter className="gap-2">
                         <Button variant="ghost" onClick={() => setIsModalOpen(false)}>CANCELAR</Button>
-                        <Button className="bg-primary hover:bg-primary-medium px-8 font-bold" onClick={handleSave}>{actionLoading === 'save' ? <Loader2 className="animate-spin" /> : 'SALVAR E PUBLICAR'}</Button>
+                        <Button className="bg-primary hover:bg-primary-medium px-8 font-bold" onClick={handleSave}>
+                            {actionLoading === 'save'
+                                ? <Loader2 className="animate-spin" />
+                                : formData.data_publicacao && new Date(formData.data_publicacao) > new Date()
+                                    ? <span className="flex items-center gap-2"><Clock className="w-4 h-4" />AGENDAR PUBLICAÇÃO</span>
+                                    : 'SALVAR E PUBLICAR'}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

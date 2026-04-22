@@ -19,6 +19,7 @@ const NewsSection = () => {
                 const { data, error } = await supabase
                     .from("noticias")
                     .select("*")
+                    .lte("data_publicacao", new Date().toISOString())
                     .order("data_publicacao", { ascending: false })
                     .limit(4);
 

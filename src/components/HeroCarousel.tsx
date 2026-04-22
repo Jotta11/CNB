@@ -92,7 +92,7 @@ const HeroCarousel = () => {
   if (!slides.length) return <HeroFallback />;
 
   return (
-    <section id="inicio" className="min-h-[85vh] relative overflow-hidden">
+    <section id="inicio" className="min-h-screen relative overflow-hidden">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}
@@ -104,7 +104,7 @@ const HeroCarousel = () => {
         <CarouselContent className="-ml-0">
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative min-h-[85vh] flex items-end md:items-center overflow-hidden">
+              <div className="relative min-h-screen flex items-end md:items-center overflow-hidden">
 
                 {/* Arte mobile (< md) */}
                 {slide.imagem_mobile && (
@@ -155,7 +155,7 @@ const HeroCarousel = () => {
                 </div>
 
                 {/* Conteúdo desktop: lado esquerdo, verticalmente centrado */}
-                <div className="hidden md:flex relative z-10 flex-col items-start justify-center h-full min-h-[85vh] px-20 max-w-xl">
+                <div className="hidden md:flex relative z-10 flex-col items-start justify-center h-full min-h-screen px-20 max-w-xl">
                   <h2 className="font-display text-4xl lg:text-5xl text-white tracking-wider leading-tight mb-4 whitespace-pre-line">
                     {slide.titulo}
                   </h2>

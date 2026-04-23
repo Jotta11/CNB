@@ -82,8 +82,8 @@ const slideToForm = (s: HeroSlide): SlideForm => {
 // ── Upload helper ─────────────────────────────────────────────────────────────
 
 const uploadSlideImage = async (file: File, slot: 'mobile' | 'desktop', slideId: string): Promise<string> => {
-  const maxWidth = slot === 'mobile' ? 768 : 1920;
-  const webpFile = await convertToWebP(file, maxWidth);
+  const maxWidth = slot === 'mobile' ? 750 : 1920;
+  const webpFile = await convertToWebP(file, maxWidth, 0.75);
   const path = `hero-slides/${slideId}-${slot}-${Date.now()}.webp`;
   const { error } = await supabase.storage
     .from('site-assets')

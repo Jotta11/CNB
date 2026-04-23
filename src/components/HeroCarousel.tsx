@@ -109,17 +109,22 @@ const SlideItem = ({
   slide,
   count,
   current,
+  isFirst,
 }: {
   slide: ReturnType<typeof useHeroSlides>['slides'][number];
   count: number;
   current: number;
+  isFirst: boolean;
 }) => {
   const hasAnyImage = !!(slide.imagem_mobile || slide.imagem_desktop);
 
-  // Usa desktop como fallback no mobile quando não há imagem mobile
+  // Usa desktop como fallback no mobile e vice-versa
   const mobileImage = slide.imagem_mobile ?? slide.imagem_desktop;
-  // Usa mobile como fallback no desktop quando não há imagem desktop
   const desktopImage = slide.imagem_desktop ?? slide.imagem_mobile;
+
+  // Primeiro slide: prioridade alta para LCP; demais: lazy
+  const imgPriority = isFirst ? 'high' : 'low';
+  const imgLoading = isFirst ? 'eager' : 'lazy';
 
   return (
     <div className="relative aspect-[5/8] md:h-[800px] md:aspect-auto w-full flex items-end md:items-center overflow-hidden">
@@ -129,16 +134,24 @@ const SlideItem = ({
         <>
           {/* Mobile */}
           {mobileImage && (
-            <div
-              className="md:hidden absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url("${mobileImage}")` }}
+            <img
+              src={mobileImage}
+              alt=""
+              aria-hidden="true"
+              fetchPriority={imgPriority}
+              loading={imgLoading}
+              className="md:hidden absolute inset-0 w-full h-full object-cover object-center"
             />
           )}
           {/* Desktop */}
           {desktopImage && (
-            <div
-              className="hidden md:block absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url("${desktopImage}")` }}
+            <img
+              src={desktopImage}
+              alt=""
+              aria-hidden="true"
+              fetchPriority={imgPriority}
+              loading={imgLoading}
+              className="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
             />
           )}
         </>
@@ -231,7 +244,7 @@ const HeroCarousel = () => {
   if (slides.length === 1) {
     return (
       <section id="inicio" className={`${BANNER_CLASS} relative overflow-hidden`}>
-        <SlideItem slide={slides[0]} count={1} current={0} />
+        <SlideItem slide={slides[0]} count={1} current={0} isFirst={true} />
       </section>
     );
   }
@@ -247,12 +260,13 @@ const HeroCarousel = () => {
         className="h-full"
       >
         <CarouselContent className="-ml-0 h-full">
-          {slides.map((slide) => (
+          {slides.map((slide, i) => (
             <CarouselItem key={slide.id} className="pl-0">
               <SlideItem
                 slide={slide}
                 count={slides.length}
                 current={current}
+                isFirst={i === 0}
               />
             </CarouselItem>
           ))}

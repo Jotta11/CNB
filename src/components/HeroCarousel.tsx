@@ -28,7 +28,7 @@ const HeroFallback = () => {
   return (
     <section
       id="inicio"
-      className="aspect-[5/8] md:h-[800px] md:aspect-auto flex items-center justify-center relative overflow-hidden pt-20"
+      className="mt-[72px] md:mt-20 aspect-[5/8] md:h-[800px] md:aspect-auto flex items-center justify-center relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-medium)) 100%)' }}
     >
       <div className="absolute inset-0 opacity-5" style={{
@@ -92,7 +92,7 @@ const HeroCarousel = () => {
   if (!slides.length) return <HeroFallback />;
 
   return (
-    <section id="inicio" className="relative overflow-hidden">
+    <section id="inicio" className="mt-[72px] md:mt-20 relative overflow-hidden">
       <Carousel
         setApi={setApi}
         plugins={[plugin.current]}

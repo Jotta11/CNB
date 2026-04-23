@@ -46,6 +46,13 @@ const LeadDetailModal = ({ lead, open, onOpenChange, onStatusChange }: LeadDetai
                 </a>
               </div>
 
+              {lead.area_atuacao && (
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Área de Atuação</p>
+                  <p className="font-medium text-sm">{lead.area_atuacao}</p>
+                </div>
+              )}
+
               {lead.localizacao && (
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-xs text-muted-foreground uppercase font-semibold mb-1">Localização</p>

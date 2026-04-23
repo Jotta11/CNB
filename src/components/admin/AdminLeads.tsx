@@ -226,9 +226,9 @@ const AdminLeads = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="rounded-md border overflow-hidden">
+        <div className="rounded-md border overflow-hidden bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50">
+            <thead className="bg-muted/40 border-b">
               <tr>
                 <th className="px-3 py-3 w-10">
                   <Checkbox
@@ -248,7 +248,7 @@ const AdminLeads = () => {
                 <tr
                   key={lead.id}
                   className={`border-t transition-colors ${
-                    selectedIds.has(lead.id) ? 'bg-primary/5' : 'hover:bg-muted/30'
+                    selectedIds.has(lead.id) ? 'bg-primary/5' : 'bg-white hover:bg-slate-50'
                   }`}
                 >
                   <td className="px-3 py-3" onClick={e => e.stopPropagation()}>

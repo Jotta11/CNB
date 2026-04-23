@@ -28,7 +28,7 @@ const HeroFallback = () => {
   return (
     <section
       id="inicio"
-      className="aspect-[5/8] md:aspect-[12/5] flex items-center justify-center relative overflow-hidden pt-20"
+      className="aspect-[5/8] md:aspect-[3/2] flex items-center justify-center relative overflow-hidden pt-20"
       style={{ background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-medium)) 100%)' }}
     >
       <div className="absolute inset-0 opacity-5" style={{
@@ -104,7 +104,7 @@ const HeroCarousel = () => {
         <CarouselContent className="-ml-0">
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative aspect-[5/8] md:aspect-[12/5] w-full flex items-end md:items-center overflow-hidden">
+              <div className="relative aspect-[5/8] md:aspect-[3/2] w-full flex items-end md:items-center overflow-hidden">
 
                 {/* Arte mobile (< md) */}
                 {slide.imagem_mobile && (

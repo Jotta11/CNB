@@ -17,6 +17,7 @@ export interface Lead {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  area_atuacao: string | null;
 }
 
 export const tipoLabels: Record<LeadTipo, string> = {

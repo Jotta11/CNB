@@ -16,9 +16,9 @@ const Hero = () => {
   };
 
   return (
-    <section 
-      id="inicio" 
-      className="min-h-[85vh] flex items-center justify-center relative overflow-hidden pt-20"
+    <section
+      id="inicio"
+      className="aspect-[5/8] md:h-[800px] md:aspect-auto flex items-center justify-center relative overflow-hidden pt-20"
       style={{
         background: heroBackground 
           ? `url(${heroBackground}) center/cover no-repeat`

@@ -15,35 +15,52 @@ export interface HeroSlide {
   updated_at: string;
 }
 
+const fetchActiveSlides = async (): Promise<HeroSlide[]> => {
+  const { data, error } = await supabase
+    .from('hero_slides' as never)
+    .select('*')
+    .eq('ativo', true)
+    .order('ordem', { ascending: true });
+  if (error) {
+    console.error('[useHeroSlides] Erro ao buscar slides:', error);
+    throw error;
+  }
+  return (data ?? []) as HeroSlide[];
+};
+
+const fetchAllSlides = async (): Promise<HeroSlide[]> => {
+  const { data, error } = await supabase
+    .from('hero_slides' as never)
+    .select('*')
+    .order('ordem', { ascending: true });
+  if (error) {
+    console.error('[useHeroSlidesAdmin] Erro ao buscar slides:', error);
+    throw error;
+  }
+  return (data ?? []) as HeroSlide[];
+};
+
 export const useHeroSlides = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['hero-slides-ativos'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('hero_slides')
-        .select('*')
-        .eq('ativo', true)
-        .order('ordem', { ascending: true });
-      if (error) throw error;
-      return data as HeroSlide[];
-    },
+    queryFn: fetchActiveSlides,
+    staleTime: 1000 * 60 * 5, // 5 min cache
+    retry: 2,
   });
 
-  return { slides: data ?? [], loading: isLoading };
+  return {
+    slides: data ?? [],
+    loading: isLoading,
+    isError,
+    error,
+  };
 };
 
 export const useHeroSlidesAdmin = () => {
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['hero-slides-admin'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('hero_slides')
-        .select('*')
-        .order('ordem', { ascending: true });
-      if (error) throw error;
-      return data as HeroSlide[];
-    },
+    queryFn: fetchAllSlides,
   });
 
-  return { slides: data ?? [], loading: isLoading, refetch };
+  return { slides: data ?? [], loading: isLoading, isError, refetch };
 };

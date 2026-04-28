@@ -18,7 +18,7 @@ const FloatingWhatsApp = () => {
   const { settings, loading } = useSiteSettings();
   const whatsappNumber = settings.whatsapp_number || DEFAULT_WHATSAPP;
   const message = 'Olá! Vim pelo site e gostaria de mais informações.';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
 
   if (loading) return null;
 

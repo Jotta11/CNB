@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, Search, Send, ClipboardList } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import FloatingWhatsApp from '@/components/FloatingWhatsApp';
-import BackToTop from '@/components/BackToTop';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -125,8 +121,6 @@ const Indicacao = () => {
 
   return (
     <div className="min-h-screen bg-secondary">
-      <Header />
-
       <section className="min-h-screen flex items-center relative overflow-hidden py-24">
         {/* Decorative background */}
         <div className="absolute inset-0 bg-gradient-to-br from-secondary via-primary/80 to-primary" />
@@ -373,9 +367,6 @@ const Indicacao = () => {
         </div>
       </section>
 
-      <Footer />
-      <FloatingWhatsApp />
-      <BackToTop />
     </div>
   );
 };

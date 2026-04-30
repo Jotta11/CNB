@@ -16,6 +16,7 @@ import LoteDetails from "./pages/LoteDetails";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
 import IndicacaoConectada from "./pages/IndicacaoConectada";
+import Indicacao from "./pages/Indicacao";
 import LandingVender from "./pages/LandingVender";
 import LandingPrecos from "./pages/LandingPrecos";
 import LandingOfertas from "./pages/LandingOfertas";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/noticias" element={<News />} />
             <Route path="/noticias/:slug" element={<NewsDetail />} />
             <Route path="/indicacao-conectada" element={<IndicacaoConectada />} />
+            <Route path="/indicacao" element={<Indicacao />} />
             <Route path="/vender" element={<LandingVender />} />
             <Route path="/precos" element={<LandingPrecos />} />
             <Route path="/ofertas" element={<LandingOfertas />} />

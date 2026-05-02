@@ -186,7 +186,7 @@ const LoteDetails = () => {
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
-      (user ? `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` : '\n') +
+      (user ? `• Preço: ${formatPrice(lote.preco)}/@\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -319,7 +319,7 @@ const LoteDetails = () => {
 
               {/* Price Section */}
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <span className="text-xs block mb-1 text-muted-foreground">Preço por cabeça</span>
+                <span className="text-xs block mb-1 text-muted-foreground">Preço por @</span>
                 {user ? (
                   <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
                 ) : (

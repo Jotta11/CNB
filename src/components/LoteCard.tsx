@@ -52,7 +52,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
       `• Localização: ${loteLocation}\n` +
-      (user ? `• Preço: ${formatPrice(lote.preco)}/cabeça\n\n` : '\n') +
+      (user ? `• Preço: ${formatPrice(lote.preco)}/@\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -166,7 +166,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
 
           <div className="border-t border-border pt-4 mt-auto">
             <div className="mb-4">
-              <span className="text-xs text-muted-foreground block">Preço por cabeça</span>
+              <span className="text-xs text-muted-foreground block">Preço por @</span>
               {user ? (
                 <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}</span>
               ) : (
@@ -300,7 +300,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
 
         <div className="border-t border-border pt-4">
           <div className="mb-4">
-            <span className="text-xs text-muted-foreground block">Preço por cabeça</span>
+            <span className="text-xs text-muted-foreground block">Preço por @</span>
             {user ? (
               <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}</span>
             ) : (

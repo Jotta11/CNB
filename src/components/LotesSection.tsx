@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
+import { SHOW_EM_BREVE_LOTES } from '@/config/emBreve';
 import LoteCard from './LoteCard';
 import { useLotes, type Lote } from '@/hooks/useLotes';
 import { lotes as fallbackLotes } from '@/data/lotes';
@@ -47,6 +48,7 @@ const LotesSection = () => {
     preco: l.preco,
     video_url: null,
     imagem_url: null,
+    cidade: null,
     ativo: true,
     ordem: 0,
     localizacao: l.localizacao || 'Tocantins',
@@ -118,6 +120,25 @@ const LotesSection = () => {
                 </div>
               </div>
 
+              {SHOW_EM_BREVE_LOTES && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0 backdrop-blur-sm bg-primary/75 rounded-2xl flex flex-col items-center justify-center z-10"
+                >
+                  <span className="inline-block bg-accent text-white font-display text-sm tracking-[0.3em] px-4 py-1 rounded-full mb-4">
+                    EM BREVE
+                  </span>
+                  <p className="font-display text-5xl md:text-7xl text-white tracking-wide leading-none text-center">
+                    NOVOS LOTES
+                  </p>
+                  <p className="text-white/80 text-sm md:text-base max-w-sm font-medium text-center mt-4 px-6">
+                    Nossa vitrine de negócios está sendo preparada com curadoria exclusiva.
+                    Fique de olho!
+                  </p>
+                </motion.div>
+              )}
             </div>
 
             <div className="text-center mt-10">

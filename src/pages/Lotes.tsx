@@ -37,6 +37,7 @@ const Lotes = () => {
     preco: l.preco,
     video_url: null,
     imagem_url: null,
+    cidade: null,
     ativo: true,
     ordem: 0,
     localizacao: l.localizacao || 'Tocantins',

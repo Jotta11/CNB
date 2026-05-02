@@ -55,6 +55,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
     caracteristicas: defaultCaracteristicas,
     video_url: '',
     imagem_url: '',
+    cidade: '',
     ativo: true,
     ordem: 0,
     capacidade_carga: 96,
@@ -79,6 +80,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         caracteristicas: lote.caracteristicas || defaultCaracteristicas,
         video_url: lote.video_url || '',
         imagem_url: lote.imagem_url || '',
+        cidade: lote.cidade || '',
         ativo: lote.ativo,
         ordem: lote.ordem,
         capacidade_carga: lote.capacidade_carga || 96,
@@ -101,6 +103,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         caracteristicas: defaultCaracteristicas,
         video_url: '',
         imagem_url: '',
+        cidade: '',
         ativo: true,
         ordem: 0,
         capacidade_carga: 96,
@@ -272,7 +275,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="localizacao">Localização (Estado)</Label>
+              <Label htmlFor="localizacao">Estado</Label>
               <Select
                 value={form.localizacao}
                 onValueChange={(value) => setForm((prev) => ({ ...prev, localizacao: value }))}
@@ -304,6 +307,16 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cidade">Localização detalhada <span className="text-muted-foreground font-normal">(exibida no card)</span></Label>
+            <Input
+              id="cidade"
+              value={form.cidade}
+              onChange={(e) => setForm((prev) => ({ ...prev, cidade: e.target.value }))}
+              placeholder="Ex: 40km de Miranorte - TO"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

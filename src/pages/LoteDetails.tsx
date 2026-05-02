@@ -169,7 +169,7 @@ const LoteDetails = () => {
     }
   }, [id, lotes, loading, navigate]);
 
-  const loteLocation = lote?.localizacao || lote?.estado || 'Tocantins';
+  const loteLocation = lote?.cidade || lote?.localizacao || lote?.estado || 'Tocantins';
   const userRegion = profile?.regiao;
   const distance = userRegion && loteLocation ? getDistanceBetweenStates(userRegion, loteLocation) : null;
 

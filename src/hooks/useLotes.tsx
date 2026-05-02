@@ -12,6 +12,7 @@ export interface Lote {
   sexo: string;
   estado: string;
   localizacao: string | null;
+  cidade: string | null;
   preco: number;
   descricao: string | null;
   caracteristicas: string[];

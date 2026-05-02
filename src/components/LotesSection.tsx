@@ -80,7 +80,6 @@ const LotesSection = () => {
           </div>
         ) : (
           <>
-            {/* Carousel wrapper com overlay Em Breve */}
             <div className="relative">
               {/* Carousel Navigation */}
               <div className="flex justify-end gap-2 mb-4">
@@ -118,27 +117,6 @@ const LotesSection = () => {
                 </div>
               </div>
 
-              {/* Overlay Em Breve */}
-              <div className="absolute inset-0 backdrop-blur-sm bg-primary/75 rounded-2xl flex flex-col items-center justify-center z-10">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col items-center gap-4 text-center px-6"
-                >
-                  <span className="inline-block bg-accent text-white font-display text-sm tracking-[0.3em] px-4 py-1 rounded-full">
-                    EM BREVE
-                  </span>
-                  <p className="font-display text-5xl md:text-7xl text-white tracking-wide leading-none">
-                    NOVOS LOTES
-                  </p>
-                  <p className="text-white/80 text-sm md:text-base max-w-sm font-medium">
-                    Nossa vitrine de negócios está sendo preparada com curadoria exclusiva.
-                    Fique de olho!
-                  </p>
-                </motion.div>
-              </div>
             </div>
 
           </>

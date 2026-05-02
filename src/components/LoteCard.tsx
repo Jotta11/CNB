@@ -1,4 +1,4 @@
-import { Video, Lock, MapPin, Play } from 'lucide-react';
+import { Lock, MapPin, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,7 +32,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
   const { profile } = useUserProfile();
 
   // Calculate distance between user's region and lote location
-  const loteLocation = lote.localizacao || lote.estado;
+  const loteLocation = lote.cidade || lote.localizacao || lote.estado;
   const userRegion = profile?.regiao;
   const distance = userRegion && loteLocation ? getDistanceBetweenStates(userRegion, loteLocation) : null;
 
@@ -85,16 +85,26 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
           className="relative w-full md:w-1/2 h-56 md:h-auto md:min-h-[280px] bg-primary flex items-center justify-center cursor-pointer flex-shrink-0 overflow-hidden"
         >
           {(() => {
+            const PlayOverlay = ({ size = 'lg' }: { size?: 'md' | 'lg' }) => (
+              <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                <div className={`${size === 'lg' ? 'w-14 h-14' : 'w-12 h-12'} bg-white/90 rounded-full flex items-center justify-center shadow-lg`}>
+                  <Play className={`${size === 'lg' ? 'w-7 h-7' : 'w-6 h-6'} text-primary fill-primary ml-1`} />
+                </div>
+              </div>
+            );
+            if (lote.imagem_url) {
+              return (
+                <>
+                  <img src={lote.imagem_url} alt={lote.titulo} className="w-full h-full object-cover" loading="lazy" />
+                  <PlayOverlay size="lg" />
+                </>
+              );
+            }
             const videoId = getYouTubeVideoId(lote.video_url);
             if (videoId) {
               return (
                 <>
-                  <img
-                    src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
-                    alt={`Vídeo do ${lote.numero}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  <img src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} alt={lote.titulo} className="w-full h-full object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                     <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
                       <Play className="w-7 h-7 text-white fill-white ml-1" />
@@ -103,10 +113,19 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
                 </>
               );
             }
+            if (lote.video_url) {
+              return (
+                <>
+                  <video src={lote.video_url} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
+                  <PlayOverlay size="lg" />
+                </>
+              );
+            }
             return (
-              <div className="text-white/50 flex flex-col items-center gap-2">
-                <Video size={48} />
-                <span className="text-sm">Vídeo disponível</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/70 flex items-center justify-center">
+                <div className="w-14 h-14 bg-white/20 border-2 border-white/40 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <Play className="w-7 h-7 text-white fill-white ml-1" />
+                </div>
               </div>
             );
           })()}
@@ -200,16 +219,26 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
         className="relative h-48 bg-primary flex items-center justify-center overflow-hidden"
       >
         {(() => {
+          const PlayOverlay = () => (
+            <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                <Play className="w-6 h-6 text-primary fill-primary ml-0.5" />
+              </div>
+            </div>
+          );
+          if (lote.imagem_url) {
+            return (
+              <>
+                <img src={lote.imagem_url} alt={lote.titulo} className="w-full h-full object-cover" loading="lazy" />
+                <PlayOverlay />
+              </>
+            );
+          }
           const videoId = getYouTubeVideoId(lote.video_url);
           if (videoId) {
             return (
               <>
-                <img
-                  src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
-                  alt={`Vídeo do ${lote.numero}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+                <img src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} alt={lote.titulo} className="w-full h-full object-cover" loading="lazy" />
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                   <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
                     <Play className="w-6 h-6 text-white fill-white ml-0.5" />
@@ -218,10 +247,19 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
               </>
             );
           }
+          if (lote.video_url) {
+            return (
+              <>
+                <video src={lote.video_url} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
+                <PlayOverlay />
+              </>
+            );
+          }
           return (
-            <div className="text-white/50 flex flex-col items-center gap-2">
-              <Video size={40} />
-              <span className="text-sm">Vídeo disponível</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/70 flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/20 border-2 border-white/40 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+              </div>
             </div>
           );
         })()}

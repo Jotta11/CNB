@@ -75,7 +75,7 @@ const RelatedLotes = ({ currentLote, allLotes }: RelatedLotesProps) => {
                 
                 <div className="flex items-center gap-1 mt-2 text-sm text-primary">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>{lote.localizacao || lote.estado}</span>
+                  <span>{lote.cidade || lote.localizacao || lote.estado}</span>
                 </div>
               </div>
             </motion.div>

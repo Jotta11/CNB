@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import LoteCard from './LoteCard';
 import { useLotes, type Lote } from '@/hooks/useLotes';
@@ -117,6 +118,15 @@ const LotesSection = () => {
                 </div>
               </div>
 
+            </div>
+
+            <div className="text-center mt-10">
+              <Link to="/lotes">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 gap-2">
+                  Ver todos os lotes
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
             </div>
 
           </>

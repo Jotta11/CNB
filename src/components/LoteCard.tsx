@@ -151,7 +151,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
             </div>
             <div>
               <span className="text-muted-foreground">Idade:</span>
-              <span className="font-medium ml-1">{lote.idade}</span>
+              <span className="font-medium ml-1">{lote.idade ?? '—'}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Peso médio:</span>

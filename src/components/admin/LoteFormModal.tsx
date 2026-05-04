@@ -228,13 +228,12 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="idade">Idade</Label>
+              <Label htmlFor="idade">Idade <span className="text-muted-foreground font-normal">(opcional)</span></Label>
               <Input
                 id="idade"
                 value={form.idade}
                 onChange={(e) => setForm((prev) => ({ ...prev, idade: e.target.value }))}
                 placeholder="24 meses"
-                required
               />
             </div>
             <div className="space-y-2">

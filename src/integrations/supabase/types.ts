@@ -98,7 +98,7 @@ export type Database = {
           descricao: string | null
           estado: string
           id: string
-          idade: string
+          idade: string | null
           imagem_url: string | null
           localizacao: string | null
           numero: string
@@ -124,7 +124,7 @@ export type Database = {
           descricao?: string | null
           estado?: string
           id?: string
-          idade: string
+          idade?: string | null
           imagem_url?: string | null
           localizacao?: string | null
           numero: string

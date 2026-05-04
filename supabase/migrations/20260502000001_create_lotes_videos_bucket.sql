@@ -1,6 +1,6 @@
 -- Cria o bucket lotes-videos para armazenar vídeos dos lotes
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('lotes-videos', 'lotes-videos', true)
+INSERT INTO storage.buckets (id, name, public, file_size_limit)
+VALUES ('lotes-videos', 'lotes-videos', true, 209715200)
 ON CONFLICT (id) DO NOTHING;
 
 -- 1. Qualquer pessoa pode visualizar vídeos dos lotes

@@ -6,7 +6,7 @@ export interface Lote {
   numero: string;
   titulo: string;
   raca: string;
-  idade: string;
+  idade: string | null;
   peso: string;
   tipo_peso: string;
   quantidade: number;

@@ -110,6 +110,7 @@ export type Database = {
           raca: string
           sexo: string
           tipo_implemento: string | null
+          tipo_peso: string
           tipo_preco: string
           titulo: string
           updated_at: string
@@ -135,6 +136,7 @@ export type Database = {
           raca: string
           sexo?: string
           tipo_implemento?: string | null
+          tipo_peso?: string
           tipo_preco?: string
           titulo: string
           updated_at?: string
@@ -160,6 +162,7 @@ export type Database = {
           raca?: string
           sexo?: string
           tipo_implemento?: string | null
+          tipo_peso?: string
           tipo_preco?: string
           titulo?: string
           updated_at?: string

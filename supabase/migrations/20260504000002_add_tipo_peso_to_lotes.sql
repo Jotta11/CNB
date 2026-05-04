@@ -1,0 +1,1 @@
+ALTER TABLE lotes ADD COLUMN IF NOT EXISTS tipo_peso text NOT NULL DEFAULT 'kg';

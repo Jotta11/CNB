@@ -46,6 +46,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
     raca: '',
     idade: '',
     peso: '',
+    tipo_peso: 'kg',
     quantidade: 1,
     sexo: 'Macho',
     estado: 'Vacinado',
@@ -72,6 +73,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         raca: lote.raca,
         idade: lote.idade,
         peso: lote.peso,
+        tipo_peso: lote.tipo_peso || 'kg',
         quantidade: lote.quantidade,
         sexo: lote.sexo,
         estado: lote.estado,
@@ -96,6 +98,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         raca: '',
         idade: '',
         peso: '',
+        tipo_peso: 'kg',
         quantidade: 1,
         sexo: 'Macho',
         estado: 'Vacinado',
@@ -235,14 +238,39 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="peso">Peso</Label>
-              <Input
-                id="peso"
-                value={form.peso}
-                onChange={(e) => setForm((prev) => ({ ...prev, peso: e.target.value }))}
-                placeholder="420kg"
-                required
-              />
+              <Label htmlFor="peso">Peso médio</Label>
+              <div className="flex rounded-md border border-input overflow-hidden">
+                <input
+                  id="peso"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={form.peso}
+                  onChange={(e) => setForm((prev) => ({ ...prev, peso: e.target.value }))}
+                  required
+                  placeholder="420"
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-background focus:outline-none"
+                />
+                <span className="flex items-center px-3 bg-muted text-primary font-semibold text-sm border-l border-input">
+                  {form.tipo_peso === 'arroba' ? '@' : 'kg'}
+                </span>
+              </div>
+              <div className="flex gap-1 mt-1">
+                {(['kg', 'arroba'] as const).map((tipo) => (
+                  <button
+                    key={tipo}
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, tipo_peso: tipo }))}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      form.tipo_peso === tipo
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-muted-foreground border-input hover:border-primary'
+                    }`}
+                  >
+                    {tipo === 'kg' ? 'Kg' : 'Arroba (@)'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

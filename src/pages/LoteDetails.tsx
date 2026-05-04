@@ -315,8 +315,8 @@ const LoteDetails = () => {
                   </div>
                 </div>
                 <div className="p-3 sm:p-4 rounded-lg bg-card border border-border">
-                  <span className="text-xs block mb-1 text-muted-foreground">Peso</span>
-                  <span className="font-semibold text-base sm:text-lg text-foreground">{lote.peso}</span>
+                  <span className="text-xs block mb-1 text-muted-foreground">Peso médio</span>
+                  <span className="font-semibold text-base sm:text-lg text-foreground">{lote.peso} {lote.tipo_peso === 'arroba' ? '@' : 'kg'}</span>
                 </div>
               </div>
 

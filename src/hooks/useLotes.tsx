@@ -8,6 +8,7 @@ export interface Lote {
   raca: string;
   idade: string;
   peso: string;
+  tipo_peso: string;
   quantidade: number;
   sexo: string;
   estado: string;

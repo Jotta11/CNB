@@ -14,6 +14,7 @@ export interface Lote {
   localizacao: string | null;
   cidade: string | null;
   preco: number;
+  tipo_preco: string;
   descricao: string | null;
   caracteristicas: string[];
   video_url: string | null;

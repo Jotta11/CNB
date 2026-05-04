@@ -1,0 +1,1 @@
+ALTER TABLE lotes ADD COLUMN IF NOT EXISTS tipo_preco text NOT NULL DEFAULT 'arroba';

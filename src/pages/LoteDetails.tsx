@@ -181,12 +181,15 @@ const LoteDetails = () => {
     }).format(price);
   };
 
+  const precoSufixo = lote?.tipo_preco === 'kg' ? '/kg' : lote?.tipo_preco === 'cabeca' ? '/cabeça' : '/@';
+  const precoLabel = lote?.tipo_preco === 'kg' ? 'Preço por kg' : lote?.tipo_preco === 'cabeca' ? 'Preço por cabeça' : 'Preço por @';
+
   const handleWhatsApp = () => {
     if (!lote) return;
     const message = `Olá! Tenho interesse no *${lote.numero} - ${lote.titulo}*\n\n` +
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
-      (user ? `• Preço: ${formatPrice(lote.preco)}/@\n\n` : '\n') +
+      (user ? `• Preço: ${formatPrice(lote.preco)}${precoSufixo}\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -319,9 +322,9 @@ const LoteDetails = () => {
 
               {/* Price Section */}
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <span className="text-xs block mb-1 text-muted-foreground">Preço por @</span>
+                <span className="text-xs block mb-1 text-muted-foreground">{precoLabel}</span>
                 {user ? (
-                  <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}</span>
+                  <span className="font-display text-3xl text-primary">{formatPrice(lote.preco)}<span className="text-base font-sans font-normal text-muted-foreground ml-1">{precoSufixo}</span></span>
                 ) : (
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="font-display text-2xl sm:text-3xl text-primary blur-md select-none">R$ X.XXX</span>

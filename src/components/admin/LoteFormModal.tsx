@@ -51,6 +51,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
     estado: 'Vacinado',
     localizacao: 'Tocantins',
     preco: 0,
+    tipo_preco: 'arroba',
     descricao: '',
     caracteristicas: defaultCaracteristicas,
     video_url: '',
@@ -76,6 +77,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         estado: lote.estado,
         localizacao: lote.localizacao || 'Tocantins',
         preco: lote.preco,
+        tipo_preco: lote.tipo_preco || 'arroba',
         descricao: lote.descricao || '',
         caracteristicas: lote.caracteristicas || defaultCaracteristicas,
         video_url: lote.video_url || '',
@@ -99,6 +101,7 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
         estado: 'Vacinado',
         localizacao: 'Tocantins',
         preco: 0,
+        tipo_preco: 'arroba',
         descricao: '',
         caracteristicas: defaultCaracteristicas,
         video_url: '',
@@ -321,16 +324,39 @@ const LoteFormModal = ({ isOpen, onClose, lote }: LoteFormModalProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="preco">Preço (R$)</Label>
-              <Input
-                id="preco"
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.preco}
-                onChange={(e) => setForm((prev) => ({ ...prev, preco: parseFloat(e.target.value) || 0 }))}
-                required
-              />
+              <Label htmlFor="preco">Preço</Label>
+              <div className="flex rounded-md border border-input overflow-hidden">
+                <span className="flex items-center px-3 bg-muted text-muted-foreground text-sm border-r border-input">R$</span>
+                <input
+                  id="preco"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.preco}
+                  onChange={(e) => setForm((prev) => ({ ...prev, preco: parseFloat(e.target.value) || 0 }))}
+                  required
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-background focus:outline-none"
+                />
+                <span className="flex items-center px-3 bg-muted text-primary font-semibold text-sm border-l border-input">
+                  {form.tipo_preco === 'kg' ? '/kg' : form.tipo_preco === 'cabeca' ? '/cab' : '/@'}
+                </span>
+              </div>
+              <div className="flex gap-1 mt-1">
+                {(['kg', 'arroba', 'cabeca'] as const).map((tipo) => (
+                  <button
+                    key={tipo}
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, tipo_preco: tipo }))}
+                    className={`flex-1 py-1 text-xs rounded border transition-colors ${
+                      form.tipo_preco === tipo
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background text-muted-foreground border-input hover:border-primary'
+                    }`}
+                  >
+                    {tipo === 'kg' ? 'R$/kg' : tipo === 'arroba' ? 'R$/@' : 'R$/cabeça'}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="ordem">Ordem de exibição</Label>

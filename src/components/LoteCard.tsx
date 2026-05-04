@@ -44,6 +44,9 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
     }).format(price);
   };
 
+  const precoSufixo = lote.tipo_preco === 'kg' ? '/kg' : lote.tipo_preco === 'cabeca' ? '/cabeça' : '/@';
+  const precoLabel = lote.tipo_preco === 'kg' ? 'Preço por kg' : lote.tipo_preco === 'cabeca' ? 'Preço por cabeça' : 'Preço por @';
+
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,7 +55,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
       `• Raça: ${lote.raca}\n` +
       `• Quantidade: ${lote.quantidade} cabeças\n` +
       `• Localização: ${loteLocation}\n` +
-      (user ? `• Preço: ${formatPrice(lote.preco)}/@\n\n` : '\n') +
+      (user ? `• Preço: ${formatPrice(lote.preco)}${precoSufixo}\n\n` : '\n') +
       `Gostaria de mais informações.`;
     window.open(`https://wa.me/5563992628916?text=${encodeURIComponent(message)}`, '_blank');
   };
@@ -166,9 +169,9 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
 
           <div className="border-t border-border pt-4 mt-auto">
             <div className="mb-4">
-              <span className="text-xs text-muted-foreground block">Preço por @</span>
+              <span className="text-xs text-muted-foreground block">{precoLabel}</span>
               {user ? (
-                <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}</span>
+                <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}<span className="text-sm font-sans font-normal text-muted-foreground ml-1">{precoSufixo}</span></span>
               ) : (
                 <Link to="/auth" className="group/price flex items-center gap-2">
                   <span className="font-display text-2xl text-primary blur-sm select-none">
@@ -300,9 +303,9 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
 
         <div className="border-t border-border pt-4">
           <div className="mb-4">
-            <span className="text-xs text-muted-foreground block">Preço por @</span>
+            <span className="text-xs text-muted-foreground block">{precoLabel}</span>
             {user ? (
-              <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}</span>
+              <span className="font-display text-2xl text-primary">{formatPrice(lote.preco)}<span className="text-sm font-sans font-normal text-muted-foreground ml-1">{precoSufixo}</span></span>
             ) : (
               <Link to="/auth" className="group/price flex items-center gap-2">
                 <span className="font-display text-2xl text-primary blur-sm select-none">

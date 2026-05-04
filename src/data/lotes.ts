@@ -11,6 +11,7 @@ export interface Lote {
   localizacao: string | null;
   cidade?: string | null;
   preco: number;
+  tipo_preco: string;
   descricao: string;
   caracteristicas: string[];
   capacidade_carga: number;
@@ -31,6 +32,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Tocantins',
     preco: 3200,
+    tipo_preco: 'arroba',
     descricao: 'Lote premium de gado Nelore, com excelente padrão genético e conformação para engorda. Animais criados em sistema semi-intensivo, com manejo nutricional diferenciado e acompanhamento veterinário constante. Os animais apresentam uniformidade de lote, ótima conversão alimentar e estrutura óssea robusta, características essenciais para alto ganho de peso. Ideal para confinamento ou terminação em pasto.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -56,6 +58,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Goiás',
     preco: 4500,
+    tipo_preco: 'arroba',
     descricao: 'Lote excepcional de gado Angus, reconhecido mundialmente pela qualidade superior da carne. Animais com excelente marmoreio, características ideais para mercados premium e programas de carne certificada. Criados com manejo específico para a raça, estes animais apresentam precocidade de acabamento e qualidade de carcaça diferenciada.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -81,6 +84,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Mato Grosso',
     preco: 8900,
+    tipo_preco: 'arroba',
     descricao: 'Lote exclusivo de reprodutores Brahman, raça conhecida pela rusticidade, adaptabilidade e resistência a climas tropicais. Animais com excelente conformação racial, ideal para melhoramento genético de rebanhos. Touros com comprovada fertilidade e temperamento dócil.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -106,6 +110,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Bahia',
     preco: 3800,
+    tipo_preco: 'arroba',
     descricao: 'Lote selecionado de gado Senepol, raça tropical adaptada ao clima brasileiro. Excelente ganho de peso, conformação de carcaça e precocidade. Ideal para sistemas de produção intensivos e adaptação a climas quentes.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -131,6 +136,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Maranhão',
     preco: 3400,
+    tipo_preco: 'arroba',
     descricao: 'Lote de gado Tabapuã com excelente aptidão para corte. Raça brasileira adaptada às condições tropicais, conhecida pela docilidade e rusticidade. Animais com bom desenvolvimento muscular e acabamento de carcaça.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -156,6 +162,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Piauí',
     preco: 5200,
+    tipo_preco: 'arroba',
     descricao: 'Lote de fêmeas Girolando de alta produção leiteira. Cruzamento ideal entre Gir e Holandês, combinando rusticidade tropical com potencial produtivo. Animais com histórico de boa lactação e fertilidade.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -181,6 +188,7 @@ export const lotes: Lote[] = [
     estado: 'Vacinado',
     localizacao: 'Mato Grosso do Sul',
     preco: 4100,
+    tipo_preco: 'arroba',
     descricao: 'Lote de novilhos Brangus prontos para terminação. Cruzamento de Angus com Brahman oferece qualidade de carne superior com adaptabilidade tropical. Excelente uniformidade e potencial de ganho de peso.',
     caracteristicas: [
       'Certificado sanitário completo',
@@ -206,6 +214,7 @@ export const lotes: Lote[] = [
     estado: 'Prenhe',
     localizacao: 'Pará',
     preco: 6500,
+    tipo_preco: 'arroba',
     descricao: 'Lote exclusivo de matrizes Guzerá prenhas de touros provados. Raça zebuína de dupla aptidão com excelente fertilidade e habilidade materna. Animais com confirmação de prenhez por ultrassonografia.',
     caracteristicas: [
       'Certificado sanitário completo',

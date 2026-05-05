@@ -119,7 +119,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
             if (lote.video_url) {
               return (
                 <>
-                  <video src={lote.video_url} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
+                  <video src={`${lote.video_url}#t=0.001`} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
                   <PlayOverlay size="lg" />
                 </>
               );
@@ -253,7 +253,7 @@ const LoteCard = ({ lote, index, horizontal = false }: LoteCardProps) => {
           if (lote.video_url) {
             return (
               <>
-                <video src={lote.video_url} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
+                <video src={`${lote.video_url}#t=0.001`} preload="metadata" muted playsInline className="w-full h-full object-cover pointer-events-none" />
                 <PlayOverlay />
               </>
             );
